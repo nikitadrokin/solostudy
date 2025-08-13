@@ -20,7 +20,12 @@
       "!**/.source"
     ]
   },
-  "extends": [
-    "ultracite"
-  ]
+  "extends": ["ultracite"],
+  "linter": {
+    "rules": {
+      "style": {
+        "noNestedTernary": "off"
+      }
+    }
+  }
 }

@@ -1,9 +1,9 @@
-"use client"
-import { authClient } from "@/lib/auth-client";
-import { useQuery } from "@tanstack/react-query";
-import { trpc } from "@/utils/trpc";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+'use client';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { authClient } from '@/lib/auth-client';
+import { trpc } from '@/utils/trpc';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -11,9 +11,10 @@ export default function Dashboard() {
 
   const privateData = useQuery(trpc.privateData.queryOptions());
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
   useEffect(() => {
-    if (!session && !isPending) {
-      router.push("/login");
+    if (!(session || isPending)) {
+      router.push('/login');
     }
   }, [session, isPending]);
 
