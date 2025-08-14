@@ -13,10 +13,10 @@ export default function Dashboard() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
   useEffect(() => {
-    if (!(session || isPending)) {
+    if (!session) {
       router.push('/login');
     }
-  }, [session, isPending]);
+  }, [session]);
 
   if (isPending) {
     return <div>Loading...</div>;

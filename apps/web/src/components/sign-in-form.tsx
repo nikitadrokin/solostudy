@@ -1,5 +1,6 @@
 import { useForm } from '@tanstack/react-form';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import z from 'zod';
 import { authClient } from '@/lib/auth-client';
@@ -14,7 +15,9 @@ export default function SignInForm({
   onSwitchToSignUp: () => void;
 }) {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
+  const { isPending, refetch } = authClient.useSession();
+  const [isPasskeySubmitting, setIsPasskeySubmitting] =
+    useState<boolean>(false);
 
   const form = useForm({
     defaultValues: {
@@ -28,9 +31,11 @@ export default function SignInForm({
           password: value.password,
         },
         {
-          onSuccess: () => {
-            router.push('/dashboard');
+          onSuccess: async () => {
+            // Refetch session to update React state
+            await refetch();
             toast.success('Sign in successful');
+            router.push('/dashboard');
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -45,6 +50,64 @@ export default function SignInForm({
       }),
     },
   });
+
+  // Attempt WebAuthn Conditional UI (autofill) when supported
+  useEffect(() => {
+    let cancelled = false;
+
+    const maybeAutofill = async (): Promise<void> => {
+      // Check if browser supports conditional UI
+      if (
+        typeof PublicKeyCredential === 'undefined' ||
+        !PublicKeyCredential.isConditionalMediationAvailable ||
+        !(await PublicKeyCredential.isConditionalMediationAvailable())
+      ) {
+        return;
+      }
+
+      if (cancelled) {
+        return;
+      }
+
+      try {
+        await authClient.signIn.passkey({
+          autoFill: true,
+        });
+      } catch {
+        // Intentionally swallow errors from conditional UI attempt
+        // User might have cancelled or no passkeys available
+      }
+    };
+
+    maybeAutofill();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handlePasskeySignIn = async (): Promise<void> => {
+    try {
+      setIsPasskeySubmitting(true);
+      const emailValue = form.store.state.values.email;
+
+      // Create options object, only include email if provided
+      const signInOptions = emailValue ? { email: emailValue } : {};
+
+      await authClient.signIn.passkey(signInOptions, {
+        onSuccess: async () => {
+          // Refetch session to update React state
+          await refetch();
+          toast.success('Signed in with passkey');
+          router.push('/dashboard');
+        },
+        onError: (error) => {
+          toast.error(error.error.message || error.error.statusText);
+        },
+      });
+    } finally {
+      setIsPasskeySubmitting(false);
+    }
+  };
 
   if (isPending) {
     return <Loader />;
@@ -68,6 +131,7 @@ export default function SignInForm({
               <div className="space-y-2">
                 <Label htmlFor={field.name}>Email</Label>
                 <Input
+                  autoComplete="username webauthn"
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
@@ -91,6 +155,7 @@ export default function SignInForm({
               <div className="space-y-2">
                 <Label htmlFor={field.name}>Password</Label>
                 <Input
+                  autoComplete="current-password webauthn"
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
@@ -120,6 +185,22 @@ export default function SignInForm({
           )}
         </form.Subscribe>
       </form>
+
+      <div className="mt-4">
+        <Button
+          aria-label="Sign in with a passkey"
+          className="w-full"
+          disabled={isPasskeySubmitting}
+          onClick={handlePasskeySignIn}
+          type="button"
+          variant="outline"
+        >
+          {isPasskeySubmitting ? 'Processing…' : 'Sign in with Passkey'}
+        </Button>
+        <p className="mt-2 text-center text-muted-foreground text-xs">
+          Email is optional for passkey sign-in
+        </p>
+      </div>
 
       <div className="mt-4 text-center">
         <Button

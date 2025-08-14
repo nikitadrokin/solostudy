@@ -14,7 +14,7 @@ export default function SignUpForm({
   onSwitchToSignIn: () => void;
 }) {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
+  const { isPending, refetch } = authClient.useSession();
 
   const form = useForm({
     defaultValues: {
@@ -30,9 +30,11 @@ export default function SignUpForm({
           name: value.name,
         },
         {
-          onSuccess: () => {
-            router.push('/dashboard');
+          onSuccess: async () => {
+            // Refetch session to update React state
+            await refetch();
             toast.success('Sign up successful');
+            router.push('/dashboard');
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -93,6 +95,7 @@ export default function SignUpForm({
               <div className="space-y-2">
                 <Label htmlFor={field.name}>Email</Label>
                 <Input
+                  autoComplete="username webauthn"
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
@@ -116,6 +119,7 @@ export default function SignUpForm({
               <div className="space-y-2">
                 <Label htmlFor={field.name}>Password</Label>
                 <Input
+                  autoComplete="new-password webauthn"
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
