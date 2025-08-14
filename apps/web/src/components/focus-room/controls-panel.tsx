@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import AmbientControls from './ambient-controls';
+import type { AmbientSoundId } from './ambient-player';
 
 // YouTube URL validation patterns
 const YOUTUBE_VALIDATION_PATTERNS = [
@@ -24,6 +26,15 @@ interface ControlsPanelProps {
   onLoadVideo: () => void;
   isVideoLoaded: boolean;
   videoError?: string;
+  // Ambient sound props
+  ambientSound: AmbientSoundId;
+  onAmbientSoundChange: (soundId: AmbientSoundId) => void;
+  ambientVolume: number;
+  onAmbientVolumeChange: (volume: number) => void;
+  isAmbientMuted: boolean;
+  onAmbientMuteToggle: () => void;
+  ambientError?: string;
+  isAmbientLoading?: boolean;
 }
 
 export default function ControlsPanel({
@@ -38,6 +49,15 @@ export default function ControlsPanel({
   onLoadVideo,
   isVideoLoaded,
   videoError,
+  // Ambient sound props
+  ambientSound,
+  onAmbientSoundChange,
+  ambientVolume,
+  onAmbientVolumeChange,
+  isAmbientMuted,
+  onAmbientMuteToggle,
+  ambientError,
+  isAmbientLoading,
 }: ControlsPanelProps) {
   const [urlInput, setUrlInput] = useState(videoUrl);
 
@@ -181,23 +201,17 @@ export default function ControlsPanel({
               </div>
             </div>
 
-            {/* Ambient Sound Placeholder */}
-            <div className="space-y-2">
-              <Label htmlFor="ambient-sound">Ambient Sound</Label>
-              <select
-                className="flex-1 rounded border bg-background/50 px-2 py-1"
-                disabled
-                id="ambient-sound"
-              >
-                <option>None</option>
-                <option>Rain</option>
-                <option>Forest</option>
-                <option>Cafe</option>
-                <option>Ocean Waves</option>
-                <option>White Noise</option>
-              </select>
-              <p className="text-muted-foreground text-xs">Coming in Phase 3</p>
-            </div>
+            {/* Ambient Sound Controls */}
+            <AmbientControls
+              error={ambientError}
+              isLoading={isAmbientLoading}
+              isMuted={isAmbientMuted}
+              onMuteToggle={onAmbientMuteToggle}
+              onSoundChange={onAmbientSoundChange}
+              onVolumeChange={onAmbientVolumeChange}
+              selectedSound={ambientSound}
+              volume={ambientVolume}
+            />
           </div>
         </div>
       </CardContent>

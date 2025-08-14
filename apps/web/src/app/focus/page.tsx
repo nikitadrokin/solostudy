@@ -1,6 +1,9 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
+import AmbientPlayer, {
+  type AmbientSoundId,
+} from '@/components/focus-room/ambient-player';
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import YouTubePlayer from '@/components/focus-room/youtube-player';
 import { Button } from '@/components/ui/button';
@@ -19,6 +22,13 @@ export default function FocusRoom() {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState<string>();
   const [player, setPlayer] = useState<YT.Player | null>(null);
+
+  // Ambient sound state
+  const [ambientSound, setAmbientSound] = useState<AmbientSoundId>('none');
+  const [ambientVolume, setAmbientVolume] = useState(30);
+  const [isAmbientMuted, setIsAmbientMuted] = useState(false);
+  const [ambientError, setAmbientError] = useState<string>();
+  const [isAmbientLoading, setIsAmbientLoading] = useState(false);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
   useEffect(() => {
@@ -107,6 +117,39 @@ export default function FocusRoom() {
     }
   }, [player, isMuted]);
 
+  // Ambient sound control handlers
+  const handleAmbientSoundChange = useCallback((soundId: AmbientSoundId) => {
+    setAmbientSound(soundId);
+    setAmbientError(undefined);
+  }, []);
+
+  const handleAmbientVolumeChange = useCallback(
+    (newVolume: number) => {
+      setAmbientVolume(newVolume);
+      if (newVolume > 0 && isAmbientMuted) {
+        setIsAmbientMuted(false);
+      }
+    },
+    [isAmbientMuted]
+  );
+
+  const handleAmbientMuteToggle = useCallback(() => {
+    setIsAmbientMuted(!isAmbientMuted);
+  }, [isAmbientMuted]);
+
+  const handleAmbientLoadStart = useCallback(() => {
+    setIsAmbientLoading(true);
+  }, []);
+
+  const handleAmbientLoadEnd = useCallback(() => {
+    setIsAmbientLoading(false);
+  }, []);
+
+  const handleAmbientError = useCallback((error: string) => {
+    setAmbientError(error);
+    setIsAmbientLoading(false);
+  }, []);
+
   if (isPending) {
     return (
       <div className="flex h-full items-center justify-center">Loading...</div>
@@ -180,9 +223,18 @@ export default function FocusRoom() {
         {/* Bottom Controls */}
         <div className="absolute right-4 bottom-4 left-4 z-10">
           <ControlsPanel
+            ambientError={ambientError}
+            ambientSound={ambientSound}
+            ambientVolume={ambientVolume}
+            isAmbientLoading={isAmbientLoading}
+            isAmbientMuted={isAmbientMuted}
             isMuted={isMuted}
             isPlaying={isPlaying}
             isVideoLoaded={isVideoLoaded}
+            onAmbientMuteToggle={handleAmbientMuteToggle}
+            onAmbientSoundChange={handleAmbientSoundChange}
+            onAmbientVolumeChange={handleAmbientVolumeChange}
+            // Ambient sound props
             onLoadVideo={handleLoadVideo}
             onMuteToggle={handleMuteToggle}
             onPlayPause={handlePlayPause}
@@ -193,6 +245,16 @@ export default function FocusRoom() {
             volume={volume}
           />
         </div>
+
+        {/* Ambient Sound Player - Hidden component that manages audio */}
+        <AmbientPlayer
+          isPlaying={ambientSound !== 'none'}
+          onError={handleAmbientError}
+          onLoadEnd={handleAmbientLoadEnd}
+          onLoadStart={handleAmbientLoadStart}
+          soundId={ambientSound}
+          volume={isAmbientMuted ? 0 : ambientVolume}
+        />
       </div>
 
       {/* AI Assistant Sidebar - Collapsed by default */}
