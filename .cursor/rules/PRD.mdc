@@ -1,0 +1,362 @@
+---
+description: See the full PRD for the app
+alwaysApply: false
+---
+
+# SoloStudy App - Product Requirements Document
+
+## Overview
+
+SoloStudy is a virtual study environment application that provides users with a local AI assistant for motivation and support, combined with a customizable focus room featuring YouTube video backgrounds and ambient audio controls.
+
+## Core Features
+
+### 1. AI Assistant
+
+- **Local AI Model Integration**: Runs entirely on user's device for privacy
+- **Motivational Support**: Provides encouragement and study tips
+- **Context-Aware Responses**: Understands study patterns and provides relevant help
+- **Study Session Guidance**: Offers break reminders and productivity advice
+
+### 2. Virtual Focus Room
+
+- **YouTube Video Backgrounds**: Users can set any YouTube video as their study environment background
+- **Audio Customization**:
+  - Volume control for YouTube videos
+  - Overlay ambient sounds (rain, forest, cafe, etc.)
+  - Audio mixing between video and ambient sounds
+  - Mute/unmute controls
+- **Visual Controls**: Video opacity/dimming options
+- **Environment Presets**: Save and switch between different study setups
+
+## Technical Implementation Roadmap
+
+### Phase 1: UI Foundation & Navigation (2-3 days)
+
+#### Step 1.1: Focus Room Page Structure
+
+- Create `/apps/web/src/app/focus/page.tsx`
+- Add basic layout with header and main content area
+- Create navigation from dashboard to focus room
+
+#### Step 1.2: AI Assistant Chat UI
+
+- Create `/apps/web/src/components/ai-assistant/chat-interface.tsx`
+- Design collapsible chat sidebar
+- Add message history component
+- Create input form for user questions
+
+#### Step 1.3: Focus Room Controls Panel
+
+- Create `/apps/web/src/components/focus-room/controls-panel.tsx`
+- Add YouTube URL input field
+- Create audio controls skeleton (volume, mute)
+- Add ambient sound selector dropdown
+
+### Phase 2: YouTube Integration (3-4 days)
+
+#### Step 2.1: YouTube Player Setup
+
+- Install `react-youtube` package: `pnpm add react-youtube @types/react-youtube`
+- Create `/apps/web/src/components/focus-room/youtube-player.tsx`
+- Implement basic YouTube video embedding
+- Add URL validation for YouTube links
+
+#### Step 2.2: Video Background Implementation
+
+- Style YouTube player to fill background
+- Add overlay controls that don't interfere with video
+- Implement video state management (play/pause/ready)
+- Add error handling for invalid/private videos
+
+#### Step 2.3: Video Persistence
+
+- Create tRPC endpoints for saving user's preferred videos
+- Add database schema for user video preferences
+- Implement video history and favorites
+
+### Phase 3: Audio Controls & Ambient Sounds (2-3 days)
+
+#### Step 3.1: YouTube Audio Controls
+
+- Implement volume control slider
+- Add mute/unmute functionality
+- Create video opacity/dimming controls
+- Add playback speed options
+
+#### Step 3.2: Ambient Sound System
+
+- Source free ambient sounds (rain, forest, cafe, etc.)
+- Create audio player for ambient sounds
+- Implement volume mixing between YouTube and ambient sounds
+- Add sound loop functionality
+
+#### Step 3.3: Audio Settings Persistence
+
+- Save audio preferences to database
+- Create presets for different study moods
+- Add quick-switch between audio profiles
+
+### Phase 4: Local AI Assistant Integration (4-5 days)
+
+#### Step 4.1: AI Model Setup
+
+- Research local AI options (Ollama, LocalAI, or WebLLM)
+- Set up model installation guide
+- Create AI service communication layer
+- Test basic question/answer functionality
+
+#### Step 4.2: Motivational Assistant Features
+
+- Create motivational message templates
+- Implement study session encouragement
+- Add break reminders and study tips
+- Create personality system for assistant
+
+#### Step 4.3: Context-Aware Responses
+
+- Track study session duration
+- Analyze user interaction patterns
+- Provide subject-specific help
+- Add study technique suggestions
+
+### Phase 5: Data Persistence & User Preferences (2-3 days)
+
+#### Step 5.1: Database Schema Extension
+
+- Add tables for study sessions, preferences, and AI conversations
+- Create user settings for assistant personality
+- Add focus room customization storage
+
+#### Step 5.2: Study Session Tracking
+
+- Implement session start/stop functionality
+- Track time spent in focus mode
+- Save study goals and achievements
+- Create study streak tracking
+
+### Phase 6: Advanced Features (3-4 days)
+
+#### Step 6.1: Study Analytics
+
+- Create dashboard charts for study time
+- Add productivity insights
+- Implement goal setting and tracking
+- Create study calendar view
+
+#### Step 6.2: Enhanced Focus Room
+
+- Add Pomodoro timer integration
+- Create multiple room themes/environments
+- Add collaborative study rooms (future)
+- Implement distraction blocking features
+
+## Implementation Timeline
+
+- **Week 1-2:** Phase 1 & 2 (Core focus room with YouTube)
+- **Week 3:** Phase 3 (Audio controls and ambient sounds)
+- **Week 4-5:** Phase 4 (AI assistant integration)
+- **Week 6:** Phase 5 & 6 (Polish and advanced features)
+
+## Current Technology Stack
+
+- **Frontend:** Next.js with TypeScript
+- **Backend:** tRPC with Next.js API routes
+- **Database:** PostgreSQL with Drizzle ORM
+- **Authentication:** Better Auth with passkey support
+- **Styling:** TailwindCSS with shadcn/ui components
+- **Monorepo:** Turborepo with pnpm workspaces
+
+## User Experience Goals
+
+1. **Seamless Study Environment**: Quick setup of personalized study spaces
+2. **Distraction-Free Interface**: Minimal UI that doesn't interrupt focus
+3. **Intelligent Assistance**: AI that adapts to individual study patterns
+4. **Customizable Ambience**: Fine-tuned control over audio and visual environment
+5. **Progress Tracking**: Meaningful insights into study habits and productivity
+
+## Privacy & Performance
+
+- **Local AI Processing**: All AI interactions happen on-device
+- **Minimal Data Collection**: Only essential user preferences stored
+- **Offline Capability**: Core features work without internet (except YouTube)
+- **Responsive Design**: Optimized for desktop and tablet use
+
+# SoloStudy App - Product Requirements Document
+
+## Overview
+
+SoloStudy is a virtual study environment application that provides users with a local AI assistant for motivation and support, combined with a customizable focus room featuring YouTube video backgrounds and ambient audio controls.
+
+## Core Features
+
+### 1. AI Assistant
+
+- **Local AI Model Integration**: Runs entirely on user's device for privacy
+- **Motivational Support**: Provides encouragement and study tips
+- **Context-Aware Responses**: Understands study patterns and provides relevant help
+- **Study Session Guidance**: Offers break reminders and productivity advice
+
+### 2. Virtual Focus Room
+
+- **YouTube Video Backgrounds**: Users can set any YouTube video as their study environment background
+- **Audio Customization**:
+  - Volume control for YouTube videos
+  - Overlay ambient sounds (rain, forest, cafe, etc.)
+  - Audio mixing between video and ambient sounds
+  - Mute/unmute controls
+- **Visual Controls**: Video opacity/dimming options
+- **Environment Presets**: Save and switch between different study setups
+
+## Technical Implementation Roadmap
+
+### Phase 1: UI Foundation & Navigation (2-3 days)
+
+#### Step 1.1: Focus Room Page Structure
+
+- Create `/apps/web/src/app/focus/page.tsx`
+- Add basic layout with header and main content area
+- Create navigation from dashboard to focus room
+
+#### Step 1.2: AI Assistant Chat UI
+
+- Create `/apps/web/src/components/ai-assistant/chat-interface.tsx`
+- Design collapsible chat sidebar
+- Add message history component
+- Create input form for user questions
+
+#### Step 1.3: Focus Room Controls Panel
+
+- Create `/apps/web/src/components/focus-room/controls-panel.tsx`
+- Add YouTube URL input field
+- Create audio controls skeleton (volume, mute)
+- Add ambient sound selector dropdown
+
+### Phase 2: YouTube Integration (3-4 days)
+
+#### Step 2.1: YouTube Player Setup
+
+- Install `react-youtube` package: `pnpm add react-youtube @types/react-youtube`
+- Create `/apps/web/src/components/focus-room/youtube-player.tsx`
+- Implement basic YouTube video embedding
+- Add URL validation for YouTube links
+
+#### Step 2.2: Video Background Implementation
+
+- Style YouTube player to fill background
+- Add overlay controls that don't interfere with video
+- Implement video state management (play/pause/ready)
+- Add error handling for invalid/private videos
+
+#### Step 2.3: Video Persistence
+
+- Create tRPC endpoints for saving user's preferred videos
+- Add database schema for user video preferences
+- Implement video history and favorites
+
+### Phase 3: Audio Controls & Ambient Sounds (2-3 days)
+
+#### Step 3.1: YouTube Audio Controls
+
+- Implement volume control slider
+- Add mute/unmute functionality
+- Create video opacity/dimming controls
+- Add playback speed options
+
+#### Step 3.2: Ambient Sound System
+
+- Source free ambient sounds (rain, forest, cafe, etc.)
+- Create audio player for ambient sounds
+- Implement volume mixing between YouTube and ambient sounds
+- Add sound loop functionality
+
+#### Step 3.3: Audio Settings Persistence
+
+- Save audio preferences to database
+- Create presets for different study moods
+- Add quick-switch between audio profiles
+
+### Phase 4: Local AI Assistant Integration (4-5 days)
+
+#### Step 4.1: AI Model Setup
+
+- Research local AI options (Ollama, LocalAI, or WebLLM)
+- Set up model installation guide
+- Create AI service communication layer
+- Test basic question/answer functionality
+
+#### Step 4.2: Motivational Assistant Features
+
+- Create motivational message templates
+- Implement study session encouragement
+- Add break reminders and study tips
+- Create personality system for assistant
+
+#### Step 4.3: Context-Aware Responses
+
+- Track study session duration
+- Analyze user interaction patterns
+- Provide subject-specific help
+- Add study technique suggestions
+
+### Phase 5: Data Persistence & User Preferences (2-3 days)
+
+#### Step 5.1: Database Schema Extension
+
+- Add tables for study sessions, preferences, and AI conversations
+- Create user settings for assistant personality
+- Add focus room customization storage
+
+#### Step 5.2: Study Session Tracking
+
+- Implement session start/stop functionality
+- Track time spent in focus mode
+- Save study goals and achievements
+- Create study streak tracking
+
+### Phase 6: Advanced Features (3-4 days)
+
+#### Step 6.1: Study Analytics
+
+- Create dashboard charts for study time
+- Add productivity insights
+- Implement goal setting and tracking
+- Create study calendar view
+
+#### Step 6.2: Enhanced Focus Room
+
+- Add Pomodoro timer integration
+- Create multiple room themes/environments
+- Add collaborative study rooms (future)
+- Implement distraction blocking features
+
+## Implementation Timeline
+
+- **Week 1-2:** Phase 1 & 2 (Core focus room with YouTube)
+- **Week 3:** Phase 3 (Audio controls and ambient sounds)
+- **Week 4-5:** Phase 4 (AI assistant integration)
+- **Week 6:** Phase 5 & 6 (Polish and advanced features)
+
+## Current Technology Stack
+
+- **Frontend:** Next.js with TypeScript
+- **Backend:** tRPC with Next.js API routes
+- **Database:** PostgreSQL with Drizzle ORM
+- **Authentication:** Better Auth with passkey support
+- **Styling:** TailwindCSS with shadcn/ui components
+- **Monorepo:** Turborepo with pnpm workspaces
+
+## User Experience Goals
+
+1. **Seamless Study Environment**: Quick setup of personalized study spaces
+2. **Distraction-Free Interface**: Minimal UI that doesn't interrupt focus
+3. **Intelligent Assistance**: AI that adapts to individual study patterns
+4. **Customizable Ambience**: Fine-tuned control over audio and visual environment
+5. **Progress Tracking**: Meaningful insights into study habits and productivity
+
+## Privacy & Performance
+
+- **Local AI Processing**: All AI interactions happen on-device
+- **Minimal Data Collection**: Only essential user preferences stored
+- **Offline Capability**: Core features work without internet (except YouTube)
+- **Responsive Design**: Optimized for desktop and tablet use
