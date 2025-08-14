@@ -1,7 +1,16 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { authClient } from '@/lib/auth-client';
 import { trpc } from '@/utils/trpc';
 
@@ -19,14 +28,104 @@ export default function Dashboard() {
   }, [session]);
 
   if (isPending) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-full items-center justify-center">Loading...</div>
+    );
   }
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome {session?.user.name}</p>
-      <p>privateData: {privateData.data?.message}</p>
+    <div className="container mx-auto space-y-6 p-6">
+      <div>
+        <h1 className="font-bold text-3xl">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Welcome back, {session?.user.name}!
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Focus Room Card */}
+        <Card className="col-span-1 md:col-span-2 lg:col-span-1">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <div className="h-3 w-3 rounded-full bg-blue-500" />
+              Focus Room
+            </CardTitle>
+            <CardDescription>
+              Enter your personalized study environment with AI assistance
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/focus">
+              <Button className="w-full" size="lg">
+                Start Focus Session
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Study Stats Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Today's Progress</CardTitle>
+            <CardDescription>Your study time and achievements</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground text-sm">
+                  Focus Time:
+                </span>
+                <span className="font-medium">0h 0m</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground text-sm">Sessions:</span>
+                <span className="font-medium">0</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground text-sm">Streak:</span>
+                <span className="font-medium">0 days</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Shortcuts to common tasks</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button className="w-full justify-start" disabled variant="outline">
+              View Study History
+            </Button>
+            <Button className="w-full justify-start" disabled variant="outline">
+              Set Study Goals
+            </Button>
+            <Link href="/settings">
+              <Button className="w-full justify-start" variant="outline">
+                Preferences
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Development Info */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Development Status</CardTitle>
+          <CardDescription>Current implementation progress</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-sm">
+            Phase 1 Complete: Basic UI foundation with focus room and navigation
+          </p>
+          <p className="mt-1 text-muted-foreground text-sm">
+            API Status: {privateData.data?.message}
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

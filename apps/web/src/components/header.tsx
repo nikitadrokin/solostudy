@@ -8,6 +8,7 @@ export default function Header() {
   const links = [
     { to: '/', label: 'Home' },
     { to: '/dashboard', label: 'Dashboard' },
+    { to: '/focus', label: 'Focus Room' },
     { to: '/settings', label: 'Settings' },
   ];
 
