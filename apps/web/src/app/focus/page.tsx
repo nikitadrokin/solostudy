@@ -143,8 +143,8 @@ export default function FocusRoom() {
 
   return (
     <div className="relative z-0 flex h-full">
-      {/* YouTube Video Background */}
-      <div className="-z-10 absolute inset-0">
+      {/* YouTube Video Background - Non-Interactive */}
+      <div className="-z-10 pointer-events-none absolute inset-0 select-none">
         {videoUrl ? (
           <YouTubePlayer
             className="h-full w-full"
@@ -168,7 +168,7 @@ export default function FocusRoom() {
       </div>
 
       {/* Overlay Controls */}
-      <div className="absolute top-4 right-4 left-4 z-10">
+      <div className="absolute top-4 right-4 left-4">
         <div className="flex items-start justify-between">
           {/* Quick Actions */}
           <div className="ml-auto flex gap-2">
