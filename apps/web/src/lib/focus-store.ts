@@ -41,7 +41,8 @@ type FocusStore = FocusState & FocusActions;
 
 const initialState: FocusState = {
   // Video settings
-  videoUrl: '',
+  videoUrl:
+    'https://www.youtube.com/embed/We4uRmMjjhM?start=0&loop=1&playlist=We4uRmMjjhM&showinfo=0&controls=0&disablekb=0&fs=0&rel=0&iv_load_policy=3&autoplay=1&mute=1&modestbranding=1&playsinline=1&enablejsapi=1&origin=https%3A%2F%2Fapp.studytogether.com&widgetid=1',
   isPlaying: false,
   volume: 50,
   isMuted: false,
