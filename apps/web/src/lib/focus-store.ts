@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type { AmbientSoundId } from '@/components/focus-room/ambient-player';
+import { normalizeYouTubeUrl } from '@/components/focus-room/youtube-player';
 
 interface FocusState {
   // Video settings
@@ -40,9 +41,8 @@ interface FocusActions {
 type FocusStore = FocusState & FocusActions;
 
 const initialState: FocusState = {
-  // Video settings
-  videoUrl:
-    'https://www.youtube.com/embed/We4uRmMjjhM?start=0&loop=1&playlist=We4uRmMjjhM&showinfo=0&controls=0&disablekb=0&fs=0&rel=0&iv_load_policy=3&autoplay=1&mute=1&modestbranding=1&playsinline=1&enablejsapi=1&origin=https%3A%2F%2Fapp.studytogether.com&widgetid=1',
+  // Video settings - using normalized URL format
+  videoUrl: normalizeYouTubeUrl('https://www.youtube.com/watch?v=We4uRmMjjhM'),
   isPlaying: false,
   volume: 50,
   isMuted: false,
@@ -61,8 +61,8 @@ export const useFocusStore = create<FocusStore>()(
     (set) => ({
       ...initialState,
 
-      // Video actions
-      setVideoUrl: (url: string) => set({ videoUrl: url }),
+      // Video actions - normalize YouTube URLs to ensure clean embed format
+      setVideoUrl: (url: string) => set({ videoUrl: normalizeYouTubeUrl(url) }),
       setIsPlaying: (playing: boolean) => set({ isPlaying: playing }),
       setVolume: (volume: number) => set({ volume }),
       setIsMuted: (muted: boolean) => set({ isMuted: muted }),
