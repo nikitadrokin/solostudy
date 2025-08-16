@@ -1,11 +1,16 @@
 'use client';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import YouTubePlayer from '@/components/focus-room/youtube-player';
 import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { authClient } from '@/lib/auth-client';
 import { useFocusStore } from '@/lib/focus-store';
 
@@ -167,6 +172,37 @@ export default function FocusRoom() {
         <div className="flex items-start justify-between">
           {/* Quick Actions */}
           <div className="ml-auto flex gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  className="bg-background/80 backdrop-blur-sm"
+                  size="sm"
+                  title="Focus Room Settings"
+                  variant="outline"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-80 bg-background/95 backdrop-blur-sm"
+                side="bottom"
+              >
+                <ControlsPanel
+                  isMuted={isMuted}
+                  isPlaying={isPlaying}
+                  isVideoLoaded={isVideoLoaded}
+                  onLoadVideo={handleLoadVideo}
+                  onMuteToggle={handleMuteToggle}
+                  onPlayPause={handlePlayPause}
+                  onVideoUrlChange={handleVideoUrlChange}
+                  onVolumeChange={handleVolumeChange}
+                  videoError={videoError}
+                  videoUrl={videoUrl}
+                  volume={volume}
+                />
+              </PopoverContent>
+            </Popover>
             <Button
               className="bg-background/80 backdrop-blur-sm"
               onClick={handleZenModeToggle}
@@ -183,25 +219,6 @@ export default function FocusRoom() {
           </div>
         </div>
       </div>
-
-      {/* Bottom Controls */}
-      {!isZenMode && (
-        <div className="absolute right-4 bottom-4 left-4 z-10">
-          <ControlsPanel
-            isMuted={isMuted}
-            isPlaying={isPlaying}
-            isVideoLoaded={isVideoLoaded}
-            onLoadVideo={handleLoadVideo}
-            onMuteToggle={handleMuteToggle}
-            onPlayPause={handlePlayPause}
-            onVideoUrlChange={handleVideoUrlChange}
-            onVolumeChange={handleVolumeChange}
-            videoError={videoError}
-            videoUrl={videoUrl}
-            volume={volume}
-          />
-        </div>
-      )}
     </div>
   );
 }
