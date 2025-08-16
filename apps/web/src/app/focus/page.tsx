@@ -138,11 +138,11 @@ export default function FocusRoom() {
   }
 
   return (
-    <div className="flex h-full bg-background">
+    <div className="z-0 flex h-full">
       {/* Main Content Area */}
       <div className="relative flex-1">
         {/* YouTube Video Background */}
-        <div className="absolute inset-0">
+        <div className="-z-10 absolute inset-0">
           {videoUrl ? (
             <YouTubePlayer
               className="h-full w-full"
