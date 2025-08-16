@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import type { AmbientSoundId } from '@/components/focus-room/ambient-player';
 import { normalizeYouTubeUrl } from '@/components/focus-room/youtube-player';
 
 interface FocusState {
@@ -9,11 +8,6 @@ interface FocusState {
   isPlaying: boolean;
   volume: number;
   isMuted: boolean;
-
-  // Ambient sound settings
-  ambientSound: AmbientSoundId;
-  ambientVolume: number;
-  isAmbientMuted: boolean;
 
   // UI state
   isZenMode: boolean;
@@ -25,11 +19,6 @@ interface FocusActions {
   setIsPlaying: (playing: boolean) => void;
   setVolume: (volume: number) => void;
   setIsMuted: (muted: boolean) => void;
-
-  // Ambient sound actions
-  setAmbientSound: (sound: AmbientSoundId) => void;
-  setAmbientVolume: (volume: number) => void;
-  setIsAmbientMuted: (muted: boolean) => void;
 
   // UI actions
   setIsZenMode: (zenMode: boolean) => void;
@@ -47,11 +36,6 @@ const initialState: FocusState = {
   volume: 50,
   isMuted: false,
 
-  // Ambient sound settings
-  ambientSound: 'none',
-  ambientVolume: 30,
-  isAmbientMuted: false,
-
   // UI state
   isZenMode: false,
 };
@@ -67,11 +51,6 @@ export const useFocusStore = create<FocusStore>()(
       setVolume: (volume: number) => set({ volume }),
       setIsMuted: (muted: boolean) => set({ isMuted: muted }),
 
-      // Ambient sound actions
-      setAmbientSound: (sound: AmbientSoundId) => set({ ambientSound: sound }),
-      setAmbientVolume: (volume: number) => set({ ambientVolume: volume }),
-      setIsAmbientMuted: (muted: boolean) => set({ isAmbientMuted: muted }),
-
       // UI actions
       setIsZenMode: (zenMode: boolean) => set({ isZenMode: zenMode }),
 
@@ -86,9 +65,6 @@ export const useFocusStore = create<FocusStore>()(
         videoUrl: state.videoUrl,
         volume: state.volume,
         isMuted: state.isMuted,
-        ambientSound: state.ambientSound,
-        ambientVolume: state.ambientVolume,
-        isAmbientMuted: state.isAmbientMuted,
         isZenMode: state.isZenMode,
       }),
     }

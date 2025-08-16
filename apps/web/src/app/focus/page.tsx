@@ -2,9 +2,7 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import AmbientPlayer, {
-  type AmbientSoundId,
-} from '@/components/focus-room/ambient-player';
+
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import YouTubePlayer from '@/components/focus-room/youtube-player';
 import { Button } from '@/components/ui/button';
@@ -23,10 +21,6 @@ export default function FocusRoom() {
     isPlaying,
     volume,
     isMuted,
-    // Ambient sound state
-    ambientSound,
-    ambientVolume,
-    isAmbientMuted,
     // UI state
     isZenMode,
     // Actions
@@ -34,9 +28,6 @@ export default function FocusRoom() {
     setIsPlaying,
     setVolume,
     setIsMuted,
-    setAmbientSound,
-    setAmbientVolume,
-    setIsAmbientMuted,
     setIsZenMode,
   } = useFocusStore();
 
@@ -44,8 +35,6 @@ export default function FocusRoom() {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState<string>();
   const [player, setPlayer] = useState<YT.Player | null>(null);
-  const [ambientError, setAmbientError] = useState<string>();
-  const [isAmbientLoading, setIsAmbientLoading] = useState(false);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
   useEffect(() => {
@@ -136,42 +125,6 @@ export default function FocusRoom() {
       setIsMuted(true);
     }
   }, [player, isMuted, setIsMuted]);
-
-  // Ambient sound control handlers
-  const handleAmbientSoundChange = useCallback(
-    (soundId: AmbientSoundId) => {
-      setAmbientSound(soundId);
-      setAmbientError(undefined);
-    },
-    [setAmbientSound]
-  );
-
-  const handleAmbientVolumeChange = useCallback(
-    (newVolume: number) => {
-      setAmbientVolume(newVolume);
-      if (newVolume > 0 && isAmbientMuted) {
-        setIsAmbientMuted(false);
-      }
-    },
-    [isAmbientMuted, setAmbientVolume, setIsAmbientMuted]
-  );
-
-  const handleAmbientMuteToggle = useCallback(() => {
-    setIsAmbientMuted(!isAmbientMuted);
-  }, [isAmbientMuted, setIsAmbientMuted]);
-
-  const handleAmbientLoadStart = useCallback(() => {
-    setIsAmbientLoading(true);
-  }, []);
-
-  const handleAmbientLoadEnd = useCallback(() => {
-    setIsAmbientLoading(false);
-  }, []);
-
-  const handleAmbientError = useCallback((error: string) => {
-    setAmbientError(error);
-    setIsAmbientLoading(false);
-  }, []);
 
   // Zen mode toggle handler
   const handleZenModeToggle = useCallback(() => {
@@ -282,18 +235,9 @@ export default function FocusRoom() {
         {!isZenMode && (
           <div className="absolute right-4 bottom-4 left-4 z-10">
             <ControlsPanel
-              ambientError={ambientError}
-              ambientSound={ambientSound}
-              ambientVolume={ambientVolume}
-              isAmbientLoading={isAmbientLoading}
-              isAmbientMuted={isAmbientMuted}
               isMuted={isMuted}
               isPlaying={isPlaying}
               isVideoLoaded={isVideoLoaded}
-              onAmbientMuteToggle={handleAmbientMuteToggle}
-              onAmbientSoundChange={handleAmbientSoundChange}
-              onAmbientVolumeChange={handleAmbientVolumeChange}
-              // Ambient sound props
               onLoadVideo={handleLoadVideo}
               onMuteToggle={handleMuteToggle}
               onPlayPause={handlePlayPause}
@@ -305,16 +249,6 @@ export default function FocusRoom() {
             />
           </div>
         )}
-
-        {/* Ambient Sound Player - Hidden component that manages audio */}
-        <AmbientPlayer
-          isPlaying={ambientSound !== 'none'}
-          onError={handleAmbientError}
-          onLoadEnd={handleAmbientLoadEnd}
-          onLoadStart={handleAmbientLoadStart}
-          soundId={ambientSound}
-          volume={isAmbientMuted ? 0 : ambientVolume}
-        />
       </div>
 
       {/* AI Assistant Sidebar - Collapsed by default */}

@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AmbientControls from './ambient-controls';
-import type { AmbientSoundId } from './ambient-player';
 
 // YouTube URL validation patterns
 const YOUTUBE_VALIDATION_PATTERNS = [
@@ -26,15 +24,6 @@ interface ControlsPanelProps {
   onLoadVideo: () => void;
   isVideoLoaded: boolean;
   videoError?: string;
-  // Ambient sound props
-  ambientSound: AmbientSoundId;
-  onAmbientSoundChange: (soundId: AmbientSoundId) => void;
-  ambientVolume: number;
-  onAmbientVolumeChange: (volume: number) => void;
-  isAmbientMuted: boolean;
-  onAmbientMuteToggle: () => void;
-  ambientError?: string;
-  isAmbientLoading?: boolean;
 }
 
 export default function ControlsPanel({
@@ -49,15 +38,6 @@ export default function ControlsPanel({
   onLoadVideo,
   isVideoLoaded,
   videoError,
-  // Ambient sound props
-  ambientSound,
-  onAmbientSoundChange,
-  ambientVolume,
-  onAmbientVolumeChange,
-  isAmbientMuted,
-  onAmbientMuteToggle,
-  ambientError,
-  isAmbientLoading,
 }: ControlsPanelProps) {
   const [urlInput, setUrlInput] = useState(videoUrl);
 
@@ -85,133 +65,113 @@ export default function ControlsPanel({
         <CardTitle className="text-lg">Focus Room Controls</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {/* YouTube Controls */}
-          <div className="space-y-4">
-            <h3 className="mb-2 font-medium">Video Background</h3>
+        <div className="space-y-4">
+          <h3 className="mb-2 font-medium">Video Background</h3>
 
-            {/* URL Input */}
-            <div className="space-y-2">
-              <Label htmlFor="youtube-url">YouTube URL</Label>
-              <div className="flex gap-2">
-                <Input
-                  className={`flex-1 ${
-                    urlInput && !isValidYouTubeUrl(urlInput)
-                      ? 'border-destructive'
-                      : ''
-                  }`}
-                  id="youtube-url"
-                  onChange={(e) => setUrlInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="https://youtube.com/watch?v=..."
-                  type="url"
-                  value={urlInput}
-                />
-                <Button
-                  disabled={!(urlInput && isValidYouTubeUrl(urlInput))}
-                  onClick={handleUrlSubmit}
-                  size="default"
-                >
-                  Load
-                </Button>
-              </div>
-
-              {/* URL Validation Error */}
-              {urlInput && !isValidYouTubeUrl(urlInput) && (
-                <p className="text-destructive text-sm">
-                  Please enter a valid YouTube URL
-                </p>
-              )}
-
-              {/* Video Error */}
-              {videoError && (
-                <p className="text-destructive text-sm">{videoError}</p>
-              )}
-            </div>
-
-            {/* Playback Controls */}
+          {/* URL Input */}
+          <div className="space-y-2">
+            <Label htmlFor="youtube-url">YouTube URL</Label>
             <div className="flex gap-2">
+              <Input
+                className={`flex-1 ${
+                  urlInput && !isValidYouTubeUrl(urlInput)
+                    ? 'border-destructive'
+                    : ''
+                }`}
+                id="youtube-url"
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="https://youtube.com/watch?v=..."
+                type="url"
+                value={urlInput}
+              />
               <Button
-                className="flex items-center gap-2"
-                disabled={!isVideoLoaded}
-                onClick={onPlayPause}
-                size="sm"
-                variant="outline"
+                disabled={!(urlInput && isValidYouTubeUrl(urlInput))}
+                onClick={handleUrlSubmit}
+                size="default"
               >
-                {isPlaying ? (
-                  <>
-                    <Pause className="h-4 w-4" />
-                    Pause
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4" />
-                    Play
-                  </>
-                )}
+                Load
               </Button>
             </div>
 
-            {/* Video Status */}
-            <div className="text-muted-foreground text-sm">
-              Status:{' '}
-              {isVideoLoaded
-                ? isPlaying
-                  ? 'Playing'
-                  : 'Paused'
-                : 'No video loaded'}
+            {/* URL Validation Error */}
+            {urlInput && !isValidYouTubeUrl(urlInput) && (
+              <p className="text-destructive text-sm">
+                Please enter a valid YouTube URL
+              </p>
+            )}
+
+            {/* Video Error */}
+            {videoError && (
+              <p className="text-destructive text-sm">{videoError}</p>
+            )}
+          </div>
+
+          {/* Playback Controls */}
+          <div className="flex gap-2">
+            <Button
+              className="flex items-center gap-2"
+              disabled={!isVideoLoaded}
+              onClick={onPlayPause}
+              size="sm"
+              variant="outline"
+            >
+              {isPlaying ? (
+                <>
+                  <Pause className="h-4 w-4" />
+                  Pause
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4" />
+                  Play
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Volume Control */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="video-volume">Volume</Label>
+              <span className="text-muted-foreground text-sm">
+                {isMuted ? 'Muted' : `${volume}%`}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                className="shrink-0"
+                onClick={onMuteToggle}
+                size="sm"
+                variant="outline"
+              >
+                {isMuted ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
+              </Button>
+              <input
+                className="flex-1"
+                disabled={!isVideoLoaded}
+                id="video-volume"
+                max="100"
+                min="0"
+                onChange={(e) => onVolumeChange(Number(e.target.value))}
+                type="range"
+                value={isMuted ? 0 : volume}
+              />
             </div>
           </div>
 
-          {/* Audio Controls */}
-          <div className="space-y-4">
-            <h3 className="mb-2 font-medium">Audio Settings</h3>
-
-            {/* Volume Control */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="video-volume">Video Volume</Label>
-                <span className="text-muted-foreground text-sm">
-                  {isMuted ? 'Muted' : `${volume}%`}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  className="shrink-0"
-                  onClick={onMuteToggle}
-                  size="sm"
-                  variant="outline"
-                >
-                  {isMuted ? (
-                    <VolumeX className="h-4 w-4" />
-                  ) : (
-                    <Volume2 className="h-4 w-4" />
-                  )}
-                </Button>
-                <input
-                  className="flex-1"
-                  disabled={!isVideoLoaded}
-                  id="video-volume"
-                  max="100"
-                  min="0"
-                  onChange={(e) => onVolumeChange(Number(e.target.value))}
-                  type="range"
-                  value={isMuted ? 0 : volume}
-                />
-              </div>
-            </div>
-
-            {/* Ambient Sound Controls */}
-            <AmbientControls
-              error={ambientError}
-              isLoading={isAmbientLoading}
-              isMuted={isAmbientMuted}
-              onMuteToggle={onAmbientMuteToggle}
-              onSoundChange={onAmbientSoundChange}
-              onVolumeChange={onAmbientVolumeChange}
-              selectedSound={ambientSound}
-              volume={ambientVolume}
-            />
+          {/* Video Status */}
+          <div className="text-muted-foreground text-sm">
+            Status:{' '}
+            {isVideoLoaded
+              ? isPlaying
+                ? 'Playing'
+                : 'Paused'
+              : 'No video loaded'}
           </div>
         </div>
       </CardContent>
