@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // For development: Create placeholder audio URLs
 // In production, these would be actual audio file URLs
 const createPlaceholderUrls = () => {
-  if (typeof window === 'undefined') return {};
+  if (typeof window === 'undefined') {
+    return {};
+  }
 
   // Create data URLs for very short silent audio clips for demo
   const silentAudio =

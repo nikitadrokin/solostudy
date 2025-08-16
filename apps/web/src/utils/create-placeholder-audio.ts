@@ -99,10 +99,10 @@ export const createPlaceholderAudioUrls = () => {
     { id: 'fireplace', frequency: 80, volume: 0.05 },
   ];
 
-  sounds.forEach(({ id, frequency, volume }) => {
+  for (const { id, frequency, volume } of sounds) {
     const blob = createSimpleToneBlob(frequency, 10, volume);
     urls[id] = URL.createObjectURL(blob);
-  });
+  }
 
   return urls;
 };

@@ -1,4 +1,5 @@
 'use client';
+import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import AmbientPlayer, {
@@ -9,24 +10,40 @@ import YouTubePlayer from '@/components/focus-room/youtube-player';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { authClient } from '@/lib/auth-client';
+import { useFocusStore } from '@/lib/focus-store';
 
 export default function FocusRoom() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
-  // YouTube player state
-  const [videoUrl, setVideoUrl] = useState('');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(50);
-  const [isMuted, setIsMuted] = useState(false);
+  // Zustand store
+  const {
+    // Video state
+    videoUrl,
+    isPlaying,
+    volume,
+    isMuted,
+    // Ambient sound state
+    ambientSound,
+    ambientVolume,
+    isAmbientMuted,
+    // UI state
+    isZenMode,
+    // Actions
+    setVideoUrl,
+    setIsPlaying,
+    setVolume,
+    setIsMuted,
+    setAmbientSound,
+    setAmbientVolume,
+    setIsAmbientMuted,
+    setIsZenMode,
+  } = useFocusStore();
+
+  // Local state that doesn't need persistence
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState<string>();
   const [player, setPlayer] = useState<YT.Player | null>(null);
-
-  // Ambient sound state
-  const [ambientSound, setAmbientSound] = useState<AmbientSoundId>('none');
-  const [ambientVolume, setAmbientVolume] = useState(30);
-  const [isAmbientMuted, setIsAmbientMuted] = useState(false);
   const [ambientError, setAmbientError] = useState<string>();
   const [isAmbientLoading, setIsAmbientLoading] = useState(false);
 
@@ -46,11 +63,11 @@ export default function FocusRoom() {
 
   const handlePlay = useCallback(() => {
     setIsPlaying(true);
-  }, []);
+  }, [setIsPlaying]);
 
   const handlePause = useCallback(() => {
     setIsPlaying(false);
-  }, []);
+  }, [setIsPlaying]);
 
   const handleError = useCallback((error: number) => {
     const errorMessages: Record<number, string> = {
@@ -66,11 +83,14 @@ export default function FocusRoom() {
   }, []);
 
   // Control handlers
-  const handleVideoUrlChange = useCallback((newUrl: string) => {
-    setVideoUrl(newUrl);
-    setIsVideoLoaded(false);
-    setVideoError(undefined);
-  }, []);
+  const handleVideoUrlChange = useCallback(
+    (newUrl: string) => {
+      setVideoUrl(newUrl);
+      setIsVideoLoaded(false);
+      setVideoError(undefined);
+    },
+    [setVideoUrl]
+  );
 
   const handleLoadVideo = useCallback(() => {
     setIsVideoLoaded(false);
@@ -100,7 +120,7 @@ export default function FocusRoom() {
         }
       }
     },
-    [player, isMuted]
+    [player, isMuted, setVolume, setIsMuted]
   );
 
   const handleMuteToggle = useCallback(() => {
@@ -115,13 +135,16 @@ export default function FocusRoom() {
       player.mute();
       setIsMuted(true);
     }
-  }, [player, isMuted]);
+  }, [player, isMuted, setIsMuted]);
 
   // Ambient sound control handlers
-  const handleAmbientSoundChange = useCallback((soundId: AmbientSoundId) => {
-    setAmbientSound(soundId);
-    setAmbientError(undefined);
-  }, []);
+  const handleAmbientSoundChange = useCallback(
+    (soundId: AmbientSoundId) => {
+      setAmbientSound(soundId);
+      setAmbientError(undefined);
+    },
+    [setAmbientSound]
+  );
 
   const handleAmbientVolumeChange = useCallback(
     (newVolume: number) => {
@@ -130,12 +153,12 @@ export default function FocusRoom() {
         setIsAmbientMuted(false);
       }
     },
-    [isAmbientMuted]
+    [isAmbientMuted, setAmbientVolume, setIsAmbientMuted]
   );
 
   const handleAmbientMuteToggle = useCallback(() => {
     setIsAmbientMuted(!isAmbientMuted);
-  }, [isAmbientMuted]);
+  }, [isAmbientMuted, setIsAmbientMuted]);
 
   const handleAmbientLoadStart = useCallback(() => {
     setIsAmbientLoading(true);
@@ -149,6 +172,11 @@ export default function FocusRoom() {
     setAmbientError(error);
     setIsAmbientLoading(false);
   }, []);
+
+  // Zen mode toggle handler
+  const handleZenModeToggle = useCallback(() => {
+    setIsZenMode(!isZenMode);
+  }, [isZenMode, setIsZenMode]);
 
   if (isPending) {
     return (
@@ -185,66 +213,98 @@ export default function FocusRoom() {
         </div>
 
         {/* Overlay Controls */}
-        <div className="absolute top-4 right-4 left-4 z-10">
-          <div className="flex items-start justify-between">
-            {/* Study Session Info */}
-            <Card className="bg-background/80 backdrop-blur-sm">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 animate-pulse rounded-full bg-green-500" />
-                  <span className="font-medium text-sm">
-                    Focus Session Active
-                  </span>
-                </div>
-                <p className="mt-1 font-bold text-2xl">00:00:00</p>
-              </CardContent>
-            </Card>
+        {!isZenMode && (
+          <div className="absolute top-4 right-4 left-4 z-10">
+            <div className="flex items-start justify-between">
+              {/* Study Session Info */}
+              <Card className="bg-background/80 backdrop-blur-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-3 animate-pulse rounded-full bg-green-500" />
+                    <span className="font-medium text-sm">
+                      Focus Session Active
+                    </span>
+                  </div>
+                  <p className="mt-1 font-bold text-2xl">00:00:00</p>
+                </CardContent>
+              </Card>
 
-            {/* Quick Actions */}
-            <div className="flex gap-2">
-              <Button
-                className="bg-background/80 backdrop-blur-sm"
-                size="sm"
-                variant="secondary"
-              >
-                Take Break
-              </Button>
-              <Button
-                className="bg-background/80 backdrop-blur-sm"
-                size="sm"
-                variant="destructive"
-              >
-                End Session
-              </Button>
+              {/* Quick Actions */}
+              <div className="flex gap-2">
+                <Button
+                  className="bg-background/80 backdrop-blur-sm"
+                  onClick={handleZenModeToggle}
+                  size="sm"
+                  title={isZenMode ? 'Exit Zen Mode' : 'Enter Zen Mode'}
+                  variant="outline"
+                >
+                  {isZenMode ? (
+                    <Eye className="h-4 w-4" />
+                  ) : (
+                    <EyeOff className="h-4 w-4" />
+                  )}
+                </Button>
+                <Button
+                  className="bg-background/80 backdrop-blur-sm"
+                  size="sm"
+                  variant="secondary"
+                >
+                  Take Break
+                </Button>
+                <Button
+                  className="bg-background/80 backdrop-blur-sm"
+                  size="sm"
+                  variant="destructive"
+                >
+                  End Session
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Zen Mode Toggle - Always visible */}
+        {isZenMode && (
+          <div className="absolute top-4 right-4 z-10">
+            <Button
+              className="bg-background/80 backdrop-blur-sm"
+              onClick={handleZenModeToggle}
+              size="sm"
+              title="Exit Zen Mode"
+              variant="outline"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
 
         {/* Bottom Controls */}
-        <div className="absolute right-4 bottom-4 left-4 z-10">
-          <ControlsPanel
-            ambientError={ambientError}
-            ambientSound={ambientSound}
-            ambientVolume={ambientVolume}
-            isAmbientLoading={isAmbientLoading}
-            isAmbientMuted={isAmbientMuted}
-            isMuted={isMuted}
-            isPlaying={isPlaying}
-            isVideoLoaded={isVideoLoaded}
-            onAmbientMuteToggle={handleAmbientMuteToggle}
-            onAmbientSoundChange={handleAmbientSoundChange}
-            onAmbientVolumeChange={handleAmbientVolumeChange}
-            // Ambient sound props
-            onLoadVideo={handleLoadVideo}
-            onMuteToggle={handleMuteToggle}
-            onPlayPause={handlePlayPause}
-            onVideoUrlChange={handleVideoUrlChange}
-            onVolumeChange={handleVolumeChange}
-            videoError={videoError}
-            videoUrl={videoUrl}
-            volume={volume}
-          />
-        </div>
+        {!isZenMode && (
+          <div className="absolute right-4 bottom-4 left-4 z-10">
+            <ControlsPanel
+              ambientError={ambientError}
+              ambientSound={ambientSound}
+              ambientVolume={ambientVolume}
+              isAmbientLoading={isAmbientLoading}
+              isAmbientMuted={isAmbientMuted}
+              isMuted={isMuted}
+              isPlaying={isPlaying}
+              isVideoLoaded={isVideoLoaded}
+              onAmbientMuteToggle={handleAmbientMuteToggle}
+              onAmbientSoundChange={handleAmbientSoundChange}
+              onAmbientVolumeChange={handleAmbientVolumeChange}
+              // Ambient sound props
+              onLoadVideo={handleLoadVideo}
+              onMuteToggle={handleMuteToggle}
+              onPlayPause={handlePlayPause}
+              onVideoUrlChange={handleVideoUrlChange}
+              onVolumeChange={handleVolumeChange}
+              videoError={videoError}
+              videoUrl={videoUrl}
+              volume={volume}
+            />
+          </div>
+        )}
 
         {/* Ambient Sound Player - Hidden component that manages audio */}
         <AmbientPlayer
@@ -258,42 +318,44 @@ export default function FocusRoom() {
       </div>
 
       {/* AI Assistant Sidebar - Collapsed by default */}
-      <div className="w-80 border-l bg-background shadow-lg">
-        <Card className="h-full rounded-none border-0">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-emerald-500" />
-              AI Study Assistant
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-1 flex-col">
-            {/* Chat Messages */}
-            <div className="mb-4 flex-1 space-y-3">
-              <div className="rounded-lg bg-muted p-3">
-                <p className="text-sm">
-                  Welcome to your focus session! I'm here to help you stay
-                  motivated and productive. What are you studying today?
+      {!isZenMode && (
+        <div className="w-80 border-l bg-background shadow-lg">
+          <Card className="h-full rounded-none border-0">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                AI Study Assistant
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-1 flex-col">
+              {/* Chat Messages */}
+              <div className="mb-4 flex-1 space-y-3">
+                <div className="rounded-lg bg-muted p-3">
+                  <p className="text-sm">
+                    Welcome to your focus session! I'm here to help you stay
+                    motivated and productive. What are you studying today?
+                  </p>
+                </div>
+              </div>
+
+              {/* Chat Input */}
+              <div className="space-y-2">
+                <textarea
+                  className="h-20 w-full resize-none rounded-md border px-3 py-2"
+                  disabled
+                  placeholder="Ask me anything about your studies..."
+                />
+                <Button className="w-full" disabled>
+                  Send Message
+                </Button>
+                <p className="text-center text-muted-foreground text-xs">
+                  AI integration coming in Phase 4
                 </p>
               </div>
-            </div>
-
-            {/* Chat Input */}
-            <div className="space-y-2">
-              <textarea
-                className="h-20 w-full resize-none rounded-md border px-3 py-2"
-                disabled
-                placeholder="Ask me anything about your studies..."
-              />
-              <Button className="w-full" disabled>
-                Send Message
-              </Button>
-              <p className="text-center text-muted-foreground text-xs">
-                AI integration coming in Phase 4
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
