@@ -12,13 +12,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { authClient } from '@/lib/auth-client';
-import { trpc } from '@/utils/trpc';
 
 export default function Dashboard() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
-
-  const privateData = useQuery(trpc.privateData.queryOptions());
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
   useEffect(() => {
@@ -111,19 +108,23 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Development Info */}
+      {/* Analytics Preview */}
       <Card>
         <CardHeader>
-          <CardTitle>Development Status</CardTitle>
-          <CardDescription>Current implementation progress</CardDescription>
+          <CardTitle>Analytics</CardTitle>
+          <CardDescription>
+            Insights and detailed progress tracking
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            Phase 1 Complete: Basic UI foundation with focus room and navigation
-          </p>
-          <p className="mt-1 text-muted-foreground text-sm">
-            API Status: {privateData.data?.message}
-          </p>
+          <div className="flex h-32 items-center justify-center rounded-lg border border-dashed">
+            <div className="text-center">
+              <p className="font-medium text-muted-foreground">Coming Soon</p>
+              <p className="mt-1 text-muted-foreground text-sm">
+                Detailed analytics and insights will be available here
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
