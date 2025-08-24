@@ -144,15 +144,19 @@ export default function FocusRoom() {
   return (
     <div className="relative z-0 flex h-full">
       {/* YouTube Video Background - Non-Interactive */}
-      <div className="-z-10 pointer-events-none absolute inset-0 select-none">
+      <div className="relative h-full w-full overflow-hidden">
         {videoUrl ? (
+          // Center + cover: absolute @ 50%/50% with translate; oversize via w-screen & h-[56.25vw] and guard with min-w-full/min-h-full; wrapper uses overflow-hidden to crop.
           <YouTubePlayer
-            className="h-full w-full"
+            className="-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 box-border h-[56.25vw] min-h-full w-screen min-w-full select-none [&_video]:bg-red-500"
             onError={handleError}
             onPause={handlePause}
             onPlay={handlePlay}
             onReady={handlePlayerReady}
-            videoUrl={videoUrl}
+            // videoUrl={videoUrl}
+            videoUrl={
+              'https://www.youtube.com/embed/We4uRmMjjhM?start=0&amp;loop=1&amp;playlist=We4uRmMjjhM&amp;showinfo=0&amp;controls=0&amp;disablekb=0&amp;fs=0&amp;rel=0&amp;iv_load_policy=3&amp;autoplay=1&amp;mute=1&amp;modestbranding=1&amp;playsinline=1&amp;enablejsapi=1&amp;origin=https%3A%2F%2Fapp.studytogether.com&amp;widgetid=2&amp;forigin=https%3A%2F%2Fapp.studytogether.com%2Fsolo&amp;aoriginsup=1&amp;vf=2'
+            }
             volume={volume}
           />
         ) : (
@@ -168,7 +172,7 @@ export default function FocusRoom() {
       </div>
 
       {/* Overlay Controls */}
-      <div className="absolute top-4 right-4 left-4">
+      <div className="absolute top-[calc(48px+16px)] left-0 z-10 md:right-0 md:left-auto">
         <div className="flex items-start justify-between">
           {/* Quick Actions */}
           <div className="ml-auto flex gap-2">
