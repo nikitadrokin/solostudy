@@ -142,33 +142,22 @@ export default function FocusRoom() {
   }
 
   return (
-    <div className="relative z-0 flex h-full">
-      {/* YouTube Video Background - Non-Interactive */}
-      <div className="-z-10 pointer-events-none absolute inset-0 select-none">
-        {videoUrl ? (
-          <YouTubePlayer
-            className="h-full w-full"
-            onError={handleError}
-            onPause={handlePause}
-            onPlay={handlePlay}
-            onReady={handlePlayerReady}
-            videoUrl={videoUrl}
-            volume={volume}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 text-muted-foreground dark:from-gray-900 dark:to-gray-800">
-            <div className="text-center">
-              <h2 className="mb-2 font-semibold text-2xl">
-                YouTube Focus Background
-              </h2>
-              <p>Enter a YouTube URL in the controls below to get started</p>
-            </div>
-          </div>
-        )}
-      </div>
+    <main className="relative h-full overflow-hidden">
+      <iframe
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen={true}
+        className="-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 box-border h-[56.25vw] min-h-full w-screen min-w-full"
+        frameBorder="0"
+        height="360"
+        id="video-player"
+        referrerPolicy="strict-origin-when-cross-origin"
+        src="https://www.youtube.com/embed/We4uRmMjjhM?start=0&amp;loop=1&amp;playlist=We4uRmMjjhM&amp;showinfo=0&amp;controls=0&amp;disablekb=0&amp;fs=0&amp;rel=0&amp;iv_load_policy=3&amp;autoplay=1&amp;mute=1&amp;modestbranding=1&amp;playsinline=1&amp;enablejsapi=1&amp;origin=https%3A%2F%2Fapp.studytogether.com&amp;widgetid=2&amp;forigin=https%3A%2F%2Fapp.studytogether.com%2Fsolo&amp;aoriginsup=1&amp;vf=2"
+        title="4K Jazz Cozy Cabin - Smooth Piano Jazz Music &amp; Rain Sound on Window to Relax, Study and Work"
+        width="640"
+      />
 
       {/* Overlay Controls */}
-      <div className="absolute top-4 right-4 left-4">
+      <div className="absolute top-[calc(48px+16px)] left-0 z-10 md:right-0 md:left-auto">
         <div className="flex items-start justify-between">
           {/* Quick Actions */}
           <div className="ml-auto flex gap-2">
@@ -219,6 +208,6 @@ export default function FocusRoom() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
