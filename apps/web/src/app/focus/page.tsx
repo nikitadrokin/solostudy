@@ -14,6 +14,15 @@ import {
 import { authClient } from '@/lib/auth-client';
 import { useFocusStore } from '@/lib/focus-store';
 
+// YouTube player type (should match the one in youtube-player.tsx)
+interface YTPlayer {
+  setVolume(volume: number): void;
+  playVideo(): void;
+  pauseVideo(): void;
+  mute(): void;
+  unMute(): void;
+}
+
 export default function FocusRoom() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -38,7 +47,7 @@ export default function FocusRoom() {
   // Local state that doesn't need persistence
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState<string>();
-  const [player, setPlayer] = useState<YT.Player | null>(null);
+  const [player, setPlayer] = useState<YTPlayer | null>(null);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
   useEffect(() => {
@@ -48,7 +57,7 @@ export default function FocusRoom() {
   }, [session, isPending]);
 
   // YouTube player callbacks
-  const handlePlayerReady = useCallback((event: { target: YT.Player }) => {
+  const handlePlayerReady = useCallback((event: { target: YTPlayer }) => {
     setPlayer(event.target);
     setIsVideoLoaded(true);
     setVideoError(undefined);
@@ -143,17 +152,13 @@ export default function FocusRoom() {
 
   return (
     <main className="relative h-full overflow-hidden">
-      <iframe
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen={true}
-        className="-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 box-border h-[56.25vw] min-h-full w-screen min-w-full"
-        frameBorder="0"
-        height="360"
-        id="video-player"
-        referrerPolicy="strict-origin-when-cross-origin"
-        src="https://www.youtube.com/embed/We4uRmMjjhM?start=0&amp;loop=1&amp;playlist=We4uRmMjjhM&amp;showinfo=0&amp;controls=0&amp;disablekb=0&amp;fs=0&amp;rel=0&amp;iv_load_policy=3&amp;autoplay=1&amp;mute=1&amp;modestbranding=1&amp;playsinline=1&amp;enablejsapi=1&amp;origin=https%3A%2F%2Fapp.studytogether.com&amp;widgetid=2&amp;forigin=https%3A%2F%2Fapp.studytogether.com%2Fsolo&amp;aoriginsup=1&amp;vf=2"
-        title="4K Jazz Cozy Cabin - Smooth Piano Jazz Music &amp; Rain Sound on Window to Relax, Study and Work"
-        width="640"
+      <YouTubePlayer
+        onError={handleError}
+        onPause={handlePause}
+        onPlay={handlePlay}
+        onReady={handlePlayerReady}
+        videoUrl={videoUrl || 'https://www.youtube.com/watch?v=We4uRmMjjhM'}
+        volume={volume}
       />
 
       {/* Overlay Controls */}

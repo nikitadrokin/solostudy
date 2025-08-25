@@ -1,15 +1,61 @@
 'use client';
-import { useCallback, useState } from 'react';
-import YouTube, { type YouTubeProps } from 'react-youtube';
+import { useEffect, useRef, useState } from 'react';
 
 interface YouTubePlayerProps {
   videoUrl: string;
-  onReady?: (event: { target: YT.Player }) => void;
+  onReady?: (event: { target: YTPlayer }) => void;
   onPlay?: () => void;
   onPause?: () => void;
   onError?: (error: number) => void;
   volume?: number;
   className?: string;
+}
+
+// Extend Window interface to include YouTube API
+declare global {
+  interface Window {
+    YT?: {
+      Player: new (
+        elementId: string | HTMLElement,
+        config: YTPlayerOptions
+      ) => YTPlayer;
+      PlayerState: {
+        PLAYING: number;
+        PAUSED: number;
+      };
+    };
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+// YouTube API types
+interface YTPlayer {
+  setVolume(volume: number): void;
+  playVideo(): void;
+  pauseVideo(): void;
+  mute(): void;
+  unMute(): void;
+  destroy(): void;
+}
+
+interface YTPlayerOptions {
+  events?: {
+    onReady?: (event: YTPlayerEvent) => void;
+    onStateChange?: (event: YTOnStateChangeEvent) => void;
+    onError?: (event: YTOnErrorEvent) => void;
+  };
+}
+
+interface YTPlayerEvent {
+  target: YTPlayer;
+}
+
+interface YTOnStateChangeEvent {
+  data: number;
+}
+
+interface YTOnErrorEvent {
+  data: number;
 }
 
 // YouTube URL patterns for video ID extraction
@@ -53,7 +99,7 @@ function normalizeYouTubeUrl(url: string): string {
     showinfo: '0',
     loop: '1',
     playlist: videoId,
-    mute: '1',
+    mute: '0',
     iv_load_policy: '3',
     playsinline: '1',
     enablejsapi: '1',
@@ -66,6 +112,34 @@ function normalizeYouTubeUrl(url: string): string {
   return `${baseUrl}${videoId}?${params.toString()}`;
 }
 
+/**
+ * Load YouTube IFrame API and create a player instance
+ */
+function loadYouTubeAPI(): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve();
+      return;
+    }
+
+    if (window.YT?.Player) {
+      resolve();
+      return;
+    }
+
+    // Load YouTube IFrame API script
+    const script = document.createElement('script');
+    script.src = 'https://www.youtube.com/iframe_api';
+    script.async = true;
+    document.head.appendChild(script);
+
+    // YouTube API callback
+    window.onYouTubeIframeAPIReady = () => {
+      resolve();
+    };
+  });
+}
+
 export default function YouTubePlayer({
   videoUrl,
   onReady,
@@ -75,91 +149,100 @@ export default function YouTubePlayer({
   volume = 50,
   className = '',
 }: YouTubePlayerProps) {
-  const [, setPlayer] = useState<YT.Player | null>(null);
-  const [, setIsReady] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [player, setPlayer] = useState<YTPlayer | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   const videoId = extractVideoId(videoUrl);
 
-  const handleReady: YouTubeProps['onReady'] = useCallback(
-    (event: { target: YT.Player }) => {
-      const playerInstance = event.target;
-      setPlayer(playerInstance);
-      setIsReady(true);
+  // Load YouTube API on mount
+  useEffect(() => {
+    loadYouTubeAPI().then(() => {
+      setApiLoaded(true);
+    });
+  }, []);
 
-      // Set initial volume
-      playerInstance.setVolume(volume);
+  // Initialize player when API is loaded and iframe is ready
+  useEffect(() => {
+    const shouldInitialize =
+      apiLoaded && videoId && iframeRef.current && !player;
+    if (!shouldInitialize) {
+      return;
+    }
 
-      onReady?.(event);
-    },
-    [onReady, volume]
-  );
+    const initializePlayer = () => {
+      const iframe = iframeRef.current;
+      const ytAPI = window.YT;
 
-  const handlePlay: YouTubeProps['onPlay'] = useCallback(() => {
-    onPlay?.();
-  }, [onPlay]);
+      if (!iframe) {
+        return;
+      }
 
-  const handlePause: YouTubeProps['onPause'] = useCallback(() => {
-    onPause?.();
-  }, [onPause]);
+      if (!ytAPI?.Player) {
+        return;
+      }
 
-  const handleError: YouTubeProps['onError'] = useCallback(
-    (event: { data: number }) => {
-      const errorCode = event.data;
-      onError?.(errorCode);
-    },
-    [onError]
-  );
+      try {
+        const ytPlayer = new ytAPI.Player(iframe, {
+          events: {
+            onReady: (event: YTPlayerEvent) => {
+              const playerInstance = event.target;
+              setPlayer(playerInstance);
+              setIsReady(true);
 
-  // Update volume when prop changes (for future use)
-  // const updateVolume = useCallback(
-  //   (newVolume: number) => {
-  //     if (player && isReady) {
-  //       player.setVolume(newVolume);
-  //     }
-  //   },
-  //   [player, isReady]
-  // );
+              // Set initial volume
+              playerInstance.setVolume(volume);
 
-  // Player controls (commented out as not currently used)
-  // const controls = {
-  //   play: () => player?.playVideo(),
-  //   pause: () => player?.pauseVideo(),
-  //   stop: () => player?.stopVideo(),
-  //   setVolume: updateVolume,
-  //   getVolume: () => player?.getVolume() || 0,
-  //   mute: () => player?.mute(),
-  //   unMute: () => player?.unMute(),
-  //   isMuted: () => player?.isMuted() || false,
-  //   getDuration: () => player?.getDuration() || 0,
-  //   getCurrentTime: () => player?.getCurrentTime() || 0,
-  //   seekTo: (seconds: number) => player?.seekTo(seconds, true),
-  // };
+              onReady?.({ target: playerInstance });
+            },
+            onStateChange: (event: YTOnStateChangeEvent) => {
+              const ytPlayerState = window.YT?.PlayerState;
+              if (!ytPlayerState) {
+                return;
+              }
 
-  // YouTube player options - configured to hide all UI elements and prevent hover effects
-  const opts: YouTubeProps['opts'] = {
-    height: '100%',
-    width: '100%',
-    playerVars: {
-      autoplay: 1, // Auto-start playback
-      controls: 0, // Hide YouTube controls completely
-      disablekb: 0, // Allow keyboard controls (can be overridden programmatically)
-      fs: 0, // Disable fullscreen button
-      modestbranding: 1, // Minimal YouTube branding
-      rel: 0, // Don't show related videos at end
-      showinfo: 0, // Hide video title and uploader info
-      loop: 1, // Loop the video continuously
-      playlist: videoId ?? '', // Required for looping single video
-      mute: 1, // Start muted (user can unmute via app controls)
-      iv_load_policy: 3, // Hide video annotations
-      playsinline: 1, // Play inline on mobile devices
-      enablejsapi: 1, // Enable JavaScript API for programmatic control
-      // Additional parameters to ensure clean embed
-      cc_load_policy: 0, // Hide closed captions by default
-      color: 'white', // White progress bar
-      hl: 'en', // Interface language
-      origin: typeof window !== 'undefined' ? window.location.origin : '',
-    },
-  };
+              if (event.data === ytPlayerState.PLAYING) {
+                onPlay?.();
+              } else if (event.data === ytPlayerState.PAUSED) {
+                onPause?.();
+              }
+            },
+            onError: (event: YTOnErrorEvent) => {
+              onError?.(event.data);
+            },
+          },
+        });
+        setPlayer(ytPlayer);
+      } catch {
+        // Error handling without console
+      }
+    };
+
+    // Small delay to ensure iframe is fully loaded
+    const timer = setTimeout(initializePlayer, 100);
+    return () => clearTimeout(timer);
+  }, [apiLoaded, videoId, player, onReady, onPlay, onPause, onError, volume]);
+
+  // Update volume when prop changes
+  useEffect(() => {
+    if (player && isReady) {
+      player.setVolume(volume);
+    }
+  }, [player, isReady, volume]);
+
+  // Clean up player on unmount
+  useEffect(() => {
+    return () => {
+      if (player) {
+        try {
+          player.destroy();
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    };
+  }, [player]);
 
   if (!videoId) {
     return (
@@ -173,31 +256,24 @@ export default function YouTubePlayer({
     );
   }
 
-  return (
-    <div className={`relative ${className}`}>
-      <YouTube
-        className="h-full w-full"
-        iframeClassName="h-full w-full"
-        onError={handleError}
-        onPause={handlePause}
-        onPlay={handlePlay}
-        onReady={handleReady}
-        opts={opts}
-        videoId={videoId}
-      />
+  const embedUrl = normalizeYouTubeUrl(videoUrl);
 
-      {/* Overlay to prevent direct interaction with YouTube player */}
-      <div className="pointer-events-none absolute inset-0" />
-    </div>
+  return (
+    <iframe
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowFullScreen={true}
+      className={`-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 box-border h-[56.25vw] min-h-full w-screen min-w-full ${className}`}
+      frameBorder="0"
+      height="100%"
+      id="video-player"
+      ref={iframeRef}
+      referrerPolicy="strict-origin-when-cross-origin"
+      src={embedUrl}
+      title="YouTube video player"
+      width="100%"
+    />
   );
 }
-
-// Export the controls interface for use in parent components
-export type YouTubePlayerControls = typeof YouTubePlayer.prototype extends {
-  controls: infer U;
-}
-  ? U
-  : never;
 
 // Export video ID extraction and URL normalization utilities
 export { extractVideoId, normalizeYouTubeUrl };
