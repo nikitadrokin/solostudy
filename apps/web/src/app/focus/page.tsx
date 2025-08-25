@@ -1,5 +1,5 @@
 'use client';
-import { Eye, EyeOff, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -34,14 +34,11 @@ export default function FocusRoom() {
     isPlaying,
     volume,
     isMuted,
-    // UI state
-    isZenMode,
     // Actions
     setVideoUrl,
     setIsPlaying,
     setVolume,
     setIsMuted,
-    setIsZenMode,
   } = useFocusStore();
 
   // Local state that doesn't need persistence
@@ -139,30 +136,21 @@ export default function FocusRoom() {
     }
   }, [player, isMuted, setIsMuted]);
 
-  // Zen mode toggle handler
-  const handleZenModeToggle = useCallback(() => {
-    setIsZenMode(!isZenMode);
-  }, [isZenMode, setIsZenMode]);
-
-  if (isPending) {
-    return (
-      <div className="flex h-full items-center justify-center">Loading...</div>
-    );
-  }
-
   return (
     <main className="relative h-full overflow-hidden">
-      <YouTubePlayer
-        onError={handleError}
-        onPause={handlePause}
-        onPlay={handlePlay}
-        onReady={handlePlayerReady}
-        videoUrl={videoUrl || 'https://www.youtube.com/watch?v=We4uRmMjjhM'}
-        volume={volume}
-      />
+      {!isPending && (
+        <YouTubePlayer
+          onError={handleError}
+          onPause={handlePause}
+          onPlay={handlePlay}
+          onReady={handlePlayerReady}
+          videoUrl={videoUrl || 'https://www.youtube.com/watch?v=We4uRmMjjhM'}
+          volume={volume}
+        />
+      )}
 
       {/* Overlay Controls */}
-      <div className="absolute top-[calc(48px+16px)] left-0 z-10 md:right-0 md:left-auto">
+      <div className="absolute top-4 right-4 z-10">
         <div className="flex items-start justify-between">
           {/* Quick Actions */}
           <div className="ml-auto flex gap-2">
@@ -179,7 +167,7 @@ export default function FocusRoom() {
               </PopoverTrigger>
               <PopoverContent
                 align="end"
-                className="w-80 bg-background/95 backdrop-blur-sm"
+                className="w-80 bg-background/80 backdrop-blur-sm"
                 side="bottom"
               >
                 <ControlsPanel
@@ -197,19 +185,6 @@ export default function FocusRoom() {
                 />
               </PopoverContent>
             </Popover>
-            <Button
-              className="bg-background/80 backdrop-blur-sm"
-              onClick={handleZenModeToggle}
-              size="sm"
-              title={isZenMode ? 'Exit Zen Mode' : 'Enter Zen Mode'}
-              variant="outline"
-            >
-              {isZenMode ? (
-                <Eye className="h-4 w-4" />
-              ) : (
-                <EyeOff className="h-4 w-4" />
-              )}
-            </Button>
           </div>
         </div>
       </div>
