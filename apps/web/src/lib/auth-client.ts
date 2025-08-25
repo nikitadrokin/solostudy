@@ -7,3 +7,11 @@ export const authClient = createAuthClient({
 });
 
 export const { signIn, signOut, signUp, useSession } = authClient;
+
+export type Passkey = {
+  id: string;
+  name?: string;
+  deviceType: string;
+  createdAt: Date;
+  backedUp: boolean;
+};

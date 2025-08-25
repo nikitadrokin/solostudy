@@ -14,15 +14,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { authClient } from '@/lib/auth-client';
-
-type Passkey = {
-  id: string;
-  name: string | null;
-  deviceType: string;
-  createdAt: string;
-  backedUp: boolean;
-};
+import { authClient, type Passkey } from '@/lib/auth-client';
 
 export default function SettingsPage() {
   const router = useRouter();
