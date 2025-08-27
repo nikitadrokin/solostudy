@@ -2,6 +2,9 @@ import { QueryCache, QueryClient } from '@tanstack/react-query';
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query';
 import { toast } from 'sonner';
+
+// biome-ignore lint/nursery/noTsIgnore: Coolify monorepo deployment thinks this type doesn't exist
+// @ts-ignore
 import type { AppRouter } from '../../../server/src/routers';
 
 export const queryClient = new QueryClient({
