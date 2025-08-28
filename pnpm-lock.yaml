@@ -154,9 +154,6 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.1.10
         version: 4.1.11
-      '@tanstack/react-query-devtools':
-        specifier: ^5.80.5
-        version: 5.85.0(@tanstack/react-query@5.85.0(react@19.1.1))(react@19.1.1)
       '@types/node':
         specifier: ^20
         version: 20.19.10
@@ -1680,9 +1677,6 @@ packages:
   '@tanstack/query-core@5.83.1':
     resolution: {integrity: sha512-OG69LQgT7jSp+5pPuCfzltq/+7l2xoweggjme9vlbCPa/d7D7zaqv5vN/S82SzSYZ4EDLTxNO1PWrv49RAS64Q==}
 
-  '@tanstack/query-devtools@5.84.0':
-    resolution: {integrity: sha512-fbF3n+z1rqhvd9EoGp5knHkv3p5B2Zml1yNRjh7sNXklngYI5RVIWUrUjZ1RIcEoscarUb0+bOvIs5x9dwzOXQ==}
-
   '@tanstack/react-form@1.19.1':
     resolution: {integrity: sha512-ccrDBz7xMex45BvpFUvkjbG2dQk1k68CmEnWtHez2hFNCr0ZNYZYMRTFSwtoNL9gspmrMiI1vg/tEZblcKiYPQ==}
     peerDependencies:
@@ -1691,12 +1685,6 @@ packages:
     peerDependenciesMeta:
       '@tanstack/react-start':
         optional: true
-
-  '@tanstack/react-query-devtools@5.85.0':
-    resolution: {integrity: sha512-Q/lmGAY2I3KkhxSJKLKQUeUBOc9Mv/OrCTw4CfUCq2Za+XhDsB5ZfVTOANAJyDZ+SiUu27Cw1eHNE+xJdACJiw==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.85.0
-      react: ^18 || ^19
 
   '@tanstack/react-query@5.85.0':
     resolution: {integrity: sha512-t1HMfToVMGfwEJRya6GG7gbK0luZJd+9IySFNePL1BforU1F3LqQ3tBC2Rpvr88bOrlU6PXyMLgJD0Yzn4ztUw==}
@@ -4027,8 +4015,6 @@ snapshots:
 
   '@tanstack/query-core@5.83.1': {}
 
-  '@tanstack/query-devtools@5.84.0': {}
-
   '@tanstack/react-form@1.19.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@tanstack/form-core': 1.19.1
@@ -4038,12 +4024,6 @@ snapshots:
       react: 19.1.1
     transitivePeerDependencies:
       - react-dom
-
-  '@tanstack/react-query-devtools@5.85.0(@tanstack/react-query@5.85.0(react@19.1.1))(react@19.1.1)':
-    dependencies:
-      '@tanstack/query-devtools': 5.84.0
-      '@tanstack/react-query': 5.85.0(react@19.1.1)
-      react: 19.1.1
 
   '@tanstack/react-query@5.85.0(react@19.1.1)':
     dependencies:
