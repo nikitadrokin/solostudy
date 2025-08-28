@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { User, LogIn } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { authClient } from '@/lib/auth-client';
 import { Button } from './ui/button';
 import { Skeleton } from './ui/skeleton';
@@ -22,16 +24,22 @@ export default function UserMenu() {
 
   if (!session) {
     return (
-      <Button asChild variant="outline">
-        <Link href="/login">Sign In</Link>
-      </Button>
+      <SidebarMenuButton asChild tooltip="Sign In">
+        <Link href="/login">
+          <LogIn />
+          <span>Sign In</span>
+        </Link>
+      </SidebarMenuButton>
     );
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">{session.user.name}</Button>
+        <SidebarMenuButton tooltip={session.user.name}>
+          <User />
+          <span className="truncate">{session.user.name}</span>
+        </SidebarMenuButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-card">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
