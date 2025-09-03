@@ -260,7 +260,7 @@ export default function YouTubePlayer({
 
   return (
     <iframe
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; web-share"
       allowFullScreen={true}
       className={`-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 box-border h-[56.25vw] min-h-full w-screen min-w-full ${className}`}
       frameBorder="0"
