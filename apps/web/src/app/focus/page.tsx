@@ -1,18 +1,11 @@
 'use client';
-import { Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
-import ControlsPanel from '@/components/focus-room/controls-panel';
 import YouTubePlayer from '@/components/focus-room/youtube-player';
-import { Button } from '@/components/ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { authClient } from '@/lib/auth-client';
 import { useFocusStore } from '@/lib/focus-store';
+import OverlayControls from './overlay-controls';
 
 // YouTube player type (should match the one in youtube-player.tsx)
 interface YTPlayer {
@@ -48,6 +41,10 @@ export default function FocusRoom() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
   useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      return;
+    }
+
     if (!(session || isPending)) {
       router.push('/login');
     }
@@ -150,44 +147,19 @@ export default function FocusRoom() {
       )}
 
       {/* Overlay Controls */}
-      <div className="absolute top-4 right-4 z-10">
-        <div className="flex items-start justify-between">
-          {/* Quick Actions */}
-          <div className="ml-auto flex gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  className="bg-background/80 backdrop-blur-sm"
-                  size="sm"
-                  title="Focus Room Settings"
-                  variant="outline"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                className="w-80 bg-background/80 backdrop-blur-sm"
-                side="bottom"
-              >
-                <ControlsPanel
-                  isMuted={isMuted}
-                  isPlaying={isPlaying}
-                  isVideoLoaded={isVideoLoaded}
-                  onLoadVideo={handleLoadVideo}
-                  onMuteToggle={handleMuteToggle}
-                  onPlayPause={handlePlayPause}
-                  onVideoUrlChange={handleVideoUrlChange}
-                  onVolumeChange={handleVolumeChange}
-                  videoError={videoError}
-                  videoUrl={videoUrl}
-                  volume={volume}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
-      </div>
+      <OverlayControls
+        isMuted={isMuted}
+        isPlaying={isPlaying}
+        isVideoLoaded={isVideoLoaded}
+        onLoadVideo={handleLoadVideo}
+        onMuteToggle={handleMuteToggle}
+        onPlayPause={handlePlayPause}
+        onVideoUrlChange={handleVideoUrlChange}
+        onVolumeChange={handleVolumeChange}
+        videoError={videoError}
+        videoUrl={videoUrl}
+        volume={volume}
+      />
     </main>
   );
 }

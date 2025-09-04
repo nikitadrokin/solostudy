@@ -108,7 +108,6 @@ export default function ControlsPanel({
       <div className="flex gap-2">
         <Button
           className="flex items-center gap-2"
-          disabled={!isVideoLoaded}
           onClick={onPlayPause}
           size="sm"
           variant="outline"
