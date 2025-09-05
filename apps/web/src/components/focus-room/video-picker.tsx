@@ -15,6 +15,7 @@ const VideoPicker: React.FC = () => {
               <img
                 alt={`${entry.title} thumbnail`}
                 className="h-full w-full object-cover"
+                loading="lazy"
                 src={entry.thumbnails[0].url}
               />
             </AspectRatio>
