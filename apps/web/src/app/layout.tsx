@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import '../index.css';
+import { cookies } from 'next/headers';
 import AppSidebar from '@/components/app-sidebar';
 import Providers from '@/components/providers';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -20,18 +21,21 @@ export const metadata: Metadata = {
   description: 'solostudy',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <SidebarProvider>
+          <SidebarProvider defaultOpen={defaultOpen}>
             <div className="flex min-h-svh w-full">
               <AppSidebar />
               <SidebarInset>{children}</SidebarInset>
