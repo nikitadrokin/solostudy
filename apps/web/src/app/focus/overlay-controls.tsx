@@ -1,6 +1,7 @@
 'use client';
-import { Settings } from 'lucide-react';
+import { Clapperboard, Settings, Video } from 'lucide-react';
 import ControlsPanel from '@/components/focus-room/controls-panel';
+import VideoPicker from '@/components/focus-room/video-picker';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -40,6 +41,26 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
       <div className="flex items-start justify-between">
         {/* Quick Actions */}
         <div className="ml-auto flex gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                className="bg-background/80 backdrop-blur-sm"
+                size="sm"
+                title="Focus Room Settings"
+                variant="outline"
+              >
+                <Clapperboard className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="w-80 bg-background/80 backdrop-blur-sm"
+              side="bottom"
+            >
+              <VideoPicker />
+            </PopoverContent>
+          </Popover>
+
           <Popover>
             <PopoverTrigger asChild>
               <Button

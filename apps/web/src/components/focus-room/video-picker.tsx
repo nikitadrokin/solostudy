@@ -2,10 +2,13 @@ import playlistData from '@/data/programming_vibes';
 
 const VideoPicker: React.FC = () => {
   return (
-    <div>
-      {playlistData.entries.map((entry) => (
-        <div key={entry.id}>{entry.title}</div>
-      ))}
+    <div className="overflow-hidden">
+      <div className="max-h-60 space-y-4 overflow-y-auto">
+        {playlistData.entries.map((entry) => (
+          // todo: nice layout :)
+          <div key={entry.id}>{entry.title}</div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -34,11 +34,6 @@ export default function FocusRoom() {
     setIsMuted,
   } = useFocusStore();
 
-  // Local state that doesn't need persistence
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [videoError, setVideoError] = useState<string>();
-  const [player, setPlayer] = useState<YTPlayer | null>(null);
-
   // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
@@ -49,6 +44,14 @@ export default function FocusRoom() {
       router.push('/login');
     }
   }, [session, isPending]);
+
+  // Video logic (TODO move to store)
+  // Start video logic
+
+  // Local state that doesn't need persistence
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState<string>();
+  const [player, setPlayer] = useState<YTPlayer | null>(null);
 
   // YouTube player callbacks
   const handlePlayerReady = useCallback((event: { target: YTPlayer }) => {
@@ -132,6 +135,8 @@ export default function FocusRoom() {
       setIsMuted(true);
     }
   }, [player, isMuted, setIsMuted]);
+
+  // End video logic
 
   return (
     <main className="relative h-full overflow-hidden">
