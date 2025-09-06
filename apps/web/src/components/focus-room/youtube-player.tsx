@@ -36,6 +36,8 @@ interface YTPlayer {
   mute(): void;
   unMute(): void;
   destroy(): void;
+  getCurrentTime(): number;
+  seekTo(seconds: number): void;
 }
 
 interface YTPlayerOptions {

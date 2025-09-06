@@ -1,15 +1,25 @@
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import playlistData from '@/data/programming_vibes';
+import { useVideoStore } from '@/lib/video-store';
 
 const VideoPicker: React.FC = () => {
+  const { handleVideoUrlChange, handleLoadVideo } = useVideoStore();
+
+  const handleVideoSelect = (url: string) => {
+    handleVideoUrlChange(url);
+    handleLoadVideo();
+  };
+
   return (
     <div className="overflow-hidden">
       <div className="grid max-h-60 grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-3 space-y-4 overflow-y-auto">
         {playlistData.entries.map((entry) => (
-          <div
-            className="cursor-pointer rounded-lg p-2 hover:bg-muted/50"
+          <button
+            className="cursor-pointer rounded-lg p-2 text-left hover:bg-muted/50"
             key={entry.id}
+            onClick={() => handleVideoSelect(entry.url)}
             title={entry.title}
+            type="button"
           >
             <AspectRatio className="overflow-hidden rounded" ratio={16 / 9}>
               {/** biome-ignore lint/performance/noImgElement: saving on vercel bandwidth */}
@@ -23,7 +33,7 @@ const VideoPicker: React.FC = () => {
             <div className="mt-2 truncate font-medium text-xs">
               {entry.title}
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>

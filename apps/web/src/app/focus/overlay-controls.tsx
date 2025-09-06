@@ -2,6 +2,7 @@
 import { Clapperboard, Settings } from 'lucide-react';
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
+import TodoList from '@/components/todo-list';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -11,10 +12,15 @@ import {
 
 const OverlayControls: React.FC = () => {
   return (
-    <div className="absolute top-4 right-4 z-10">
+    <div className="absolute top-4 right-4 left-4 z-10">
       <div className="flex items-start justify-between">
+        {/* Todo List */}
+        <div className="flex gap-2">
+          <TodoList />
+        </div>
+
         {/* Quick Actions */}
-        <div className="ml-auto flex gap-2">
+        <div className="flex gap-2">
           <Popover>
             <PopoverTrigger asChild>
               <Button

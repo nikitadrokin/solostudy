@@ -8,6 +8,8 @@ interface YTPlayer {
   pauseVideo(): void;
   mute(): void;
   unMute(): void;
+  getCurrentTime(): number;
+  seekTo(seconds: number): void;
 }
 
 interface VideoState {
@@ -17,6 +19,9 @@ interface VideoState {
   // Video loading state (not persisted - should reset on page visit)
   isVideoLoaded: boolean;
   videoError: string | undefined;
+
+  // Timestamp preservation for reconnection (not persisted)
+  savedTimestamp: number | null;
 }
 
 interface VideoActions {
@@ -26,6 +31,10 @@ interface VideoActions {
   // Video state management
   setIsVideoLoaded: (loaded: boolean) => void;
   setVideoError: (error: string | undefined) => void;
+
+  // Timestamp management
+  saveCurrentTimestamp: () => void;
+  restoreTimestamp: () => void;
 
   // Player control actions
   handlePlayerReady: (event: { target: YTPlayer }) => void;
@@ -45,6 +54,7 @@ const initialState: VideoState = {
   player: null,
   isVideoLoaded: false,
   videoError: undefined,
+  savedTimestamp: null,
 };
 
 export const useVideoStore = create<VideoStore>()((set, get) => ({
@@ -57,6 +67,32 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
   setIsVideoLoaded: (loaded) => set({ isVideoLoaded: loaded }),
   setVideoError: (error) => set({ videoError: error }),
 
+  // Timestamp management
+  saveCurrentTimestamp: () => {
+    const { player } = get();
+    if (player) {
+      try {
+        const currentTime = player.getCurrentTime();
+        set({ savedTimestamp: currentTime });
+      } catch {
+        // Failed to get timestamp, no need to save
+      }
+    }
+  },
+
+  restoreTimestamp: () => {
+    const { player, savedTimestamp } = get();
+    if (player && savedTimestamp !== null) {
+      try {
+        player.seekTo(savedTimestamp);
+        set({ savedTimestamp: null }); // Clear after use
+      } catch {
+        // Failed to seek, clear the saved timestamp
+        set({ savedTimestamp: null });
+      }
+    }
+  },
+
   // Player control actions
   handlePlayerReady: (event) => {
     set({
@@ -64,6 +100,11 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
       isVideoLoaded: true,
       videoError: undefined,
     });
+
+    // Restore timestamp if we have one saved (from reconnection)
+    setTimeout(() => {
+      get().restoreTimestamp();
+    }, 500); // Small delay to ensure player is fully ready
   },
 
   handlePlay: () => {
@@ -109,13 +150,30 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     const { isPlaying } = useFocusStore.getState();
 
     if (!player) {
+      // Simple reconnection: reload the video to reestablish connection
+      set({
+        isVideoLoaded: false,
+        videoError: 'Player disconnected. Reloading...',
+      });
       return;
     }
 
-    if (isPlaying) {
-      player.pauseVideo();
-    } else {
-      player.playVideo();
+    try {
+      if (isPlaying) {
+        player.pauseVideo();
+      } else {
+        player.playVideo();
+      }
+    } catch {
+      // Save current timestamp before disconnecting
+      get().saveCurrentTimestamp();
+
+      // If player methods fail, trigger reload
+      set({
+        player: null,
+        isVideoLoaded: false,
+        videoError: 'Player disconnected. Reloading...',
+      });
     }
   },
 
@@ -124,6 +182,7 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     const { setVolume, setIsMuted, isMuted } = useFocusStore.getState();
 
     setVolume(newVolume);
+
     if (player) {
       player.setVolume(newVolume);
       if (newVolume > 0 && isMuted) {
