@@ -12,7 +12,7 @@ const VideoPicker: React.FC = () => {
 
   return (
     <div className="overflow-hidden">
-      <div className="grid max-h-60 grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-3 space-y-4 overflow-y-auto">
+      <div className="grid max-h-60 grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4 overflow-y-auto">
         {playlistData.entries.map((entry) => (
           <button
             className="cursor-pointer rounded-lg p-2 text-left hover:bg-muted/50"
