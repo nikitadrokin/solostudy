@@ -9,17 +9,28 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useIsMobile } from '@/hooks/use-mobile';
+import SidebarTrigger from './sidebar-trigger';
 
 const OverlayControls: React.FC = () => {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="absolute top-4 right-4 left-4 z-10">
+    <div className="absolute top-2 right-2 left-2 z-10">
       <div className="flex items-start justify-between">
-        {/* Todo List */}
+        {/* Leading */}
         <div className="flex gap-2">
+          {isMobile && (
+            <SidebarTrigger
+              className="bg-background/80 backdrop-blur-sm"
+              variant="outline"
+            />
+          )}
+
           <TodoList />
         </div>
 
-        {/* Quick Actions */}
+        {/* Trailing */}
         <div className="flex gap-2">
           <Popover>
             <PopoverTrigger asChild>
@@ -29,7 +40,7 @@ const OverlayControls: React.FC = () => {
                 title="Focus Room Settings"
                 variant="outline"
               >
-                <Clapperboard className="h-4 w-4" />
+                <Clapperboard className="size-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -49,7 +60,7 @@ const OverlayControls: React.FC = () => {
                 title="Focus Room Settings"
                 variant="outline"
               >
-                <Settings className="h-4 w-4" />
+                <Settings className="size-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent
