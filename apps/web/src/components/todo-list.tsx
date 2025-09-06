@@ -11,6 +11,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useTodoStore } from '@/lib/todo-store';
+import { cn } from '@/lib/utils';
+import { Badge } from './ui/badge';
 
 export default function TodoList() {
   const [newTodo, setNewTodo] = useState('');
@@ -27,6 +29,7 @@ export default function TodoList() {
 
   const completedCount = tasks.filter((task) => task.completed).length;
   const totalCount = tasks.length;
+  const badgeCount = totalCount - completedCount;
 
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen}>
@@ -39,9 +42,9 @@ export default function TodoList() {
         >
           <CheckSquare className="h-4 w-4" />
           {totalCount > 0 && (
-            <span className="-right-1 -top-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
-              {totalCount}
-            </span>
+            <Badge className="-right-1 -top-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+              {badgeCount}
+            </Badge>
           )}
         </Button>
       </PopoverTrigger>
@@ -95,27 +98,44 @@ export default function TodoList() {
               </p>
             ) : (
               tasks.map((task) => (
+                // biome-ignore lint/a11y/useSemanticElements: can't nest button in button
                 <div
                   className="group flex items-center gap-2 rounded-md p-2 hover:bg-muted/50"
                   key={task.id}
+                  onClick={() => toggleTask(task.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleTask(task.id);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <Checkbox
                     checked={task.completed}
                     className="flex-shrink-0"
-                    onCheckedChange={() => toggleTask(task.id)}
+                    onCheckedChange={() => {
+                      toggleTask(task.id);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                   />
                   <span
-                    className={`flex-1 text-sm ${
+                    className={cn(
+                      'flex-1 select-none text-sm',
                       task.completed
                         ? 'text-muted-foreground line-through'
                         : 'text-foreground'
-                    }`}
+                    )}
                   >
                     {task.title}
                   </span>
                   <Button
                     className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => removeTask(task.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeTask(task.id);
+                    }}
                     size="icon"
                     variant="ghost"
                   >
