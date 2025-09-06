@@ -1,5 +1,5 @@
 'use client';
-import { Clapperboard, Settings, Video } from 'lucide-react';
+import { Clapperboard, Settings } from 'lucide-react';
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
 import { Button } from '@/components/ui/button';
@@ -9,33 +9,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-type OverlayControlsProps = {
-  isMuted: boolean;
-  isPlaying: boolean;
-  isVideoLoaded: boolean;
-  onLoadVideo: () => void;
-  onMuteToggle: () => void;
-  onPlayPause: () => void;
-  onVideoUrlChange: (url: string) => void;
-  onVolumeChange: (volume: number) => void;
-  videoError: string | undefined;
-  videoUrl: string;
-  volume: number;
-};
-
-const OverlayControls: React.FC<OverlayControlsProps> = ({
-  isMuted,
-  isPlaying,
-  isVideoLoaded,
-  onLoadVideo,
-  onMuteToggle,
-  onVolumeChange,
-  onPlayPause,
-  onVideoUrlChange,
-  videoError,
-  videoUrl,
-  volume,
-}) => {
+const OverlayControls: React.FC = () => {
   return (
     <div className="absolute top-4 right-4 z-10">
       <div className="flex items-start justify-between">
@@ -77,19 +51,7 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
               className="w-80 bg-background/80 backdrop-blur-sm"
               side="bottom"
             >
-              <ControlsPanel
-                isMuted={isMuted}
-                isPlaying={isPlaying}
-                isVideoLoaded={isVideoLoaded}
-                onLoadVideo={onLoadVideo}
-                onMuteToggle={onMuteToggle}
-                onPlayPause={onPlayPause}
-                onVideoUrlChange={onVideoUrlChange}
-                onVolumeChange={onVolumeChange}
-                videoError={videoError}
-                videoUrl={videoUrl}
-                volume={volume}
-              />
+              <ControlsPanel />
             </PopoverContent>
           </Popover>
         </div>

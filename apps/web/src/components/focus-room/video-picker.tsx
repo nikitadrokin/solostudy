@@ -9,6 +9,7 @@ const VideoPicker: React.FC = () => {
           <div
             className="cursor-pointer rounded-lg p-2 hover:bg-muted/50"
             key={entry.id}
+            title={entry.title}
           >
             <AspectRatio className="overflow-hidden rounded" ratio={16 / 9}>
               {/** biome-ignore lint/performance/noImgElement: saving on vercel bandwidth */}

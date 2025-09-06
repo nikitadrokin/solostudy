@@ -4,6 +4,8 @@ import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useFocusStore } from '@/lib/focus-store';
+import { useVideoStore } from '@/lib/video-store';
 
 // YouTube URL validation patterns
 const YOUTUBE_VALIDATION_PATTERNS = [
@@ -11,39 +13,25 @@ const YOUTUBE_VALIDATION_PATTERNS = [
   /^([a-zA-Z0-9_-]{11})$/, // Direct video ID
 ];
 
-interface ControlsPanelProps {
-  videoUrl: string;
-  onVideoUrlChange: (url: string) => void;
-  isPlaying: boolean;
-  onPlayPause: () => void;
-  volume: number;
-  onVolumeChange: (volume: number) => void;
-  isMuted: boolean;
-  onMuteToggle: () => void;
-  onLoadVideo: () => void;
-  isVideoLoaded: boolean;
-  videoError?: string;
-}
+export default function ControlsPanel() {
+  // Get state and actions from stores
+  const { videoUrl, isPlaying, volume, isMuted } = useFocusStore();
+  const {
+    isVideoLoaded,
+    videoError,
+    handleVideoUrlChange,
+    handleLoadVideo,
+    handlePlayPause,
+    handleVolumeChange,
+    handleMuteToggle,
+  } = useVideoStore();
 
-export default function ControlsPanel({
-  videoUrl,
-  onVideoUrlChange,
-  isPlaying,
-  onPlayPause,
-  volume,
-  onVolumeChange,
-  isMuted,
-  onMuteToggle,
-  onLoadVideo,
-  isVideoLoaded,
-  videoError,
-}: ControlsPanelProps) {
   const [urlInput, setUrlInput] = useState(videoUrl);
 
   const handleUrlSubmit = useCallback(() => {
-    onVideoUrlChange(urlInput);
-    onLoadVideo();
-  }, [urlInput, onVideoUrlChange, onLoadVideo]);
+    handleVideoUrlChange(urlInput);
+    handleLoadVideo();
+  }, [urlInput, handleVideoUrlChange, handleLoadVideo]);
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
@@ -108,7 +96,7 @@ export default function ControlsPanel({
       <div className="flex gap-2">
         <Button
           className="flex items-center gap-2"
-          onClick={onPlayPause}
+          onClick={handlePlayPause}
           size="sm"
           variant="outline"
         >
@@ -137,7 +125,7 @@ export default function ControlsPanel({
         <div className="flex items-center gap-2">
           <Button
             className="shrink-0"
-            onClick={onMuteToggle}
+            onClick={handleMuteToggle}
             size="sm"
             variant="outline"
           >
@@ -153,7 +141,7 @@ export default function ControlsPanel({
             id="video-volume"
             max="100"
             min="0"
-            onChange={(e) => onVolumeChange(Number(e.target.value))}
+            onChange={(e) => handleVolumeChange(Number(e.target.value))}
             type="range"
             value={isMuted ? 0 : volume}
           />
