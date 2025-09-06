@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -62,7 +63,9 @@ export default function Dashboard() {
         {/* Study Stats Card */}
         <Card>
           <CardHeader>
-            <CardTitle>Today's Progress</CardTitle>
+            <CardTitle className="inline-flex items-center gap-2">
+              Today's Progress <Badge variant="secondary">coming soon</Badge>
+            </CardTitle>
             <CardDescription>Your study time and achievements</CardDescription>
           </CardHeader>
           <CardContent>
@@ -88,7 +91,9 @@ export default function Dashboard() {
         {/* Quick Actions Card */}
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="inline-flex items-center gap-2">
+              Quick Actions <Badge variant="secondary">coming soon</Badge>
+            </CardTitle>
             <CardDescription>Shortcuts to common tasks</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">

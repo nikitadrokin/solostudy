@@ -10,50 +10,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-
-interface TodoItem {
-  id: string;
-  text: string;
-  completed: boolean;
-}
+import { useTodoStore } from '@/lib/todo-store';
 
 export default function TodoList() {
-  const [todos, setTodos] = useState<TodoItem[]>([]);
   const [newTodo, setNewTodo] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const addTodo = () => {
-    if (newTodo.trim()) {
-      const todo: TodoItem = {
-        id: Date.now().toString(),
-        text: newTodo.trim(),
-        completed: false,
-      };
-      setTodos([...todos, todo]);
+  const { tasks, addTask, toggleTask, removeTask } = useTodoStore();
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      addTask(newTodo);
       setNewTodo('');
     }
   };
 
-  const toggleTodo = (id: string) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
-
-  const deleteTodo = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      addTodo();
-    }
-  };
-
-  const completedCount = todos.filter((todo) => todo.completed).length;
-  const totalCount = todos.length;
+  const completedCount = tasks.filter((task) => task.completed).length;
+  const totalCount = tasks.length;
 
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen}>
@@ -108,7 +81,7 @@ export default function TodoList() {
             <Button
               className="h-9 w-9"
               disabled={!newTodo.trim()}
-              onClick={addTodo}
+              onClick={() => addTask(newTodo)}
               size="icon"
             >
               <Plus className="h-4 w-4" />
@@ -116,33 +89,33 @@ export default function TodoList() {
           </div>
 
           <div className="max-h-64 space-y-2 overflow-y-auto">
-            {todos.length === 0 ? (
+            {tasks.length === 0 ? (
               <p className="py-4 text-center text-muted-foreground text-sm">
                 No tasks yet. Add one above!
               </p>
             ) : (
-              todos.map((todo) => (
+              tasks.map((task) => (
                 <div
                   className="group flex items-center gap-2 rounded-md p-2 hover:bg-muted/50"
-                  key={todo.id}
+                  key={task.id}
                 >
                   <Checkbox
-                    checked={todo.completed}
+                    checked={task.completed}
                     className="flex-shrink-0"
-                    onCheckedChange={() => toggleTodo(todo.id)}
+                    onCheckedChange={() => toggleTask(task.id)}
                   />
                   <span
                     className={`flex-1 text-sm ${
-                      todo.completed
+                      task.completed
                         ? 'text-muted-foreground line-through'
                         : 'text-foreground'
                     }`}
                   >
-                    {todo.text}
+                    {task.title}
                   </span>
                   <Button
                     className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => deleteTodo(todo.id)}
+                    onClick={() => removeTask(task.id)}
                     size="icon"
                     variant="ghost"
                   >
