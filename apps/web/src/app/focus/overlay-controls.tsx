@@ -86,6 +86,7 @@ const OverlayControls: React.FC = () => {
             <PopoverContent
               align="end"
               className="w-80 bg-background/80 backdrop-blur-sm"
+              onOpenAutoFocus={(e) => e.preventDefault()}
               side="bottom"
             >
               <ControlsPanel />

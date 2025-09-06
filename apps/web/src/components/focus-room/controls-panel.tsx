@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useFocusStore } from '@/lib/focus-store';
+import { cn } from '@/lib/utils';
 import { useVideoStore } from '@/lib/video-store';
 
 // YouTube URL validation patterns
@@ -60,11 +61,12 @@ export default function ControlsPanel() {
         <Label htmlFor="youtube-url">YouTube URL</Label>
         <div className="flex gap-2">
           <Input
-            className={`flex-1 ${
+            className={cn(
+              'flex-1',
               urlInput && !isValidYouTubeUrl(urlInput)
                 ? 'border-destructive'
                 : ''
-            }`}
+            )}
             id="youtube-url"
             onChange={(e) => setUrlInput(e.target.value)}
             onKeyPress={handleKeyPress}
