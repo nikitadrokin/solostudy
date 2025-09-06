@@ -3413,51 +3413,6 @@ const playlistData: YoutubePlaylist = {
     {
       _type: 'url',
       ie_key: 'Youtube',
-      id: 'NL-NlWeWJPM',
-      url: 'https://www.youtube.com/watch?v=NL-NlWeWJPM',
-      title:
-        'Warm Winter Night with Jazz Instrumental \ud83c\udf84 Christmas Jazz Piano for Relax, Stress Relief',
-      description: null,
-      duration: 42_898,
-      channel_id: 'UCn3r_vCCNRGk1CFgcir-29A',
-      channel: 'Cozy Coffee Shop',
-      channel_url: 'https://www.youtube.com/channel/UCn3r_vCCNRGk1CFgcir-29A',
-      uploader: 'Cozy Coffee Shop',
-      uploader_id: '@cozycoffeeshop1956',
-      uploader_url: 'https://www.youtube.com/@cozycoffeeshop1956',
-      thumbnails: [
-        {
-          url: 'https://i.ytimg.com/vi/NL-NlWeWJPM/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLCIcQbxHkI1WHDjktS_Bh_3W8XJdw',
-          height: 94,
-          width: 168,
-        },
-        {
-          url: 'https://i.ytimg.com/vi/NL-NlWeWJPM/hqdefault.jpg?sqp=-oaymwEbCMQBEG5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLDmGf6V7SLBWAGastOTOdPyXVAW-w',
-          height: 110,
-          width: 196,
-        },
-        {
-          url: 'https://i.ytimg.com/vi/NL-NlWeWJPM/hqdefault.jpg?sqp=-oaymwEcCPYBEIoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLAUg3mCLnD5bWwhw5JQDcwHC-RXpw',
-          height: 138,
-          width: 246,
-        },
-        {
-          url: 'https://i.ytimg.com/vi/NL-NlWeWJPM/hqdefault.jpg?sqp=-oaymwEcCNACELwBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLAWM_MiLk0rbTkLVWNIHZugDWi6xw',
-          height: 188,
-          width: 336,
-        },
-      ],
-      timestamp: null,
-      release_timestamp: null,
-      availability: null,
-      view_count: 1_200_000,
-      live_status: 'was_live',
-      channel_is_verified: null,
-      __x_forwarded_for_ip: null,
-    },
-    {
-      _type: 'url',
-      ie_key: 'Youtube',
       id: 'BsbeDtFyHbI',
       url: 'https://www.youtube.com/watch?v=BsbeDtFyHbI',
       title:
