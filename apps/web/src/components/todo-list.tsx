@@ -13,6 +13,7 @@ import {
 import { useTodoStore } from '@/lib/todo-store';
 import { cn } from '@/lib/utils';
 import { Badge } from './ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 export default function TodoList() {
   const [newTodo, setNewTodo] = useState('');
@@ -33,21 +34,31 @@ export default function TodoList() {
 
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          className="relative bg-background/80 backdrop-blur-sm"
-          size="sm"
-          title="Todo List"
-          variant="outline"
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <Button
+              className="relative bg-background/80 backdrop-blur-sm"
+              size="sm"
+              variant="outline"
+            >
+              <CheckSquare className="h-4 w-4" />
+              {totalCount > 0 && (
+                <Badge className="-right-1 -top-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+                  {badgeCount}
+                </Badge>
+              )}
+            </Button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent
+          align="start"
+          className="bg-background/80 backdrop-blur-sm"
+          side="bottom"
         >
-          <CheckSquare className="h-4 w-4" />
-          {totalCount > 0 && (
-            <Badge className="-right-1 -top-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
-              {badgeCount}
-            </Badge>
-          )}
-        </Button>
-      </PopoverTrigger>
+          View Tasks
+        </TooltipContent>
+      </Tooltip>
       <PopoverContent
         align="start"
         className="w-80 bg-background/80 backdrop-blur-sm"

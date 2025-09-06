@@ -9,6 +9,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import SidebarTrigger from './sidebar-trigger';
 
@@ -33,16 +38,23 @@ const OverlayControls: React.FC = () => {
         {/* Trailing */}
         <div className="flex gap-2">
           <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                className="bg-background/80 backdrop-blur-sm"
-                size="sm"
-                title="Focus Room Settings"
-                variant="outline"
-              >
-                <Clapperboard className="size-4" />
-              </Button>
-            </PopoverTrigger>
+            <Tooltip>
+              <TooltipTrigger>
+                <PopoverTrigger asChild>
+                  <Button
+                    className="bg-background/80 backdrop-blur-sm"
+                    size="sm"
+                    title="Focus Room Settings"
+                    variant="outline"
+                  >
+                    <Clapperboard className="size-4" />
+                  </Button>
+                </PopoverTrigger>
+              </TooltipTrigger>
+              <TooltipContent align="end" side="bottom">
+                Select background
+              </TooltipContent>
+            </Tooltip>
             <PopoverContent
               align="end"
               className="w-80 bg-background/80 backdrop-blur-sm"
@@ -53,16 +65,24 @@ const OverlayControls: React.FC = () => {
           </Popover>
 
           <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                className="bg-background/80 backdrop-blur-sm"
-                size="sm"
-                title="Focus Room Settings"
-                variant="outline"
-              >
-                <Settings className="size-4" />
-              </Button>
-            </PopoverTrigger>
+            <Tooltip>
+              <TooltipTrigger>
+                <PopoverTrigger asChild>
+                  <Button
+                    className="bg-background/80 backdrop-blur-sm"
+                    size="sm"
+                    title="Focus Room Settings"
+                    variant="outline"
+                  >
+                    <Settings className="size-4" />
+                  </Button>
+                </PopoverTrigger>
+              </TooltipTrigger>
+
+              <TooltipContent align="end" side="bottom">
+                Focus Room Settings
+              </TooltipContent>
+            </Tooltip>
             <PopoverContent
               align="end"
               className="w-80 bg-background/80 backdrop-blur-sm"
