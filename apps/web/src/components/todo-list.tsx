@@ -62,6 +62,8 @@ export default function TodoList() {
       <PopoverContent
         align="start"
         className="w-80 bg-background/80 backdrop-blur-sm"
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onPointerDownOutside={(e) => e.preventDefault()}
         side="bottom"
       >
         <div className="space-y-4">
