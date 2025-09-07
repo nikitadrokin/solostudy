@@ -16,10 +16,11 @@ const YOUTUBE_VALIDATION_PATTERNS = [
 
 export default function ControlsPanel() {
   // Get state and actions from stores
-  const { videoUrl, isPlaying, volume, isMuted } = useFocusStore();
+  const { videoUrl, volume, isMuted } = useFocusStore();
   const {
     isVideoLoaded,
     videoError,
+    isPlaying, // Move this here
     handleVideoUrlChange,
     handleLoadVideo,
     handlePlayPause,

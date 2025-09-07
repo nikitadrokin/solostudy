@@ -8,8 +8,10 @@ interface YTPlayer {
   pauseVideo(): void;
   mute(): void;
   unMute(): void;
+  destroy(): void;
   getCurrentTime(): number;
   seekTo(seconds: number): void;
+  getPlayerState(): number;
 }
 
 interface VideoState {
@@ -22,6 +24,12 @@ interface VideoState {
 
   // Timestamp preservation for reconnection (not persisted)
   savedTimestamp: number | null;
+
+  // Reload trigger (not persisted)
+  reloadKey: number;
+
+  // Player state (not persisted)
+  isPlaying: boolean;
 }
 
 interface VideoActions {
@@ -31,10 +39,14 @@ interface VideoActions {
   // Video state management
   setIsVideoLoaded: (loaded: boolean) => void;
   setVideoError: (error: string | undefined) => void;
+  setIsPlaying: (playing: boolean) => void;
 
   // Timestamp management
   saveCurrentTimestamp: () => void;
   restoreTimestamp: () => void;
+
+  // Reload management
+  triggerReload: () => void;
 
   // Player control actions
   handlePlayerReady: (event: { target: YTPlayer }) => void;
@@ -46,6 +58,7 @@ interface VideoActions {
   handlePlayPause: () => void;
   handleVolumeChange: (newVolume: number) => void;
   handleMuteToggle: () => void;
+  syncPlayerState: () => void;
 }
 
 type VideoStore = VideoState & VideoActions;
@@ -55,6 +68,8 @@ const initialState: VideoState = {
   isVideoLoaded: false,
   videoError: undefined,
   savedTimestamp: null,
+  reloadKey: 0,
+  isPlaying: false,
 };
 
 export const useVideoStore = create<VideoStore>()((set, get) => ({
@@ -66,6 +81,7 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
   // Video state management
   setIsVideoLoaded: (loaded) => set({ isVideoLoaded: loaded }),
   setVideoError: (error) => set({ videoError: error }),
+  setIsPlaying: (playing: boolean) => set({ isPlaying: playing }),
 
   // Timestamp management
   saveCurrentTimestamp: () => {
@@ -93,6 +109,29 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     }
   },
 
+  // Reload management
+  triggerReload: () => {
+    const { player } = get();
+
+    // Save current timestamp before reloading
+    if (player) {
+      try {
+        const currentTime = player.getCurrentTime();
+        set({ savedTimestamp: currentTime });
+      } catch {
+        // Could not get timestamp, proceed without it
+      }
+    }
+
+    // Increment reload key to trigger component reload
+    set((state) => ({
+      reloadKey: state.reloadKey + 1,
+      player: null,
+      isVideoLoaded: false,
+      videoError: undefined,
+    }));
+  },
+
   // Player control actions
   handlePlayerReady: (event) => {
     set({
@@ -108,11 +147,11 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
   },
 
   handlePlay: () => {
-    useFocusStore.getState().setIsPlaying(true);
+    set({ isPlaying: true });
   },
 
   handlePause: () => {
-    useFocusStore.getState().setIsPlaying(false);
+    set({ isPlaying: false });
   },
 
   handleError: (error) => {
@@ -146,34 +185,29 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
   },
 
   handlePlayPause: () => {
-    const { player } = get();
-    const { isPlaying } = useFocusStore.getState();
+    const { player, syncPlayerState } = get();
 
     if (!player) {
-      // Simple reconnection: reload the video to reestablish connection
-      set({
-        isVideoLoaded: false,
-        videoError: 'Player disconnected. Reloading...',
-      });
+      // Trigger actual reload when player is disconnected
+      get().triggerReload();
       return;
     }
 
     try {
+      // First, sync the actual player state with our store
+      syncPlayerState();
+
+      // Get the updated state after sync
+      const { isPlaying } = get();
+
       if (isPlaying) {
         player.pauseVideo();
       } else {
         player.playVideo();
       }
     } catch {
-      // Save current timestamp before disconnecting
-      get().saveCurrentTimestamp();
-
-      // If player methods fail, trigger reload
-      set({
-        player: null,
-        isVideoLoaded: false,
-        videoError: 'Player disconnected. Reloading...',
-      });
+      // If player methods fail, trigger reload with timestamp preservation
+      get().triggerReload();
     }
   },
 
@@ -206,6 +240,22 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     } else {
       player.mute();
       setIsMuted(true);
+    }
+  },
+
+  syncPlayerState: () => {
+    const { player } = get();
+    if (!player) {
+      return;
+    }
+
+    try {
+      const playerState = player.getPlayerState();
+      // YouTube player states: 1 = playing, 2 = paused
+      const actuallyPlaying = playerState === 1;
+      set({ isPlaying: actuallyPlaying });
+    } catch {
+      // Could not get player state, ignore
     }
   },
 }));

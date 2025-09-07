@@ -14,8 +14,14 @@ export default function FocusRoom() {
 
   // Zustand stores
   const { videoUrl, volume } = useFocusStore();
-  const { handlePlayerReady, handlePlay, handlePause, handleError } =
-    useVideoStore();
+  const {
+    handlePlayerReady,
+    handlePlay,
+    handlePause,
+    handleError,
+    reloadKey,
+    savedTimestamp,
+  } = useVideoStore();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
   useEffect(() => {
@@ -36,6 +42,8 @@ export default function FocusRoom() {
           onPause={handlePause}
           onPlay={handlePlay}
           onReady={handlePlayerReady}
+          reloadKey={reloadKey}
+          startTime={savedTimestamp ?? undefined}
           videoUrl={videoUrl || 'https://www.youtube.com/watch?v=We4uRmMjjhM'}
           volume={volume}
         />

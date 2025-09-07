@@ -9,6 +9,8 @@ interface YouTubePlayerProps {
   onError?: (error: number) => void;
   volume?: number;
   className?: string;
+  reloadKey?: number;
+  startTime?: number;
 }
 
 // Extend Window interface to include YouTube API
@@ -38,6 +40,7 @@ interface YTPlayer {
   destroy(): void;
   getCurrentTime(): number;
   seekTo(seconds: number): void;
+  getPlayerState(): number;
 }
 
 interface YTPlayerOptions {
@@ -84,7 +87,7 @@ function extractVideoId(url: string): string | null {
  * Normalize any YouTube URL to a clean embed format with all UI elements hidden
  * This ensures consistent behavior regardless of the input URL format
  */
-function normalizeYouTubeUrl(url: string): string {
+function normalizeYouTubeUrl(url: string, startTime?: number): string {
   const videoId = extractVideoId(url);
   if (!videoId) {
     return url; // Return original if we can't extract video ID
@@ -109,6 +112,8 @@ function normalizeYouTubeUrl(url: string): string {
     color: 'white',
     hl: 'en',
     ...(typeof window !== 'undefined' && { origin: window.location.origin }),
+    ...(startTime !== undefined &&
+      startTime > 0 && { start: Math.floor(startTime).toString() }),
   });
 
   return `${baseUrl}${videoId}?${params.toString()}`;
@@ -150,6 +155,8 @@ export default function YouTubePlayer({
   onError,
   volume = 50,
   className = '',
+  reloadKey = 0,
+  startTime,
 }: YouTubePlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [player, setPlayer] = useState<YTPlayer | null>(null);
@@ -164,6 +171,14 @@ export default function YouTubePlayer({
       setApiLoaded(true);
     });
   }, []);
+
+  // Reset player state when reload key changes
+  useEffect(() => {
+    if (reloadKey > 0) {
+      setPlayer(null);
+      setIsReady(false);
+    }
+  }, [reloadKey]);
 
   // Initialize player when API is loaded and iframe is ready
   useEffect(() => {
@@ -258,7 +273,7 @@ export default function YouTubePlayer({
     );
   }
 
-  const embedUrl = normalizeYouTubeUrl(videoUrl);
+  const embedUrl = normalizeYouTubeUrl(videoUrl, startTime);
 
   return (
     <iframe
@@ -268,6 +283,7 @@ export default function YouTubePlayer({
       frameBorder="0"
       height="100%"
       id="video-player"
+      key={`${videoId}-${reloadKey}`}
       ref={iframeRef}
       referrerPolicy="strict-origin-when-cross-origin"
       src={embedUrl}

@@ -5,7 +5,6 @@ import { normalizeYouTubeUrl } from '@/components/focus-room/youtube-player';
 interface FocusState {
   // Video settings
   videoUrl: string;
-  isPlaying: boolean;
   volume: number;
   isMuted: boolean;
 
@@ -16,7 +15,6 @@ interface FocusState {
 interface FocusActions {
   // Video actions
   setVideoUrl: (url: string) => void;
-  setIsPlaying: (playing: boolean) => void;
   setVolume: (volume: number) => void;
   setIsMuted: (muted: boolean) => void;
 
@@ -32,7 +30,6 @@ type FocusStore = FocusState & FocusActions;
 const initialState: FocusState = {
   // Video settings - using normalized URL format
   videoUrl: normalizeYouTubeUrl('https://www.youtube.com/watch?v=We4uRmMjjhM'),
-  isPlaying: false,
   volume: 50,
   isMuted: false,
 
@@ -47,7 +44,6 @@ export const useFocusStore = create<FocusStore>()(
 
       // Video actions - normalize YouTube URLs to ensure clean embed format
       setVideoUrl: (url: string) => set({ videoUrl: normalizeYouTubeUrl(url) }),
-      setIsPlaying: (playing: boolean) => set({ isPlaying: playing }),
       setVolume: (volume: number) => set({ volume }),
       setIsMuted: (muted: boolean) => set({ isMuted: muted }),
 
