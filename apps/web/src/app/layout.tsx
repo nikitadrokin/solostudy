@@ -44,7 +44,10 @@ export default async function RootLayout({
           </SidebarProvider>
         </Providers>
 
-        <Databuddy clientId="3pcVDvZvNzFtuvMqb8CIa" enableBatching={true} />
+        <Databuddy
+          clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID || ''}
+          enableBatching={true}
+        />
       </body>
     </html>
   );
