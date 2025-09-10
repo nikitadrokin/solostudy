@@ -1,7 +1,8 @@
 'use client';
+import { Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,7 +12,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { authClient } from '@/lib/auth-client';
+import { useTodoStore } from '@/lib/todo-store';
+import { cn } from '@/lib/utils';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -113,24 +118,132 @@ export default function Dashboard() {
       </div>
 
       {/* Analytics Preview */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Analytics</CardTitle>
-          <CardDescription>
-            Insights and detailed progress tracking
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex h-32 items-center justify-center rounded-lg border border-dashed">
-            <div className="text-center">
-              <p className="font-medium text-muted-foreground">Coming Soon</p>
-              <p className="mt-1 text-muted-foreground text-sm">
-                Detailed analytics and insights will be available here
-              </p>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Task List */}
+        <TaskListCard />
+
+        <Card className="col-span-1 md:col-span-2">
+          <CardHeader>
+            <CardTitle>Analytics</CardTitle>
+            <CardDescription>
+              Insights and detailed progress tracking
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex h-32 items-center justify-center rounded-lg border border-dashed">
+              <div className="text-center">
+                <p className="font-medium text-muted-foreground">Coming Soon</p>
+                <p className="mt-1 text-muted-foreground text-sm">
+                  Detailed analytics and insights will be available here
+                </p>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
+  );
+}
+
+function TaskListCard() {
+  const [newTodo, setNewTodo] = useState('');
+
+  const { tasks, addTask, toggleTask, removeTask } = useTodoStore();
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      addTask(newTodo);
+      setNewTodo('');
+    }
+  };
+
+  const completedCount = tasks.filter((task) => task.completed).length;
+  const totalCount = tasks.length;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Task List</CardTitle>
+        <CardDescription>
+          {completedCount} of {totalCount} completed
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              className="flex-1"
+              onChange={(e) => setNewTodo(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Add a task..."
+              value={newTodo}
+            />
+            <Button
+              className="h-9 w-9"
+              disabled={!newTodo.trim()}
+              onClick={() => addTask(newTodo)}
+              size="icon"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="max-h-64 space-y-2 overflow-y-auto">
+            {tasks.length === 0 ? (
+              <p className="py-4 text-center text-muted-foreground text-sm">
+                No tasks yet. Add one above!
+              </p>
+            ) : (
+              tasks.map((task) => (
+                // biome-ignore lint/a11y/useSemanticElements: can't nest button in button
+                <div
+                  className="group flex items-center gap-2 rounded-md p-2 hover:bg-muted/50"
+                  key={task.id}
+                  onClick={() => toggleTask(task.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleTask(task.id);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <Checkbox
+                    checked={task.completed}
+                    className="flex-shrink-0"
+                    onCheckedChange={() => {
+                      toggleTask(task.id);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <span
+                    className={cn(
+                      'flex-1 select-none text-sm',
+                      task.completed
+                        ? 'text-muted-foreground line-through'
+                        : 'text-foreground'
+                    )}
+                  >
+                    {task.title}
+                  </span>
+                  <Button
+                    className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeTask(task.id);
+                    }}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
