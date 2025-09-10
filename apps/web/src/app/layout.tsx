@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import '../index.css';
+import { Databuddy } from '@databuddy/sdk/react';
 import { cookies } from 'next/headers';
 import AppSidebar from '@/components/app-sidebar';
 import Providers from '@/components/providers';
@@ -42,6 +43,8 @@ export default async function RootLayout({
             </div>
           </SidebarProvider>
         </Providers>
+
+        <Databuddy clientId="3pcVDvZvNzFtuvMqb8CIa" enableBatching={true} />
       </body>
     </html>
   );
