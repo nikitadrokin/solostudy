@@ -46,6 +46,7 @@ export default async function RootLayout({
 
         <Databuddy
           clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID || ''}
+          disabled={process.env.NODE_ENV === 'development'}
           enableBatching={true}
           trackAttributes={true}
           trackBounceRate={true}
