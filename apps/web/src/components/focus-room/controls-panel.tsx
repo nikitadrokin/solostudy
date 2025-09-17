@@ -4,9 +4,9 @@ import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useFocusStore } from '@/lib/focus-store';
 import { cn } from '@/lib/utils';
-import { useVideoStore } from '@/lib/video-store';
+import { useFocusStore } from '@/stores/focus-store';
+import { useVideoStore } from '@/stores/video-store';
 
 // YouTube URL validation patterns
 const YOUTUBE_VALIDATION_PATTERNS = [

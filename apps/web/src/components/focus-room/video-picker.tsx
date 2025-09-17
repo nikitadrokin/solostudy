@@ -1,6 +1,6 @@
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import playlistData from '@/data/programming_vibes';
-import { useVideoStore } from '@/lib/video-store';
+import { useVideoStore } from '@/stores/video-store';
 
 const VideoPicker: React.FC = () => {
   const { handleVideoUrlChange, handleLoadVideo } = useVideoStore();

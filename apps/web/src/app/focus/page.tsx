@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 
 import YouTubePlayer from '@/components/focus-room/youtube-player';
 import { authClient } from '@/lib/auth-client';
-import { useFocusStore } from '@/lib/focus-store';
-import { useVideoStore } from '@/lib/video-store';
+import { useFocusStore } from '@/stores/focus-store';
+import { useVideoStore } from '@/stores/video-store';
 import OverlayControls from './overlay-controls';
 
 export default function FocusRoom() {

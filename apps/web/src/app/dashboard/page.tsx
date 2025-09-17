@@ -15,8 +15,8 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { authClient } from '@/lib/auth-client';
-import { useTodoStore } from '@/lib/todo-store';
 import { cn } from '@/lib/utils';
+import { useTodoStore } from '@/stores/todo-store';
 
 export default function Dashboard() {
   const router = useRouter();

@@ -10,8 +10,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { useTodoStore } from '@/lib/todo-store';
 import { cn } from '@/lib/utils';
+import { useTodoStore } from '@/stores/todo-store';
 import { Badge } from './ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
