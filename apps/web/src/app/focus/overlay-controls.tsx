@@ -39,7 +39,7 @@ const OverlayControls: React.FC = () => {
         <div className="flex gap-2">
           <Popover>
             <Tooltip>
-              <TooltipTrigger>
+              <TooltipTrigger asChild>
                 <PopoverTrigger asChild>
                   <Button
                     className="bg-background/80 backdrop-blur-sm"
@@ -66,7 +66,7 @@ const OverlayControls: React.FC = () => {
 
           <Popover>
             <Tooltip>
-              <TooltipTrigger>
+              <TooltipTrigger asChild>
                 <PopoverTrigger asChild>
                   <Button
                     className="bg-background/80 backdrop-blur-sm"
