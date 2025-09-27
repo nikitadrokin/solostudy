@@ -187,7 +187,7 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
   },
 
   handlePlayPause: () => {
-    const { player, syncPlayerState } = get();
+    const { player } = get();
 
     if (!player) {
       // Trigger actual reload when player is disconnected
@@ -196,17 +196,18 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     }
 
     try {
-      // First, sync the actual player state with our store
-      syncPlayerState();
+      // Get the current player state directly from the player
+      const playerState = player.getPlayerState();
+      const currentlyPlaying = playerState === 1; // 1 = playing
 
-      // Get the updated state after sync
-      const { isPlaying } = get();
-
-      if (isPlaying) {
+      if (currentlyPlaying) {
         player.pauseVideo();
       } else {
         player.playVideo();
       }
+
+      // Update our store state to match
+      set({ isPlaying: !currentlyPlaying });
     } catch {
       // If player methods fail, trigger reload with timestamp preservation
       get().triggerReload();
