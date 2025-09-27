@@ -1,4 +1,5 @@
 import { useForm } from '@tanstack/react-form';
+import type { BetterFetchOption } from 'better-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -91,7 +92,11 @@ export default function SignInForm({
       const emailValue = form.store.state.values.email;
 
       // Create options object, only include email if provided
-      const signInOptions = emailValue ? { email: emailValue } : {};
+      const signInOptions = (emailValue ? { email: emailValue } : {}) as {
+        autoFill?: boolean;
+        email?: string;
+        fetchOptions?: BetterFetchOption;
+      };
 
       await authClient.signIn.passkey(signInOptions, {
         onSuccess: async () => {
