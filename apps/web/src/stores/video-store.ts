@@ -175,6 +175,8 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
       isVideoLoaded: false,
       videoError: undefined,
     });
+    // Trigger reload to sync player with new video
+    get().triggerReload();
   },
 
   handleLoadVideo: () => {
