@@ -1,6 +1,7 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
+import InstallPWAPrompt from '@/components/InstallPWAPrompt';
 import { Button } from '@/components/ui/button';
 import { trpc } from '@/utils/trpc';
 
@@ -25,6 +26,10 @@ export default function Home() {
             <Link href="/dashboard">Dashboard</Link>
           </Button>
         </div>
+      </div>
+
+      <div className="mb-8">
+        <InstallPWAPrompt />
       </div>
 
       <div className="rounded-lg border bg-muted/50 p-6 text-center">
