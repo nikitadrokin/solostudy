@@ -38,6 +38,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <meta content="yes" name="apple-mobile-web-app-capable" />
+      <meta
+        content="black-translucent"
+        name="apple-mobile-web-app-status-bar-style"
+      />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
