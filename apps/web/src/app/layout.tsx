@@ -20,6 +20,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'solostudy',
   description: 'solostudy',
+  icons: {
+    icon: '/pwa-192x192.png',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon-180x180.png',
+  },
+  manifest: '/manifest.json',
 };
 
 export default async function RootLayout({
