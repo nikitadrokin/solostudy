@@ -26,6 +26,7 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon-180x180.png',
   },
   manifest: '/manifest.json',
+  themeColor: '#000000',
 };
 
 export default async function RootLayout({
@@ -39,6 +40,8 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <meta content="yes" name="apple-mobile-web-app-capable" />
+      <meta content="SoloStudy" name="apple-mobile-web-app-title" />
+      <meta content="yes" name="mobile-web-app-capable" />
       <meta
         content="black-translucent"
         name="apple-mobile-web-app-status-bar-style"
