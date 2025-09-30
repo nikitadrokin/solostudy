@@ -8,8 +8,6 @@ import {
   Youtube,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import InstallPWAPrompt from '@/components/InstallPWAPrompt';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,19 +17,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useSession } from '@/lib/auth-client';
 
 export default function Home() {
-  const router = useRouter();
-  const { data: session } = useSession();
-
-  // Redirect authenticated users to dashboard
-  useEffect(() => {
-    if (session) {
-      router.replace('/dashboard');
-    }
-  }, [router, session]);
-
   return (
     <div className="container m-auto max-w-6xl place-items-center px-4 py-10">
       {/* Hero */}
