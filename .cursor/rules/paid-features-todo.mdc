@@ -1,0 +1,172 @@
+## Monetization & Pro Analytics PRD (SoloStudy)
+
+- **Status**: Draft
+- **Owner**: Product
+- **Goal**: Keep the core focus experience free while introducing a compelling Pro tier centered on analytics, exports, and integrations. Provide a clear upgrade path with soft caps and a strong value narrative for individuals and teams.
+
+## Problem Statement
+
+- **Today**: Users can focus and track sessions, but lack deep insights and automation to improve habits and outcomes.
+- **Opportunity**: Add Pro analytics that surface trends, correlations, and forecasts, plus data portability and integrations, without degrading the free experience.
+
+## Objectives and Success Criteria
+
+- **North-star**: Weekly Active Focuser (≥3 sessions/week).
+- **Primary KPIs**:
+  - Trial-to-paid conversion
+  - Cap-hit → upgrade rate
+  - Export/API adoption
+  - Team seat expansion
+  - Churn by persona
+- **Non-goals**:
+  - No hard paywalls on starting/finishing a focus session
+  - No collection of sensitive content data (tasks/notes optional and redacted by default)
+
+## Personas
+
+- **Individual**: Students, creators, indie devs seeking habit improvement.
+- **Power user**: Data-minded individuals needing historical analyses and exports.
+- **Team lead/educator**: Needs shared templates, aggregate analytics, seat management.
+
+## Packaging and Tiers
+
+- **Free**
+  - Core focus room, timers, ambient audio/video
+  - Basic history (30 days), daily/weekly summaries
+  - Basic todos, sync, PWA offline
+- **Pro (Individual)**
+  - Unlimited history
+  - Advanced analytics (segments, goals, streaks, anomaly hints)
+  - CSV/JSON export, personal API, webhooks
+  - Calendar sync, custom session templates, playlists/mixes
+  - Priority support, 7–14 day trial
+- **Teams/Education**
+  - Seat-based, consolidated billing
+  - Shared templates, shared dashboards
+  - Org-level analytics, admin controls, SSO (as add-on)
+- **Add-ons**
+  - Integrations pack (Notion, Google Calendar, Slack/Discord)
+  - Data export automation pack (scheduled exports to S3/Drive)
+  - Advanced automations (scheduled sessions, reminders)
+
+## Entitlement Matrix (v1)
+
+| Capability                           |  Free   | Pro | Team Member | Team Admin |
+| ------------------------------------ | :-----: | :-: | :---------: | :--------: |
+| Focus sessions (core)                |    ✔    |  ✔  |      ✔      |     ✔      |
+| History retention                    |   30d   |  ∞  |      ∞      |     ∞      |
+| Basic summaries                      |    ✔    |  ✔  |      ✔      |     ✔      |
+| Advanced analytics (segments, goals) |    ✖    |  ✔  |      ✔      |     ✔      |
+| Streak insights and relapse recovery | Limited |  ✔  |      ✔      |     ✔      |
+| CSV/JSON export                      |    ✖    |  ✔  |      ✔      |     ✔      |
+| Personal API token                   |    ✖    |  ✔  |      ✔      |     ✔      |
+| Webhooks (session end)               |    ✖    |  ✔  |      ✔      |     ✔      |
+| Calendar sync                        |    ✖    |  ✔  |      ✔      |     ✔      |
+| Custom templates/playlists           |    ✖    |  ✔  |      ✔      |     ✔      |
+| Org dashboards                       |    ✖    |  ✖  |      ✔      |     ✔      |
+| Seat management                      |    ✖    |  ✖  |      ✖      |     ✔      |
+| SSO (add-on)                         |    ✖    |  ✖  |   Add-on    |   Add-on   |
+
+- **Quotas (defaults)**:
+  - Free: 30-day history, 3 tags, 0 exports, 0 API, 1 automation, 5 dashboards
+  - Pro: Unlimited history, unlimited tags, export/API on, 20 automations, 25 dashboards
+  - Teams: Pro + org-level dashboards and higher shared limits
+
+## Analytics Scope (Pro/Teams)
+
+- **Session analytics**: duration, completion rate, interruptions, recovery time
+- **Focus quality**: distraction events, idle windows, correlations with ambient/video
+- **Segmentation**: project/tag, daypart, device, session type
+- **Goals & forecast**: weekly/monthly targets, variance, projections
+- **Streaks & retention**: rolling streaks, relapse recovery, habit health
+- **Benchmarks**: personal vs baseline; team averages (Teams)
+- **Insights**: anomaly detection and nudges (e.g., “productivity drops after 45 min”)
+- **Exports & APIs**: CSV/JSON export, personal API, webhooks on session end
+- **Privacy**: opt-out categories, anonymization for Teams, retention controls
+
+## Visibility and Access States
+
+- **Hidden (not visible)**: Experimental/region-restricted features behind feature flags/policies.
+- **Teased (visible but locked)**:
+  - Disabled controls with tooltip; blurred chart previews with Pro badge
+  - Inline comparison cards and soft-limit CTAs (on cap hit)
+- **Accessible (full access)**:
+  - Unlocked UI, elevated quotas, advanced filters/pages enabled
+
+## Enforcement Architecture
+
+- **Entitlements**
+  - Plans: `free`, `pro`, `team_member`, `team_admin`
+  - Features: versioned capabilities (e.g., `analytics/segments@1`, `export/csv@1`)
+  - Quotas: per-feature limits (historyDays, exportsPerMonth, webhooksPerMin)
+  - Association: per-user and optional organization; included in session/JWT and server context
+- **Server-side enforcement**
+  - Gate analytics, exports, API/webhooks by entitlements
+  - Apply quotas and rate limits; structured error with upgrade hints
+  - Audit logs for overage and paywall hits
+- **Client-side gating**
+  - Read entitlements for show/hide/tease; never trust client alone
+  - Reusable locked-state components with consistent upgrade CTAs
+  - Progressive disclosure once meaningful data exists
+
+## Billing and Lifecycle
+
+- **Checkout & portal**: Hosted checkout, self-serve plan changes, proration
+- **Trials & grace**: 7–14 day trial, grace on failed payments, auto-downgrade with data retained
+- **Invoices & taxes**: VAT/GST support; student/EDU discounts
+- **Teams**: Owner-managed seats, invites, roles; seat-based pricing; org cancellation logic
+
+## Data, Privacy, Security
+
+- **Event pipeline**
+  - Client batching and offline queue; dedupe and schema validation server-side
+  - Aggregations via scheduled jobs/materialized views
+- **Privacy**
+  - No raw content required; hash/redact sensitive strings
+  - Do Not Track support; consent for telemetry; regional storage as needed
+  - Tier-based retention (Free: 30–90 days; Pro/Team: user/org-controlled or unlimited)
+- **Security**
+  - Scoped API tokens; webhook signatures; IP/rate limits
+  - Minimal PII; encryption at rest; key rotation policy
+
+## Pricing (initial hypotheses)
+
+- **Pro (Individual)**: Monthly + annual (2 months free); student discount
+- **Teams**: Per-seat with volume tiers; EDU institutional pricing
+- Pricing to be validated via experiments (geo and persona A/B)
+
+## Growth and Conversion
+
+- **Soft caps**: Hit history/tag/export limits → contextual upgrade prompts
+- **Locked insights**: Blurred advanced charts with quantified preview value
+- **Lifecycle nudges**: Weekly report email highlighting locked insights
+- **Moments of joy**: After 3rd week or streak recovery, prompt trial
+- **Referrals**: Credits for invitations; stackable with student discounts
+
+## Launch Plan (Phases)
+
+- **Phase 1**: Instrument events, basic aggregation, Free summaries
+- **Phase 2**: Pro dashboards (segments, goals, streaks), soft caps, checkout
+- **Phase 3**: Exports/API/webhooks, automations, team spaces
+- **Phase 4**: EDU/SSO, add-ons, marketplace templates
+
+## Risks & Mitigations
+
+- **Over-collection risk**: Strict schema and redaction; opt-in categories
+- **UX confusion**: Clear labels, consistent locked-state components, transparent limits
+- **Gaming/free-riding**: Server-side quotas; tamper-proof counters; rate limiting
+- **Churn from upsell pressure**: Maintain useful Free tier; emphasize value, not nags
+
+## Open Questions
+
+- What default retention (90d?) best balances privacy and value on Free?
+- Which integrations land first for the integrations pack?
+- Do we include calendar sync in Pro base or as an add-on?
+- EDU pricing model: domain verification vs coupon-based?
+
+## Acceptance Criteria (v1)
+
+- Entitlement checks block Pro features server-side and reflect client state
+- Free users can complete all core flows without friction
+- Teased states appear consistently with upgrade CTAs
+- Trials, billing, and downgrade paths preserve data safely
