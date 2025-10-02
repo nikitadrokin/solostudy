@@ -132,10 +132,19 @@ export default function InstallPWAPrompt() {
             </ol>
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            Click Install to add SoloStudy to your device. You can also install
-            from your browser menu.
-          </p>
+          <div className="space-y-3">
+            <p className="text-muted-foreground text-sm">
+              Click Install to add SoloStudy to your device. You can also
+              install from your browser menu.
+            </p>
+            <div className="rounded-md bg-muted p-3">
+              <p className="font-medium text-sm">Need help installing?</p>
+              <p className="mt-1 text-muted-foreground text-xs">
+                Search for "how to install PWA on [your browser]" for detailed
+                instructions specific to your browser and operating system.
+              </p>
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>

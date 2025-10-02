@@ -8,6 +8,7 @@ import {
   Youtube,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 import InstallPWAPrompt from '@/components/InstallPWAPrompt';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,8 +18,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export default function Home() {
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+
   return (
     <div className="container m-auto max-w-6xl place-items-center px-4 py-10">
       {/* Hero */}
@@ -38,11 +49,6 @@ export default function Home() {
             <Link href="/login">Sign in</Link>
           </Button>
         </div>
-      </div>
-
-      {/* PWA Install */}
-      <div className="mb-10">
-        <InstallPWAPrompt />
       </div>
 
       {/* Features */}
@@ -109,9 +115,23 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="ghost">
-              <Link href="#install">How to install</Link>
-            </Button>
+            <Dialog
+              onOpenChange={setIsInstallModalOpen}
+              open={isInstallModalOpen}
+            >
+              <DialogTrigger asChild>
+                <Button variant="ghost">How to install</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Install SoloStudy</DialogTitle>
+                  <DialogDescription>
+                    Get the app for quick access and offline usage
+                  </DialogDescription>
+                </DialogHeader>
+                <InstallPWAPrompt />
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
 
