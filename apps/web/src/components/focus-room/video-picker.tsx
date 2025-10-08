@@ -1,9 +1,13 @@
+import { memo } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import playlistData from '@/data/programming_vibes';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 import { useVideoStore } from '@/stores/video-store';
 
 const VideoPicker: React.FC = () => {
   const { handleVideoUrlChange, handleLoadVideo } = useVideoStore();
+  const isMobile = useIsMobile();
 
   const handleVideoSelect = (url: string) => {
     handleVideoUrlChange(url);
@@ -11,7 +15,14 @@ const VideoPicker: React.FC = () => {
   };
 
   return (
-    <div className="grid max-h-[500px] grid-cols-3 gap-4 overflow-y-auto py-1 pr-1">
+    <div
+      className={cn(
+        'grid gap-4 overflow-y-auto',
+        isMobile
+          ? 'h-full min-w-full flex-1 grid-cols-[repeat(auto-fit,minmax(160px,1fr))]'
+          : '-mr-4 max-h-[500px] grid-cols-3 py-4 pr-4'
+      )}
+    >
       {playlistData.entries.map((entry) => (
         <button
           className="cursor-pointer rounded-lg p-2 text-left hover:bg-muted/50"
@@ -36,4 +47,4 @@ const VideoPicker: React.FC = () => {
   );
 };
 
-export default VideoPicker;
+export default memo(VideoPicker);

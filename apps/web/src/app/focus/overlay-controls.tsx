@@ -4,6 +4,7 @@ import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
 import TodoList from '@/components/todo-list';
 import { Button } from '@/components/ui/button';
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import {
   Popover,
   PopoverContent,
@@ -37,32 +38,57 @@ const OverlayControls: React.FC = () => {
 
         {/* Trailing */}
         <div className="flex gap-2">
-          <Popover>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <PopoverTrigger asChild>
-                  <Button
-                    className="bg-background/80 backdrop-blur-sm"
-                    size="sm"
-                    title="Focus Room Settings"
-                    variant="outline"
-                  >
-                    <Clapperboard className="size-4" />
-                  </Button>
-                </PopoverTrigger>
-              </TooltipTrigger>
-              <TooltipContent align="end" side="bottom">
-                Select background
-              </TooltipContent>
-            </Tooltip>
-            <PopoverContent
-              align="end"
-              className="w-[600px] bg-background/80 py-0 pr-0 pl-1 backdrop-blur-sm"
-              side="bottom"
-            >
-              <VideoPicker />
-            </PopoverContent>
-          </Popover>
+          {isMobile ? (
+            <Drawer>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DrawerTrigger asChild>
+                    <Button
+                      className="bg-background/80 backdrop-blur-sm"
+                      size="sm"
+                      title="Select background"
+                      variant="outline"
+                    >
+                      <Clapperboard className="size-4" />
+                    </Button>
+                  </DrawerTrigger>
+                </TooltipTrigger>
+                <TooltipContent align="end" side="bottom">
+                  Select background
+                </TooltipContent>
+              </Tooltip>
+              <DrawerContent className="h-[calc(100vh-2.5rem)] bg-background/95 backdrop-blur-sm">
+                <VideoPicker />
+              </DrawerContent>
+            </Drawer>
+          ) : (
+            <Popover>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <PopoverTrigger asChild>
+                    <Button
+                      className="bg-background/80 backdrop-blur-sm"
+                      size="sm"
+                      title="Select background"
+                      variant="outline"
+                    >
+                      <Clapperboard className="size-4" />
+                    </Button>
+                  </PopoverTrigger>
+                </TooltipTrigger>
+                <TooltipContent align="end" side="bottom">
+                  Select background
+                </TooltipContent>
+              </Tooltip>
+              <PopoverContent
+                align="end"
+                className="w-[600px] bg-background/80 py-0 backdrop-blur-sm"
+                side="bottom"
+              >
+                <VideoPicker />
+              </PopoverContent>
+            </Popover>
+          )}
 
           <Popover>
             <Tooltip>

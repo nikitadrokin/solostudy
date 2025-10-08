@@ -287,6 +287,7 @@ export default function YouTubePlayer({
       ref={iframeRef}
       referrerPolicy="strict-origin-when-cross-origin"
       src={embedUrl}
+      suppressHydrationWarning
       title="YouTube video player"
       width="100%"
     />
