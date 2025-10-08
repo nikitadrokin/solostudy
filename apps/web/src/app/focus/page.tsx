@@ -1,16 +1,11 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
 import YouTubePlayer from '@/components/focus-room/youtube-player';
-import { authClient } from '@/lib/auth-client';
 import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
 import OverlayControls from './overlay-controls';
 
 export default function FocusRoom() {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
 
   // Zustand stores
   const { videoUrl, volume } = useFocusStore();
@@ -23,31 +18,18 @@ export default function FocusRoom() {
     savedTimestamp,
   } = useVideoStore();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      return;
-    }
-
-    if (!(session || isPending)) {
-      router.push('/login');
-    }
-  }, [session, isPending]);
-
   return (
     <main className="relative h-full overflow-hidden">
-      {!isPending && (
-        <YouTubePlayer
-          onError={handleError}
-          onPause={handlePause}
-          onPlay={handlePlay}
-          onReady={handlePlayerReady}
-          reloadKey={reloadKey}
-          startTime={savedTimestamp ?? undefined}
-          videoUrl={videoUrl || 'https://www.youtube.com/watch?v=We4uRmMjjhM'}
-          volume={volume}
-        />
-      )}
+      <YouTubePlayer
+        onError={handleError}
+        onPause={handlePause}
+        onPlay={handlePlay}
+        onReady={handlePlayerReady}
+        reloadKey={reloadKey}
+        startTime={savedTimestamp ?? undefined}
+        videoUrl={videoUrl || 'https://www.youtube.com/watch?v=We4uRmMjjhM'}
+        volume={volume}
+      />
 
       {/* Overlay Controls */}
       <OverlayControls />
