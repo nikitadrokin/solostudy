@@ -41,7 +41,7 @@ export default function UserMenu() {
           <span className="truncate">{session.user.name}</span>
         </SidebarMenuButton>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-card">
+      <DropdownMenuContent align="end" className="bg-card" side="right">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>{session.user.email}</DropdownMenuItem>

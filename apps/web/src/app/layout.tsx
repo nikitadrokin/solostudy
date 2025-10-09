@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import '../index.css';
 import { Databuddy } from '@databuddy/sdk/react';
 import { cookies } from 'next/headers';
+import AppHeader from '@/components/app-header';
 import AppSidebar from '@/components/app-sidebar';
 import Providers from '@/components/providers';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -53,7 +54,10 @@ export default async function RootLayout({
           <SidebarProvider defaultOpen={defaultOpen}>
             <div className="flex min-h-svh w-full">
               <AppSidebar />
-              <SidebarInset>{children}</SidebarInset>
+              <SidebarInset>
+                <AppHeader />
+                {children}
+              </SidebarInset>
             </div>
           </SidebarProvider>
         </Providers>
