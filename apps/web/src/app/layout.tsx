@@ -47,6 +47,7 @@ export default async function RootLayout({
         content="black-translucent"
         name="apple-mobile-web-app-status-bar-style"
       />
+      <meta content="/apple-touch-icon-180x180.png" name="apple-touch-icon" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
