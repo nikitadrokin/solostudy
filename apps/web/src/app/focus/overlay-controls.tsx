@@ -2,6 +2,7 @@
 import { Clapperboard, Settings } from 'lucide-react';
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
+import { FocusTimer } from '@/components/focus-timer';
 import TodoList from '@/components/todo-list';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
@@ -34,6 +35,7 @@ const OverlayControls: React.FC = () => {
           )}
 
           <TodoList />
+          <FocusTimer />
         </div>
 
         {/* Trailing */}
