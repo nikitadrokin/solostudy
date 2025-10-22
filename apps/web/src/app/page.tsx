@@ -8,7 +8,8 @@ import {
   Youtube,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLayoutEffect, useState } from 'react';
 import InstallPWAPrompt from '@/components/InstallPWAPrompt';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,6 +30,12 @@ import {
 
 export default function Home() {
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const router = useRouter();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: hiding this page for now
+  useLayoutEffect(() => {
+    router.replace('/focus');
+  }, []);
 
   return (
     <div className="container m-auto max-w-6xl place-items-center px-4 py-10">

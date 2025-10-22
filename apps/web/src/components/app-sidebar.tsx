@@ -1,5 +1,6 @@
 'use client';
 
+// biome-ignore lint/correctness/noUnusedImports: required imports
 import { Focus, Home, LayoutDashboard, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -19,7 +20,7 @@ import { ModeToggle } from './mode-toggle';
 import UserMenu from './user-menu';
 
 const links = [
-  { href: '/', label: 'Home', icon: Home },
+  // { href: '/', label: 'Home', icon: Home },
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/focus', label: 'Focus Room', icon: Focus },
   { href: '/settings', label: 'Settings', icon: Settings },
