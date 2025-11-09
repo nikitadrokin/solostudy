@@ -1,13 +1,19 @@
 'use client';
 
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useCallback, useEffect, useState } from 'react';
 import YouTubePlayer from '@/components/focus-room/youtube-player';
+import { authClient } from '@/lib/auth-client';
 import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
+import { trpc } from '@/utils/trpc';
 import OverlayControls from './overlay-controls';
 
+const DEFAULT_VIDEO_URL = 'https://www.youtube.com/watch?v=jfKfPfyJRdk';
+
 export default function FocusRoom() {
-  // Zustand stores
-  const { videoUrl, volume } = useFocusStore();
+  const { data: session } = authClient.useSession();
+  const { videoUrl: zustandVideoUrl, volume } = useFocusStore();
   const {
     handlePlayerReady,
     handlePlay,
@@ -15,7 +21,70 @@ export default function FocusRoom() {
     handleError,
     reloadKey,
     savedTimestamp,
+    setOnVideoUrlChangePersist,
   } = useVideoStore();
+
+  const [persistedVideoUrl, setPersistedVideoUrl] = useState<string | null>(
+    null
+  );
+  const [isLoadingVideo, setIsLoadingVideo] = useState(true);
+
+  const { data: lastPlayedVideo } = useQuery(
+    trpc.video.getLastPlayed.queryOptions(undefined, {
+      enabled: !!session,
+      retry: false,
+    })
+  );
+
+  const { mutate: setLastPlayed } = useMutation(
+    trpc.video.setLastPlayed.mutationOptions()
+  );
+
+  useEffect(() => {
+    if (session && lastPlayedVideo !== undefined) {
+      if (lastPlayedVideo) {
+        setPersistedVideoUrl(lastPlayedVideo);
+      } else {
+        setPersistedVideoUrl(null);
+      }
+      setIsLoadingVideo(false);
+    } else if (!session) {
+      setPersistedVideoUrl(null);
+      setIsLoadingVideo(false);
+    }
+  }, [session, lastPlayedVideo]);
+
+  const persistCallback = useCallback(
+    (url: string) => {
+      setLastPlayed({ videoUrl: url });
+      setPersistedVideoUrl(url);
+    },
+    [setLastPlayed]
+  );
+
+  useEffect(() => {
+    if (session) {
+      setOnVideoUrlChangePersist(persistCallback);
+    } else {
+      setOnVideoUrlChangePersist(undefined);
+    }
+
+    return () => {
+      setOnVideoUrlChangePersist(undefined);
+    };
+  }, [session, persistCallback, setOnVideoUrlChangePersist]);
+
+  const currentVideoUrl = session
+    ? persistedVideoUrl || DEFAULT_VIDEO_URL
+    : zustandVideoUrl || DEFAULT_VIDEO_URL;
+
+  if (isLoadingVideo) {
+    return (
+      <main className="relative flex h-full items-center justify-center overflow-hidden">
+        <div className="text-muted-foreground">Loading...</div>
+      </main>
+    );
+  }
 
   return (
     <main className="relative h-full overflow-hidden">
@@ -26,7 +95,7 @@ export default function FocusRoom() {
         onReady={handlePlayerReady}
         reloadKey={reloadKey}
         startTime={savedTimestamp ?? undefined}
-        videoUrl={videoUrl || 'https://www.youtube.com/watch?v=jfKfPfyJRdk'}
+        videoUrl={currentVideoUrl}
         volume={volume}
       />
 

@@ -30,6 +30,9 @@ interface VideoState {
 
   // Player state (not persisted)
   isPlaying: boolean;
+
+  // Persistence callback (optional, set by components that need persistence)
+  onVideoUrlChangePersist?: (url: string) => void;
 }
 
 interface VideoActions {
@@ -47,6 +50,9 @@ interface VideoActions {
 
   // Reload management
   triggerReload: () => void;
+
+  // Persistence
+  setOnVideoUrlChangePersist: (callback: ((url: string) => void) | undefined) => void;
 
   // Player control actions
   handlePlayerReady: (event: { target: YTPlayer }) => void;
@@ -70,6 +76,7 @@ const initialState: VideoState = {
   savedTimestamp: null,
   reloadKey: 0,
   isPlaying: false,
+  onVideoUrlChangePersist: undefined,
 };
 
 export const useVideoStore = create<VideoStore>()((set, get) => ({
@@ -169,12 +176,19 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     });
   },
 
+  setOnVideoUrlChangePersist: (callback) => set({ onVideoUrlChangePersist: callback }),
+
   handleVideoUrlChange: (newUrl) => {
     useFocusStore.getState().setVideoUrl(newUrl);
     set({
       isVideoLoaded: false,
       videoError: undefined,
     });
+    // Call persistence callback if set
+    const { onVideoUrlChangePersist } = get();
+    if (onVideoUrlChangePersist) {
+      onVideoUrlChangePersist(newUrl);
+    }
     // Trigger reload to sync player with new video
     get().triggerReload();
   },

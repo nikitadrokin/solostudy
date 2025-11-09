@@ -12,6 +12,7 @@ export const user = pgTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: boolean('email_verified').notNull(),
   image: text('image'),
+  lastPlayedVideoUrl: text('last_played_video_url'),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
 });

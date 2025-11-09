@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
+import { user } from '../db/schema/auth';
 import { todo } from '../db/schema/todos';
 import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
 
@@ -80,6 +81,48 @@ export const appRouter = router({
             and(eq(todo.id, input.id), eq(todo.userId, ctx.session.user.id))
           );
         return { success: true };
+      }),
+  },
+  video: {
+    getLastPlayed: protectedProcedure.query(async ({ ctx }) => {
+      try {
+        const userData = await db
+          .select({ lastPlayedVideoUrl: user.lastPlayedVideoUrl })
+          .from(user)
+          .where(eq(user.id, ctx.session.user.id))
+          .limit(1);
+        return userData[0]?.lastPlayedVideoUrl ?? null;
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to fetch last played video: ${error instanceof Error ? error.message : String(error)}`,
+          cause: error,
+        });
+      }
+    }),
+    setLastPlayed: protectedProcedure
+      .input(
+        z.object({
+          videoUrl: z.string().url(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        try {
+          await db
+            .update(user)
+            .set({
+              lastPlayedVideoUrl: input.videoUrl,
+              updatedAt: new Date(),
+            })
+            .where(eq(user.id, ctx.session.user.id));
+          return { success: true };
+        } catch (error) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to update last played video: ${error instanceof Error ? error.message : String(error)}`,
+            cause: error,
+          });
+        }
       }),
   },
 });
