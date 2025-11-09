@@ -1,10 +1,10 @@
-import type { InferSchema, PromptMetadata } from 'xmcp';
+import type { InferSchema, PromptMetadata, ToolSchema } from 'xmcp';
 import { z } from 'zod';
 
 // Define the schema for prompt parameters
 export const schema = {
   code: z.string().describe('The code to review'),
-};
+} as unknown as ToolSchema;
 
 // Define prompt metadata
 export const metadata: PromptMetadata = {

@@ -1,17 +1,17 @@
-import { z } from "zod";
-import { type InferSchema } from "xmcp";
+import type { InferSchema, ToolSchema } from 'xmcp';
+import { z } from 'zod';
 
 // Define the schema for tool parameters
 export const schema = {
-  name: z.string().describe("The name of the user to greet"),
-};
+  name: z.string().describe('The name of the user to greet'),
+} as unknown as ToolSchema;
 
 // Define tool metadata
 export const metadata = {
-  name: "greet",
-  description: "Greet the user",
+  name: 'greet',
+  description: 'Greet the user',
   annotations: {
-    title: "Greet the user",
+    title: 'Greet the user',
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
@@ -19,10 +19,10 @@ export const metadata = {
 };
 
 // Tool implementation
-export default async function greet({ name }: InferSchema<typeof schema>) {
+export default function greet({ name }: InferSchema<typeof schema>) {
   const result = `Hello, ${name}!`;
 
   return {
-    content: [{ type: "text", text: result }],
+    content: [{ type: 'text', text: result }],
   };
 }
