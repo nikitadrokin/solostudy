@@ -15,6 +15,13 @@
       "when": 1755138154378,
       "tag": "0001_lyrical_angel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762668883957,
+      "tag": "0002_goofy_dormammu",
+      "breakpoints": true
     }
   ]
 }

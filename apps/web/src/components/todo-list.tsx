@@ -1,5 +1,6 @@
 'use client';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CheckSquare, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -10,25 +11,97 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import { useTodoStore } from '@/stores/todo-store';
+import { trpcClient } from '@/utils/trpc';
 import { Badge } from './ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+
+type Task = {
+  id: string;
+  title: string;
+  completed: boolean;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export default function TodoList() {
   const [newTodo, setNewTodo] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { data: session } = authClient.useSession();
 
-  const { tasks, addTask, toggleTask, removeTask } = useTodoStore();
+  const { data: tasks = [] } = useQuery({
+    queryKey: [['todos', 'list']],
+    queryFn: () => trpcClient.todos.list.query(),
+    enabled: !!session,
+  });
+  const createMutation = useMutation({
+    mutationFn: (input: { title: string }) =>
+      trpcClient.todos.create.mutate(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [['todos', 'list']] });
+    },
+  });
+  const updateMutation = useMutation({
+    mutationFn: (input: { id: string; completed?: boolean; title?: string }) =>
+      trpcClient.todos.update.mutate(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [['todos', 'list']] });
+    },
+  });
+  const deleteMutation = useMutation({
+    mutationFn: (input: { id: string }) =>
+      trpcClient.todos.delete.mutate(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [['todos', 'list']] });
+    },
+  });
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      addTask(newTodo);
-      setNewTodo('');
+      handleAddTask();
     }
   };
 
-  const completedCount = tasks.filter((task) => task.completed).length;
+  const handleAddTask = async () => {
+    if (!newTodo.trim()) {
+      return;
+    }
+    try {
+      await createMutation.mutateAsync({ title: newTodo });
+      setNewTodo('');
+    } catch {
+      // Error handling is done by the query client
+    }
+  };
+
+  const handleToggleTask = async (taskId: string) => {
+    const task = tasks.find((t: Task) => t.id === taskId);
+    if (!task) {
+      return;
+    }
+
+    try {
+      await updateMutation.mutateAsync({
+        id: taskId,
+        completed: !task.completed,
+      });
+    } catch {
+      // Error handling is done by the query client
+    }
+  };
+
+  const handleRemoveTask = async (taskId: string) => {
+    try {
+      await deleteMutation.mutateAsync({ id: taskId });
+    } catch {
+      // Error handling is done by the query client
+    }
+  };
+
+  const completedCount = tasks.filter((task: Task) => task.completed).length;
   const totalCount = tasks.length;
   const badgeCount = totalCount - completedCount;
 
@@ -96,8 +169,8 @@ export default function TodoList() {
             />
             <Button
               className="h-9 w-9"
-              disabled={!newTodo.trim()}
-              onClick={() => addTask(newTodo)}
+              disabled={!newTodo.trim() || createMutation.isPending}
+              onClick={handleAddTask}
               size="icon"
             >
               <Plus className="h-4 w-4" />
@@ -110,16 +183,16 @@ export default function TodoList() {
                 No tasks yet. Add one above!
               </p>
             ) : (
-              tasks.map((task) => (
+              tasks.map((task: Task) => (
                 // biome-ignore lint/a11y/useSemanticElements: can't nest button in button
                 <div
                   className="group flex items-center gap-2 rounded-md p-2 hover:bg-muted/50"
                   key={task.id}
-                  onClick={() => toggleTask(task.id)}
+                  onClick={() => handleToggleTask(task.id)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      toggleTask(task.id);
+                      handleToggleTask(task.id);
                     }
                   }}
                   role="button"
@@ -129,7 +202,7 @@ export default function TodoList() {
                     checked={task.completed}
                     className="flex-shrink-0"
                     onCheckedChange={() => {
-                      toggleTask(task.id);
+                      handleToggleTask(task.id);
                     }}
                     onClick={(e) => e.stopPropagation()}
                   />
@@ -147,7 +220,7 @@ export default function TodoList() {
                     className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeTask(task.id);
+                      handleRemoveTask(task.id);
                     }}
                     size="icon"
                     variant="ghost"
