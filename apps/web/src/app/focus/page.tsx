@@ -26,7 +26,7 @@ export default function FocusRoom() {
         onReady={handlePlayerReady}
         reloadKey={reloadKey}
         startTime={savedTimestamp ?? undefined}
-        videoUrl={videoUrl || 'https://www.youtube.com/watch?v=We4uRmMjjhM'}
+        videoUrl={videoUrl || 'https://www.youtube.com/watch?v=jfKfPfyJRdk'}
         volume={volume}
       />
 

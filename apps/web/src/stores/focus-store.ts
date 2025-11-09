@@ -29,7 +29,7 @@ type FocusStore = FocusState & FocusActions;
 
 const initialState: FocusState = {
   // Video settings - using normalized URL format
-  videoUrl: normalizeYouTubeUrl('https://www.youtube.com/watch?v=We4uRmMjjhM'),
+  videoUrl: normalizeYouTubeUrl('https://www.youtube.com/watch?v=jfKfPfyJRdk'),
   volume: 50,
   isMuted: false,
 
