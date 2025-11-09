@@ -50,3 +50,7 @@ lerna-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# xmcp
+.xmcp
+xmcp-env.d.ts
