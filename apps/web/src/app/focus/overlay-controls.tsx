@@ -84,7 +84,7 @@ const OverlayControls: React.FC = () => {
               </Tooltip>
               <PopoverContent
                 align="end"
-                className="w-[600px] overflow-hidden bg-background/80 p-0 backdrop-blur-sm"
+                className="flex h-[500px] w-[600px] flex-col overflow-hidden rounded-2xl bg-background/80 p-0 backdrop-blur-sm"
                 side="bottom"
               >
                 <VideoPicker />

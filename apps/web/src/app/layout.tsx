@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   themeColor: '#000000',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover',
+  },
 };
 
 export default async function RootLayout({

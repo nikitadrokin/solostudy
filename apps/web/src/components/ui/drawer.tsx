@@ -79,8 +79,8 @@ function DrawerContent({
           )}
           style={
             {
-              '--gradient-height-top': isMobile ? '3.5rem' : '0.5rem',
-              '--gradient-height-bottom': isMobile ? '3.5rem' : '0.5rem',
+              '--gradient-height-top': '3.5rem',
+              '--gradient-height-bottom': '3.5rem',
               '--gradient-color': 'var(--background)',
             } as React.CSSProperties
           }

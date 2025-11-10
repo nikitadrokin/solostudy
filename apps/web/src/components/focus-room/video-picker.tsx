@@ -20,7 +20,7 @@ const VideoPicker: React.FC = () => {
         'grid gap-4 overflow-y-auto pt-[var(--gradient-height-top)] pb-[var(--gradient-height-bottom)]',
         isMobile
           ? 'h-full min-w-full flex-1 grid-cols-[repeat(auto-fit,minmax(160px,1fr))] px-2'
-          : '-mr-4 grid-cols-3 py-2 pr-4'
+          : 'h-full grid-cols-3 py-2 pr-4 pl-2'
       )}
     >
       {playlistData.entries.map((entry) => (
