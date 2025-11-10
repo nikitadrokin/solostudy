@@ -74,13 +74,13 @@ function DrawerContent({
             'relative flex flex-col',
             isMobile ? '' : 'pr-4 pl-2',
             'before:absolute before:inset-x-0 before:top-0 before:z-10 before:h-[var(--gradient-height-top)] before:rounded-t-3xl before:bg-gradient-to-b before:from-[var(--gradient-color)] before:to-transparent before:content-[""]',
-            'after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-[var(--gradient-height-bottom)] after:bg-gradient-to-t after:from-[var(--gradient-color)] after:to-transparent after:content-[""]',
+            'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-[var(--gradient-height-bottom)] after:bg-gradient-to-t after:from-[var(--gradient-color)] after:to-transparent after:content-[""]',
             isMobile ? 'h-full min-h-0' : 'max-h-[500px]'
           )}
           style={
             {
-              '--gradient-height-top': '3.5rem',
-              '--gradient-height-bottom': '2rem',
+              '--gradient-height-top': isMobile ? '3.5rem' : '0.5rem',
+              '--gradient-height-bottom': isMobile ? '3.5rem' : '0.5rem',
               '--gradient-color': 'var(--background)',
             } as React.CSSProperties
           }
