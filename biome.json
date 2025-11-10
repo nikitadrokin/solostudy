@@ -16,8 +16,7 @@
       "!**/.expo",
       "!**/.wrangler",
       "!**/wrangler.jsonc",
-      "!**/.source",
-      "!**/components/ui/**"
+      "!**/.source"
     ]
   },
   "extends": ["ultracite"],
@@ -25,6 +24,9 @@
     "rules": {
       "style": {
         "noNestedTernary": "off"
+      },
+      "performance": {
+        "noNamespaceImport": "off"
       }
     }
   }

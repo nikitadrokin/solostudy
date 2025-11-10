@@ -52,7 +52,9 @@ interface VideoActions {
   triggerReload: () => void;
 
   // Persistence
-  setOnVideoUrlChangePersist: (callback: ((url: string) => void) | undefined) => void;
+  setOnVideoUrlChangePersist: (
+    callback: ((url: string) => void) | undefined
+  ) => void;
 
   // Player control actions
   handlePlayerReady: (event: { target: YTPlayer }) => void;
@@ -176,7 +178,8 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     });
   },
 
-  setOnVideoUrlChangePersist: (callback) => set({ onVideoUrlChangePersist: callback }),
+  setOnVideoUrlChangePersist: (callback) =>
+    set({ onVideoUrlChangePersist: callback }),
 
   handleVideoUrlChange: (newUrl) => {
     useFocusStore.getState().setVideoUrl(newUrl);

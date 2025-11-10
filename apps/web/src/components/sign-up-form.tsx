@@ -183,7 +183,9 @@ export default function SignUpForm({
                   disabled={!state.canSubmit || state.isSubmitting}
                   type="submit"
                 >
-                  {state.isSubmitting ? 'Creating account...' : 'Create Account'}
+                  {state.isSubmitting
+                    ? 'Creating account...'
+                    : 'Create Account'}
                 </Button>
               )}
             </form.Subscribe>
