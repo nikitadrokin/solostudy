@@ -59,7 +59,7 @@ const OverlayControls: React.FC = () => {
                   Select background
                 </TooltipContent>
               </Tooltip>
-              <DrawerContent className="h-[calc(100vh-2.5rem)] bg-background/95 backdrop-blur-sm">
+              <DrawerContent className="h-[calc(100vh-2.5rem)] overflow-hidden bg-background/95 backdrop-blur-sm">
                 <VideoPicker />
               </DrawerContent>
             </Drawer>
