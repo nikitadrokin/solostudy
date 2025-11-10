@@ -6,7 +6,7 @@ import YouTubePlayer from '@/components/focus-room/youtube-player';
 import { authClient } from '@/lib/auth-client';
 import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
-import { trpc } from '@/utils/trpc';
+import { trpc, trpcClient } from '@/utils/trpc';
 import OverlayControls from './overlay-controls';
 
 const DEFAULT_VIDEO_URL = 'https://www.youtube.com/watch?v=jfKfPfyJRdk';
@@ -36,9 +36,10 @@ export default function FocusRoom() {
     })
   );
 
-  const { mutate: setLastPlayed } = useMutation(
-    trpc.video.setLastPlayed.mutationOptions()
-  );
+  const { mutate: setLastPlayed } = useMutation({
+    mutationFn: (input: { videoUrl: string }) =>
+      trpcClient.video.setLastPlayed.mutate(input),
+  });
 
   useEffect(() => {
     if (session && lastPlayedVideo !== undefined) {
