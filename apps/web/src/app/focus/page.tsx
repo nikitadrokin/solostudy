@@ -43,7 +43,8 @@ export default function FocusRoom() {
   useEffect(() => {
     if (session && lastPlayedVideo !== undefined) {
       if (lastPlayedVideo) {
-        setPersistedVideoUrl(lastPlayedVideo);
+        // don't remove the type cast, build fails without it
+        setPersistedVideoUrl(lastPlayedVideo as string);
       } else {
         setPersistedVideoUrl(null);
       }
