@@ -47,11 +47,15 @@ const VideoPicker: React.FC = () => {
             title={entry.title}
             type="button"
           >
-            <AspectRatio className="overflow-hidden rounded" ratio={16 / 9}>
+            <AspectRatio
+              className="select-none overflow-hidden rounded"
+              ratio={16 / 9}
+            >
               {/** biome-ignore lint/performance/noImgElement: saving on vercel bandwidth */}
               <img
                 alt={`${entry.title} thumbnail`}
                 className="h-full w-full object-cover"
+                draggable={false}
                 loading="lazy"
                 src={entry.thumbnails[0].url}
               />
