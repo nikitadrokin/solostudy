@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 // biome-ignore lint/nursery/noTsIgnore: Coolify monorepo deployment thinks this type doesn't exist
 // @ts-ignore
-import type { AppRouter } from '../../../server/src/routers';
+import type { AppRouter } from '../routers';
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
