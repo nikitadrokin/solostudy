@@ -10,7 +10,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-pwa-assets": "pwa-assets-generator --config pwa-assets.config.ts"
+    "generate-pwa-assets": "pwa-assets-generator --config pwa-assets.config.ts",
+    "db:push": "drizzle-kit push",
+    "db:pull": "drizzle-kit pull",
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@databuddy/sdk": "^2.0.0",
@@ -31,6 +36,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
+    "drizzle-kit": "^0.31.6",
     "drizzle-orm": "^0.44.7",
     "jotai": "^2.10.0",
     "lucide-react": "^0.487.0",
