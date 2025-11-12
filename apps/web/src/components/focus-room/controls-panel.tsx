@@ -1,6 +1,7 @@
 'use client';
 import { Pause, Play, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { extractVideoId } from '@/components/focus-room/youtube-player';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,24 +17,26 @@ const YOUTUBE_VALIDATION_PATTERNS = [
 
 export default function ControlsPanel() {
   // Get state and actions from stores
-  const { videoUrl, volume, isMuted } = useFocusStore();
+  const { videoId, volume, isMuted } = useFocusStore();
   const {
     isVideoLoaded,
     videoError,
     isPlaying, // Move this here
-    handleVideoUrlChange,
+    handleVideoIdChange,
     handleLoadVideo,
     handlePlayPause,
     handleVolumeChange,
     handleMuteToggle,
   } = useVideoStore();
 
-  const [urlInput, setUrlInput] = useState(videoUrl);
+  const [urlInput, setUrlInput] = useState(videoId);
 
   const handleUrlSubmit = useCallback(() => {
-    handleVideoUrlChange(urlInput);
+    // Extract video ID from URL if needed, otherwise use as-is (already an ID)
+    const extractedId = extractVideoId(urlInput) || urlInput;
+    handleVideoIdChange(extractedId);
     handleLoadVideo();
-  }, [urlInput, handleVideoUrlChange, handleLoadVideo]);
+  }, [urlInput, handleVideoIdChange, handleLoadVideo]);
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {

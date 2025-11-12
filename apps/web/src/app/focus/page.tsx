@@ -9,11 +9,11 @@ import { useVideoStore } from '@/stores/video-store';
 import { trpc, trpcClient } from '@/utils/trpc';
 import OverlayControls from './overlay-controls';
 
-const DEFAULT_VIDEO_URL = 'https://www.youtube.com/watch?v=jfKfPfyJRdk';
+const DEFAULT_VIDEO_ID = 'jfKfPfyJRdk';
 
 export default function FocusRoom() {
   const { data: session } = authClient.useSession();
-  const { videoUrl: zustandVideoUrl, volume } = useFocusStore();
+  const { videoId: zustandVideoId, volume } = useFocusStore();
   const {
     handlePlayerReady,
     handlePlay,
@@ -21,12 +21,10 @@ export default function FocusRoom() {
     handleError,
     reloadKey,
     savedTimestamp,
-    setOnVideoUrlChangePersist,
+    setOnVideoIdChangePersist,
   } = useVideoStore();
 
-  const [persistedVideoUrl, setPersistedVideoUrl] = useState<string | null>(
-    null
-  );
+  const [persistedVideoId, setPersistedVideoId] = useState<string | null>(null);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
 
   const { data: lastPlayedVideo } = useQuery(
@@ -37,48 +35,47 @@ export default function FocusRoom() {
   );
 
   const { mutate: setLastPlayed } = useMutation({
-    mutationFn: (input: { videoUrl: string }) =>
+    mutationFn: (input: { videoId: string }) =>
       trpcClient.video.setLastPlayed.mutate(input),
   });
 
   useEffect(() => {
     if (session && lastPlayedVideo !== undefined) {
       if (lastPlayedVideo) {
-        // don't remove the type cast, build fails without it
-        setPersistedVideoUrl(lastPlayedVideo as string);
+        setPersistedVideoId(lastPlayedVideo as string);
       } else {
-        setPersistedVideoUrl(null);
+        setPersistedVideoId(null);
       }
       setIsLoadingVideo(false);
     } else if (!session) {
-      setPersistedVideoUrl(null);
+      setPersistedVideoId(null);
       setIsLoadingVideo(false);
     }
   }, [session, lastPlayedVideo]);
 
   const persistCallback = useCallback(
-    (url: string) => {
-      setLastPlayed({ videoUrl: url });
-      setPersistedVideoUrl(url);
+    (id: string) => {
+      setLastPlayed({ videoId: id });
+      setPersistedVideoId(id);
     },
     [setLastPlayed]
   );
 
   useEffect(() => {
     if (session) {
-      setOnVideoUrlChangePersist(persistCallback);
+      setOnVideoIdChangePersist(persistCallback);
     } else {
-      setOnVideoUrlChangePersist(undefined);
+      setOnVideoIdChangePersist(undefined);
     }
 
     return () => {
-      setOnVideoUrlChangePersist(undefined);
+      setOnVideoIdChangePersist(undefined);
     };
-  }, [session, persistCallback, setOnVideoUrlChangePersist]);
+  }, [session, persistCallback, setOnVideoIdChangePersist]);
 
-  const currentVideoUrl = session
-    ? persistedVideoUrl || DEFAULT_VIDEO_URL
-    : zustandVideoUrl || DEFAULT_VIDEO_URL;
+  const currentVideoId = session
+    ? persistedVideoId || DEFAULT_VIDEO_ID
+    : zustandVideoId || DEFAULT_VIDEO_ID;
 
   if (isLoadingVideo) {
     return (
@@ -97,7 +94,7 @@ export default function FocusRoom() {
         onReady={handlePlayerReady}
         reloadKey={reloadKey}
         startTime={savedTimestamp ?? undefined}
-        videoUrl={currentVideoUrl}
+        videoId={currentVideoId}
         volume={volume}
       />
 

@@ -6,11 +6,11 @@ import { cn } from '@/lib/utils';
 import { useVideoStore } from '@/stores/video-store';
 
 const VideoPicker: React.FC = () => {
-  const { handleVideoUrlChange, handleLoadVideo } = useVideoStore();
+  const { handleVideoIdChange, handleLoadVideo } = useVideoStore();
   const isMobile = useIsMobile();
 
-  const handleVideoSelect = (url: string) => {
-    handleVideoUrlChange(url);
+  const handleVideoSelect = (id: string) => {
+    handleVideoIdChange(id);
     handleLoadVideo();
   };
 
@@ -27,7 +27,7 @@ const VideoPicker: React.FC = () => {
         <button
           className="cursor-pointer rounded-lg p-2 text-left hover:bg-muted/50"
           key={entry.id}
-          onClick={() => handleVideoSelect(entry.url)}
+          onClick={() => handleVideoSelect(entry.id)}
           title={entry.title}
           type="button"
         >

@@ -87,11 +87,11 @@ export const appRouter = router({
     getLastPlayed: protectedProcedure.query(async ({ ctx }) => {
       try {
         const userData = await db
-          .select({ lastPlayedVideoUrl: user.lastPlayedVideoUrl })
+          .select({ lastPlayedVideoId: user.lastPlayedVideoId })
           .from(user)
           .where(eq(user.id, ctx.session.user.id))
           .limit(1);
-        return userData[0]?.lastPlayedVideoUrl ?? null;
+        return userData[0]?.lastPlayedVideoId ?? null;
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -103,20 +103,23 @@ export const appRouter = router({
     setLastPlayed: protectedProcedure
       .input(
         z.object({
-          videoUrl: z.string().url(),
+          videoId: z.string(),
         })
       )
-      .mutation(async ({ ctx, input }) => {
+      .mutation(async ({ ctx, input: { videoId } }) => {
         try {
           await db
             .update(user)
             .set({
-              lastPlayedVideoUrl: input.videoUrl,
+              lastPlayedVideoId: videoId,
               updatedAt: new Date(),
             })
             .where(eq(user.id, ctx.session.user.id));
           return { success: true };
         } catch (error) {
+          if (error instanceof TRPCError) {
+            throw error;
+          }
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: `Failed to update last played video: ${error instanceof Error ? error.message : String(error)}`,

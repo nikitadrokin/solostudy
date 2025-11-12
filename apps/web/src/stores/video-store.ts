@@ -32,7 +32,7 @@ interface VideoState {
   isPlaying: boolean;
 
   // Persistence callback (optional, set by components that need persistence)
-  onVideoUrlChangePersist?: (url: string) => void;
+  onVideoIdChangePersist?: (id: string) => void;
 }
 
 interface VideoActions {
@@ -52,8 +52,8 @@ interface VideoActions {
   triggerReload: () => void;
 
   // Persistence
-  setOnVideoUrlChangePersist: (
-    callback: ((url: string) => void) | undefined
+  setOnVideoIdChangePersist: (
+    callback: ((id: string) => void) | undefined
   ) => void;
 
   // Player control actions
@@ -61,7 +61,7 @@ interface VideoActions {
   handlePlay: () => void;
   handlePause: () => void;
   handleError: (error: number) => void;
-  handleVideoUrlChange: (newUrl: string) => void;
+  handleVideoIdChange: (newId: string) => void;
   handleLoadVideo: () => void;
   handlePlayPause: () => void;
   handleVolumeChange: (newVolume: number) => void;
@@ -78,7 +78,7 @@ const initialState: VideoState = {
   savedTimestamp: null,
   reloadKey: 0,
   isPlaying: false,
-  onVideoUrlChangePersist: undefined,
+  onVideoIdChangePersist: undefined,
 };
 
 export const useVideoStore = create<VideoStore>()((set, get) => ({
@@ -178,19 +178,19 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     });
   },
 
-  setOnVideoUrlChangePersist: (callback) =>
-    set({ onVideoUrlChangePersist: callback }),
+  setOnVideoIdChangePersist: (callback) =>
+    set({ onVideoIdChangePersist: callback }),
 
-  handleVideoUrlChange: (newUrl) => {
-    useFocusStore.getState().setVideoUrl(newUrl);
+  handleVideoIdChange: (newId) => {
+    useFocusStore.getState().setVideoId(newId);
     set({
       isVideoLoaded: false,
       videoError: undefined,
     });
     // Call persistence callback if set
-    const { onVideoUrlChangePersist } = get();
-    if (onVideoUrlChangePersist) {
-      onVideoUrlChangePersist(newUrl);
+    const { onVideoIdChangePersist } = get();
+    if (onVideoIdChangePersist) {
+      onVideoIdChangePersist(newId);
     }
     // Trigger reload to sync player with new video
     get().triggerReload();

@@ -1,10 +1,9 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { normalizeYouTubeUrl } from '@/components/focus-room/youtube-player';
 
 interface FocusState {
   // Video settings
-  videoUrl: string;
+  videoId: string;
   volume: number;
   isMuted: boolean;
 
@@ -14,7 +13,7 @@ interface FocusState {
 
 interface FocusActions {
   // Video actions
-  setVideoUrl: (url: string) => void;
+  setVideoId: (id: string) => void;
   setVolume: (volume: number) => void;
   setIsMuted: (muted: boolean) => void;
 
@@ -28,8 +27,8 @@ interface FocusActions {
 type FocusStore = FocusState & FocusActions;
 
 const initialState: FocusState = {
-  // Video settings - using normalized URL format
-  videoUrl: normalizeYouTubeUrl('https://www.youtube.com/watch?v=jfKfPfyJRdk'),
+  // Video settings - using only ID's from the YouTube URL
+  videoId: 'jfKfPfyJRdk',
   volume: 50,
   isMuted: false,
 
@@ -42,8 +41,8 @@ export const useFocusStore = create<FocusStore>()(
     (set) => ({
       ...initialState,
 
-      // Video actions - normalize YouTube URLs to ensure clean embed format
-      setVideoUrl: (url: string) => set({ videoUrl: normalizeYouTubeUrl(url) }),
+      // Video actions - store video ID without link prefix
+      setVideoId: (id: string) => set({ videoId: id }),
       setVolume: (volume: number) => set({ volume }),
       setIsMuted: (muted: boolean) => set({ isMuted: muted }),
 
@@ -58,7 +57,7 @@ export const useFocusStore = create<FocusStore>()(
       storage: createJSONStorage(() => localStorage),
       // Only persist certain parts of the state - exclude transient state like isPlaying
       partialize: (state) => ({
-        videoUrl: state.videoUrl,
+        videoId: state.videoId,
         volume: state.volume,
         isMuted: state.isMuted,
         isZenMode: state.isZenMode,

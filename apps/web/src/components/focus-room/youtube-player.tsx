@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 interface YouTubePlayerProps {
-  videoUrl: string;
+  videoId: string;
   onReady?: (event: { target: YTPlayer }) => void;
   onPlay?: () => void;
   onPause?: () => void;
@@ -63,11 +63,21 @@ interface YTOnErrorEvent {
   data: number;
 }
 
+// Pattern to check if a string is already a video ID
+const VIDEO_ID_PATTERN = /^([a-zA-Z0-9_-]{11})$/;
+
 // YouTube URL patterns for video ID extraction
 const YOUTUBE_PATTERNS = [
   /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-  /^([a-zA-Z0-9_-]{11})$/, // Direct video ID
+  VIDEO_ID_PATTERN, // Direct video ID
 ];
+
+/**
+ * Convert YouTube video ID to a watch URL
+ */
+function videoIdToEmbed(videoId: string): string {
+  return `https://www.youtube.com/embed/${videoId}`;
+}
 
 /**
  * Extract YouTube video ID from various URL formats
@@ -84,16 +94,19 @@ function extractVideoId(url: string): string | null {
 }
 
 /**
- * Normalize any YouTube URL to a clean embed format with all UI elements hidden
- * This ensures consistent behavior regardless of the input URL format
+ * Normalize any YouTube URL or video ID to a clean embed format with all UI elements hidden
+ * This ensures consistent behavior regardless of the input format
  */
-function normalizeYouTubeUrl(url: string, startTime?: number): string {
-  const videoId = extractVideoId(url);
+function normalizeYouTubeUrl(urlOrId: string, startTime?: number): string {
+  // Check if input is already a video ID (11 characters, alphanumeric with dashes/underscores)
+  const isVideoId = VIDEO_ID_PATTERN.test(urlOrId);
+  const videoId = isVideoId ? urlOrId : extractVideoId(urlOrId);
   if (!videoId) {
-    return url; // Return original if we can't extract video ID
+    // If we can't extract a video ID, return original (fallback for edge cases)
+    return urlOrId;
   }
 
-  const baseUrl = 'https://www.youtube.com/embed/';
+  const videoEmbedUrl = videoIdToEmbed(videoId);
   const params = new URLSearchParams({
     autoplay: '1',
     controls: '0',
@@ -116,7 +129,7 @@ function normalizeYouTubeUrl(url: string, startTime?: number): string {
       startTime > 0 && { start: Math.floor(startTime).toString() }),
   });
 
-  return `${baseUrl}${videoId}?${params.toString()}`;
+  return `${videoEmbedUrl}?${params.toString()}`;
 }
 
 /**
@@ -148,7 +161,7 @@ function loadYouTubeAPI(): Promise<void> {
 }
 
 export default function YouTubePlayer({
-  videoUrl,
+  videoId,
   onReady,
   onPlay,
   onPause,
@@ -162,8 +175,6 @@ export default function YouTubePlayer({
   const [player, setPlayer] = useState<YTPlayer | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [apiLoaded, setApiLoaded] = useState(false);
-
-  const videoId = extractVideoId(videoUrl);
 
   // Load YouTube API on mount
   useEffect(() => {
@@ -265,7 +276,7 @@ export default function YouTubePlayer({
     return (
       <div className={`flex items-center justify-center bg-muted ${className}`}>
         <p className="text-muted-foreground">
-          {videoUrl
+          {videoId
             ? 'Invalid YouTube URL'
             : 'Enter a YouTube URL to get started'}
         </p>
@@ -273,7 +284,7 @@ export default function YouTubePlayer({
     );
   }
 
-  const embedUrl = normalizeYouTubeUrl(videoUrl, startTime);
+  const embedUrl = normalizeYouTubeUrl(videoId, startTime);
 
   return (
     <iframe
@@ -295,4 +306,4 @@ export default function YouTubePlayer({
 }
 
 // Export video ID extraction and URL normalization utilities
-export { extractVideoId, normalizeYouTubeUrl };
+export { extractVideoId, normalizeYouTubeUrl, videoIdToEmbed };
