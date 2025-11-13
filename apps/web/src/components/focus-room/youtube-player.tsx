@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface YouTubePlayerProps {
   videoId: string;
@@ -274,7 +275,12 @@ export default function YouTubePlayer({
 
   if (!videoId) {
     return (
-      <div className={`flex items-center justify-center bg-muted ${className}`}>
+      <div
+        className={cn(
+          'flex select-none items-center justify-center bg-muted',
+          className
+        )}
+      >
         <p className="text-muted-foreground">
           {videoId
             ? 'Invalid YouTube URL'

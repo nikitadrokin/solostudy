@@ -86,7 +86,7 @@ export default function FocusRoom() {
   }
 
   return (
-    <main className="relative h-full overflow-hidden">
+    <main className="relative h-full select-none overflow-hidden">
       <YouTubePlayer
         onError={handleError}
         onPause={handlePause}
