@@ -22,6 +22,7 @@ interface DynamicPopoverProps
   children?: React.ReactNode;
   tooltip?: React.ReactNode;
   trigger?: React.ReactNode;
+  showScrollFadeOnPopover?: boolean;
 }
 
 const DynamicPopover: React.FC<DynamicPopoverProps> = ({
@@ -31,6 +32,7 @@ const DynamicPopover: React.FC<DynamicPopoverProps> = ({
   tooltip,
   trigger,
   className,
+  showScrollFadeOnPopover = false,
 }) => {
   const isMobile = useIsMobile();
 
@@ -77,6 +79,7 @@ const DynamicPopover: React.FC<DynamicPopoverProps> = ({
           'flex flex-col overflow-hidden rounded-2xl bg-background/80 backdrop-blur-sm',
           className
         )}
+        showScrollFade={showScrollFadeOnPopover}
         side={side}
       >
         {children}
