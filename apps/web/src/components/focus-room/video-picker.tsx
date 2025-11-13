@@ -17,7 +17,7 @@ const VideoPicker: React.FC = () => {
   return (
     <div
       className={cn(
-        'grid gap-4 overflow-y-auto pt-[var(--gradient-height-top)] pb-[var(--gradient-height-bottom)]',
+        'grid gap-4 overflow-y-auto',
         isMobile
           ? 'h-full min-w-full flex-1 grid-cols-[repeat(auto-fit,minmax(160px,1fr))] px-2'
           : 'h-full grid-cols-3 py-2 pr-4 pl-2'

@@ -46,8 +46,11 @@ function DrawerOverlay({
 function DrawerContent({
   className,
   children,
+  contentClassName,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Content> & {
+  contentClassName?: string;
+}) {
   const isMobile = useIsMobile();
 
   return (
@@ -71,10 +74,12 @@ function DrawerContent({
         <div
           className={cn(
             'relative flex flex-col',
-            isMobile ? '' : 'pr-4 pl-2',
             'before:absolute before:inset-x-0 before:top-0 before:z-10 before:h-[var(--gradient-height-top)] before:rounded-t-3xl before:bg-gradient-to-b before:from-[var(--gradient-color)] before:to-transparent before:content-[""]',
             'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-[var(--gradient-height-bottom)] after:bg-gradient-to-t after:from-[var(--gradient-color)] after:to-transparent after:content-[""]',
-            isMobile ? 'h-full min-h-0' : 'max-h-[500px]'
+            isMobile
+              ? 'h-full min-h-0 px-4 [&>*:first-child]:pt-[var(--gradient-height-top)] [&>*:last-child]:pb-[var(--gradient-height-bottom)]'
+              : 'max-h-[500px] pr-4 pl-2',
+            contentClassName
           )}
           style={
             {

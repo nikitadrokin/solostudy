@@ -6,6 +6,7 @@ import { FocusTimer } from '@/components/focus-timer';
 import TodoList from '@/components/todo-list';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
+import DynamicPopover from '@/components/ui/dynamic-popover';
 import {
   Popover,
   PopoverContent,
@@ -60,7 +61,10 @@ const OverlayControls: React.FC = () => {
                   Select background
                 </TooltipContent>
               </Tooltip>
-              <DrawerContent className="h-[calc(100vh-2.5rem)] overflow-hidden bg-background/95 backdrop-blur-sm">
+              <DrawerContent
+                className="h-[calc(100vh-2.5rem)] overflow-hidden bg-background/95 backdrop-blur-sm"
+                contentClassName="px-0"
+              >
                 <VideoPicker />
               </DrawerContent>
             </Drawer>
@@ -106,6 +110,24 @@ const OverlayControls: React.FC = () => {
               </PopoverContent>
             </Popover>
           )}
+          <DynamicPopover
+            align="end"
+            className="w-80"
+            side="bottom"
+            tooltip="Focus Room Settings"
+            trigger={
+              <Button
+                className="bg-background/80 backdrop-blur-sm"
+                size="sm"
+                title="Focus Room Settings"
+                variant="outline"
+              >
+                <Settings className="size-4" />
+              </Button>
+            }
+          >
+            <ControlsPanel />
+          </DynamicPopover>
 
           <Popover>
             <Tooltip>
