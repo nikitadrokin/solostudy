@@ -1,8 +1,9 @@
 'use client';
-import { Clapperboard, Settings } from 'lucide-react';
+import { Clapperboard, ListCheck, Settings } from 'lucide-react';
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
 import { FocusTimer } from '@/components/focus-timer';
+import TaskList from '@/components/task-list';
 import TodoList from '@/components/todo-list';
 import { Button } from '@/components/ui/button';
 import DynamicPopover from '@/components/ui/dynamic-popover';
@@ -25,6 +26,27 @@ const OverlayControls: React.FC = () => {
           )}
 
           <TodoList />
+          <DynamicPopover
+            align="start"
+            className="md:w-80"
+            side="bottom"
+            tooltip="Task List"
+            trigger={
+              <Button
+                className="bg-background/80 backdrop-blur-sm"
+                size="sm"
+                variant="outline"
+              >
+                {/* <Title>Task List</Title>
+                <Description>
+                  {completedCount} of {totalCount} completed
+                </Description> */}
+                <ListCheck className="size-4" />
+              </Button>
+            }
+          >
+            <TaskList />
+          </DynamicPopover>
           <FocusTimer />
         </div>
 
