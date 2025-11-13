@@ -28,12 +28,12 @@ const OverlayControls: React.FC = () => {
           <TodoList />
           <DynamicPopover
             align="start"
-            className="md:w-80"
+            className="md:w-96 md:pb-0"
             side="bottom"
-            tooltip="Task List"
+            tooltip="View Tasks (new)"
             trigger={
               <Button
-                className="bg-background/80 backdrop-blur-sm"
+                className="!pr-[9px] !pl-[11px] bg-background/80 backdrop-blur-sm"
                 size="sm"
                 variant="outline"
               >
@@ -45,7 +45,7 @@ const OverlayControls: React.FC = () => {
               </Button>
             }
           >
-            <TaskList />
+            <TaskList className="" />
           </DynamicPopover>
           <FocusTimer />
         </div>

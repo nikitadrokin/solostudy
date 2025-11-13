@@ -21,7 +21,11 @@ type Task = {
   updatedAt: string;
 };
 
-const TaskList: React.FC = () => {
+type TaskListProps = {
+  className?: string;
+};
+
+const TaskList: React.FC<TaskListProps> = ({ className }) => {
   const [newTodo, setNewTodo] = useState('');
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
@@ -111,7 +115,7 @@ const TaskList: React.FC = () => {
         {completedCount} of {totalCount} completed
       </Description>
 
-      <div className="mt-4 space-y-4">
+      <div className={cn('mt-4', className)}>
         <div className="flex gap-2">
           <Input
             className="flex-1"
@@ -130,7 +134,7 @@ const TaskList: React.FC = () => {
           </Button>
         </div>
 
-        <div className="max-h-64 space-y-2 overflow-y-auto">
+        <div className="-mr-4 max-h-64 space-y-2 overflow-y-auto pr-4 pb-4">
           {tasks.length === 0 ? (
             <p className="py-4 text-center text-muted-foreground text-sm">
               No tasks yet. Add one above!
