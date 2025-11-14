@@ -1,20 +1,24 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
-import { Clapperboard, ListCheck, Settings } from 'lucide-react';
+import { Clapperboard, ListCheck, LogIn, Settings } from 'lucide-react';
+import Link from 'next/link';
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
 import { FocusTimer } from '@/components/focus-timer';
 import TaskList from '@/components/task-list';
 import TodoList from '@/components/todo-list';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import DynamicPopover from '@/components/ui/dynamic-popover';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useSession } from '@/lib/auth-client';
+import { cn } from '@/lib/utils';
 import { trpc } from '@/utils/trpc';
 import SidebarTrigger from './sidebar-trigger';
 
 const OverlayControls: React.FC = () => {
   const isMobile = useIsMobile();
+  const { data: session } = useSession();
 
   const { data: uncompletedTasks } = useQuery(
     trpc.todos.getUncompletedCount.queryOptions()
@@ -35,7 +39,7 @@ const OverlayControls: React.FC = () => {
           <TodoList />
           <DynamicPopover
             align="start"
-            className="md:w-96 md:pb-0"
+            className={cn(session ? 'md:w-96 md:pb-0' : 'md:min-w-fit md:p-6')}
             side="bottom"
             tooltip="View Tasks (new)"
             trigger={
@@ -54,7 +58,7 @@ const OverlayControls: React.FC = () => {
               </Button>
             }
           >
-            <TaskList className="" />
+            {session ? <TaskList className="" /> : <SignedOutTaskContent />}
           </DynamicPopover>
           <FocusTimer />
         </div>
@@ -96,12 +100,26 @@ const OverlayControls: React.FC = () => {
               </Button>
             }
           >
-            <ControlsPanel />
+            {session ? <ControlsPanel /> : <SignedOutTaskContent />}
           </DynamicPopover>
         </div>
       </div>
     </div>
   );
 };
+
+const SignedOutTaskContent: React.FC = () => (
+  <div className="flex flex-col items-start justify-center gap-4">
+    <ListCheck className="size-8 text-muted-foreground" />
+    <p className="text-muted-foreground text-sm">
+      Sign in to view and manage your tasks!
+    </p>
+
+    <Link className={buttonVariants()} href="/login">
+      <LogIn className="size-4" />
+      Sign in
+    </Link>
+  </div>
+);
 
 export default OverlayControls;
