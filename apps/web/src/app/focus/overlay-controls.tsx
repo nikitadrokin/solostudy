@@ -1,17 +1,24 @@
 'use client';
+import { useQuery } from '@tanstack/react-query';
 import { Clapperboard, ListCheck, Settings } from 'lucide-react';
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
 import { FocusTimer } from '@/components/focus-timer';
 import TaskList from '@/components/task-list';
 import TodoList from '@/components/todo-list';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DynamicPopover from '@/components/ui/dynamic-popover';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { trpc } from '@/utils/trpc';
 import SidebarTrigger from './sidebar-trigger';
 
 const OverlayControls: React.FC = () => {
   const isMobile = useIsMobile();
+
+  const { data: uncompletedTasks } = useQuery(
+    trpc.todos.getUncompletedCount.queryOptions()
+  );
 
   return (
     <div className="absolute top-2 right-2 left-2 z-10">
@@ -37,11 +44,13 @@ const OverlayControls: React.FC = () => {
                 size="sm"
                 variant="outline"
               >
-                {/* <Title>Task List</Title>
-                <Description>
-                  {completedCount} of {totalCount} completed
-                </Description> */}
                 <ListCheck className="size-4" />
+                {/* type coersion: 0 uncompleted tasks won't show the badge either */}
+                {!!uncompletedTasks && (
+                  <Badge className="-right-1 -top-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+                    {uncompletedTasks}
+                  </Badge>
+                )}
               </Button>
             }
           >

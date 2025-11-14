@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { TRPCError } from '@trpc/server';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
 import { user } from '../db/schema/auth';
@@ -82,6 +82,20 @@ export const appRouter = router({
           );
         return { success: true };
       }),
+    getUncompletedCount: publicProcedure.query(async ({ ctx }) => {
+      if (!ctx.session) {
+        return 0;
+      }
+
+      const result = await db
+        .select({ count: count() })
+        .from(todo)
+        .where(
+          and(eq(todo.userId, ctx.session.user.id), eq(todo.completed, false))
+        );
+
+      return result[0]?.count ?? 0;
+    }),
   },
   video: {
     getLastPlayed: protectedProcedure.query(async ({ ctx }) => {
