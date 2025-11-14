@@ -98,7 +98,7 @@ const OverlayControls: React.FC = () => {
               </Button>
             }
           >
-            {session ? <ControlsPanel /> : <SignedOutTaskContent />}
+            <ControlsPanel />
           </DynamicPopover>
         </div>
       </div>
