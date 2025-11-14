@@ -39,7 +39,7 @@ const OverlayControls: React.FC = () => {
             align="start"
             className={cn(session ? 'md:w-96 md:pb-0' : 'md:min-w-fit md:p-6')}
             side="bottom"
-            tooltip="View Tasks (new)"
+            tooltip="View Tasks"
             trigger={
               <Button
                 className="!pr-[9px] !pl-[11px] bg-background/80 backdrop-blur-sm"
