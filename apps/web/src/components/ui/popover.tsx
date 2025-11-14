@@ -1,6 +1,7 @@
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
+import ScrollArea from './scroll-area';
 
 function Popover({
   ...props
@@ -36,25 +37,7 @@ function PopoverContent({
         sideOffset={sideOffset}
         {...props}
       >
-        {showScrollFade ? (
-          <div
-            className={cn(
-              'relative flex max-h-[500px] flex-col',
-              'before:absolute before:inset-x-0 before:top-0 before:z-10 before:h-[var(--gradient-height)] before:bg-gradient-to-b before:from-[var(--gradient-color)] before:to-transparent before:content-[""]',
-              'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-[var(--gradient-height)] after:bg-gradient-to-t after:from-[var(--gradient-color)] after:to-transparent after:content-[""]'
-            )}
-            style={
-              {
-                '--gradient-height': '1rem',
-                '--gradient-color': 'var(--background)',
-              } as React.CSSProperties
-            }
-          >
-            {children}
-          </div>
-        ) : (
-          children
-        )}
+        {showScrollFade ? <ScrollArea>{children}</ScrollArea> : children}
       </PopoverPrimitive.Content>
     </PopoverPrimitive.Portal>
   );
