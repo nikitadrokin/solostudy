@@ -6,7 +6,6 @@ import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
 import { FocusTimer } from '@/components/focus-timer';
 import TaskList from '@/components/task-list';
-import TodoList from '@/components/todo-list';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import DynamicPopover from '@/components/ui/dynamic-popover';
@@ -36,7 +35,6 @@ const OverlayControls: React.FC = () => {
             />
           )}
 
-          <TodoList />
           <DynamicPopover
             align="start"
             className={cn(session ? 'md:w-96 md:pb-0' : 'md:min-w-fit md:p-6')}
