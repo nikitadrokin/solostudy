@@ -27,12 +27,13 @@ export default function FocusRoom() {
   const [persistedVideoId, setPersistedVideoId] = useState<string | null>(null);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
 
-  const { data: lastPlayedVideo } = useQuery(
-    trpc.video.getLastPlayed.queryOptions(undefined, {
-      enabled: !!session,
-      retry: false,
-    })
-  );
+  const { data: lastPlayedVideo, isLoading: isLoadingLastPlayedVideo } =
+    useQuery(
+      trpc.video.getLastPlayed.queryOptions(undefined, {
+        enabled: !!session,
+        retry: false,
+      })
+    );
 
   const { mutate: setLastPlayed } = useMutation({
     mutationFn: (input: { videoId: string }) =>
@@ -77,7 +78,7 @@ export default function FocusRoom() {
     ? persistedVideoId || DEFAULT_VIDEO_ID
     : zustandVideoId || DEFAULT_VIDEO_ID;
 
-  if (isLoadingVideo) {
+  if (isLoadingVideo || isLoadingLastPlayedVideo) {
     return (
       <main className="relative flex h-full items-center justify-center overflow-hidden">
         <div className="text-muted-foreground">Loading...</div>
