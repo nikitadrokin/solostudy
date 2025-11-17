@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import Script from 'next/script';
 import '../index.css';
 import { Databuddy } from '@databuddy/sdk/react';
 import { cookies } from 'next/headers';
@@ -46,6 +47,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {process.env.NODE_ENV === 'development' && (
+          <Script
+            crossOrigin="anonymous"
+            data-enabled="true"
+            src="//unpkg.com/react-grab/dist/index.global.js"
+            strategy="beforeInteractive"
+          />
+        )}
+      </head>
       <meta content="yes" name="apple-mobile-web-app-capable" />
       <meta content="SoloStudy" name="apple-mobile-web-app-title" />
       <meta content="yes" name="mobile-web-app-capable" />
