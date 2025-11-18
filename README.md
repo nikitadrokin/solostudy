@@ -38,15 +38,12 @@ DATABASE_URL="postgresql://username:password@localhost:5432/solostudy"
 
 # Better Auth
 BETTER_AUTH_SECRET="your-secret-key-here"
-BETTER_AUTH_URL="http://localhost:3001"
-
-# CORS
-CORS_ORIGIN="http://localhost:3000"
+BETTER_AUTH_URL="http://localhost:3000"
 
 # Passkey Configuration (for production, update these)
 PASSKEY_RP_ID="localhost"
 PASSKEY_RP_NAME="SoloStudy"
-PASSKEY_ORIGIN="http://localhost:3001"
+PASSKEY_ORIGIN="http://localhost:3000"
 ```
 
 3. Apply the schema to your database:
@@ -61,8 +58,8 @@ Then, run the development server:
 pnpm dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the web application.
+The API is running at [http://localhost:3000/api](http://localhost:3000/api).
 
 ## Project Structure
 

@@ -22,7 +22,6 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       passkey: passkeyTable,
     },
   }),
-  trustedOrigins: [process.env.CORS_ORIGIN || ''],
   emailAndPassword: {
     enabled: true,
   },
