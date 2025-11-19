@@ -1,5 +1,6 @@
 'use client';
 
+import type { UrlObject } from 'node:url';
 import {
   CheckCircle2,
   Focus,
@@ -131,7 +132,7 @@ function FeatureCard({
   icon: Icon,
   title,
   description,
-  href,
+  href: _href,
   cta,
   action,
 }: {
@@ -142,6 +143,9 @@ function FeatureCard({
   cta?: string;
   action?: React.ReactNode;
 }) {
+  // required typecasting
+  const href = _href as unknown as UrlObject;
+
   return (
     <Card className="transition-all hover:shadow-md">
       <CardHeader>
