@@ -24,10 +24,10 @@ const OverlayControls: React.FC = () => {
   );
 
   return (
-    <div className="absolute top-2 right-2 left-2 z-10">
+    <div className="absolute top-4 right-4 left-4 z-10">
       <div className="flex items-start justify-between">
         {/* Leading */}
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           {isMobile && (
             <SidebarTrigger
               className="bg-background/80 backdrop-blur-sm"
@@ -47,9 +47,8 @@ const OverlayControls: React.FC = () => {
                 variant="outline"
               >
                 <ListCheck className="size-4" />
-                {/* type coersion: 0 uncompleted tasks won't show the badge either */}
                 {!!uncompletedTasks && (
-                  <Badge className="-right-1 -top-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+                  <Badge className="-right-1 -top-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs shadow-sm">
                     {uncompletedTasks}
                   </Badge>
                 )}
@@ -58,11 +57,12 @@ const OverlayControls: React.FC = () => {
           >
             {session ? <TaskList className="" /> : <SignedOutTaskContent />}
           </DynamicPopover>
+
           <FocusTimer />
         </div>
 
         {/* Trailing */}
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <DynamicPopover
             align="end"
             className="p-0 md:h-[500px] md:w-[600px]"
