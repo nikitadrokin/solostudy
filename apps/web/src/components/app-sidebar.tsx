@@ -1,5 +1,6 @@
 'use client';
 
+import type { UrlObject } from 'node:url';
 // biome-ignore lint/correctness/noUnusedImports: required imports
 import { Focus, Home, LayoutDashboard, Settings } from 'lucide-react';
 import Link from 'next/link';
@@ -50,7 +51,7 @@ export default function AppSidebar() {
                   isActive={pathname === href}
                   tooltip={label}
                 >
-                  <Link href={href}>
+                  <Link href={href as unknown as UrlObject}>
                     <Icon />
                     <span>{label}</span>
                   </Link>
