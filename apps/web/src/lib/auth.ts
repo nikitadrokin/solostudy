@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { apiKey } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 // import { github } from 'better-auth/social-providers';
 import { db } from '../db';
@@ -40,6 +41,7 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     //   clientId: process.env.GITHUB_CLIENT_ID,
     //   clientSecret: process.env.GITHUB_CLIENT_SECRET,
     // }),
+    apiKey(),
     passkey({
       rpID: process.env.PASSKEY_RP_ID || 'localhost',
       rpName: process.env.PASSKEY_RP_NAME || 'SoloStudy',
