@@ -134,7 +134,7 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
           </Button>
         </div>
 
-        <div className="-mr-4 max-h-64 space-y-2 overflow-y-auto py-4 pr-4">
+        <div className="-mr-4 space-y-2 overflow-y-auto py-4 pr-4 md:max-h-64">
           {tasks.length === 0 ? (
             <p className="py-4 text-center text-muted-foreground text-sm">
               No tasks yet. Add one above!
