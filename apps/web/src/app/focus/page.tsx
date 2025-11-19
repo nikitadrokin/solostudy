@@ -103,33 +103,18 @@ export default function FocusRoom() {
       <div
         className="absolute inset-0 z-[5]"
         onClick={() => {
-          const { player, isPlaying, setIsPlaying } = useVideoStore.getState();
-          if (player && !isPlaying) {
-            try {
-              player.playVideo();
-              setIsPlaying(true);
-            } catch {
-              // Ignore errors
-            }
-          }
+          const { handlePlayPause } = useVideoStore.getState();
+          handlePlayPause();
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
-            const { player, isPlaying, setIsPlaying } =
-              useVideoStore.getState();
-            if (player && !isPlaying) {
-              try {
-                player.playVideo();
-                setIsPlaying(true);
-              } catch {
-                // Ignore errors
-              }
-            }
+            e.preventDefault();
+            const { handlePlayPause } = useVideoStore.getState();
+            handlePlayPause();
           }
         }}
         role="button"
         tabIndex={0}
-        title="Play video"
       />
 
       {/* Overlay Controls */}
