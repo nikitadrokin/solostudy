@@ -1,0 +1,293 @@
+---
+alwaysApply: false
+---
+
+# SoloStudy - Future Features Brainstorm
+
+## 1. Smart Agenda (LMS Integrations) - Premium Feature
+
+### Canvas/Blackboard Integration
+
+- Users log in with their school credentials
+- App fetches assignments, quizzes, and exams via LMS API
+- Auto-prioritization: Tasks automatically sorted by due date and weight (exams > quizzes > assignments)
+- "Study Mode" button: Next to imported assignments, a single button starts a focus session tagged for that subject
+- Sync schedule: Automatic updates when new assignments are added or due dates change
+
+### Benefits
+
+- Eliminates manual task entry
+- Context-aware study sessions
+- Never miss a deadline
+
+---
+
+## 2. Deep Focus Analytics (Tracking & Aggregation) - Premium Feature
+
+### Chronotype Analysis
+
+- Track when users are most productive
+- Insights like: "You complete 30% more tasks between 8 PM and 11 PM"
+- Personalized study schedule recommendations
+
+### Distraction Pattern Tracking
+
+- Track pause reasons (Phone, Snack, Noise, etc.)
+- Generate reports: "Your #1 distraction is your phone"
+- Suggest interventions based on patterns
+
+### Subject Breakdown
+
+- Pie chart showing time distribution across subjects
+- Track: 40% Math, 20% History, 40% Procrastinating
+- Identify which subjects need more attention
+
+### Focus Heatmap
+
+- GitHub-style contribution graph for study minutes
+- Darker green = deeper focus
+- Visual representation of study consistency over time
+
+### Session Quality Metrics
+
+- Focus quality score based on interruptions
+- Recovery time after distractions
+- Completion rate tracking
+
+---
+
+## 3. Study Together (Social Accountability) - Premium Feature
+
+### Virtual Library
+
+- Live view showing "3 other people are studying right now"
+- Privacy-first: Don't see video, but see active status, subject, and progress bar
+- Optional: Join themed rooms (e.g., "Late Night Study Hall")
+
+### Focus Streaks
+
+- Public or friends-only leaderboards
+- Based on "Days in a Row" or "Total Focus Minutes"
+- Weekly/monthly challenges
+
+### Accountability Features
+
+- Friend connections and study groups
+- Gentle nudges: "Your friend paused their timer - send encouragement?"
+- Group goals and shared progress tracking
+
+---
+
+## 4. Gamification (Engagement)
+
+### Focus RPG System
+
+- 1 minute of focus = 1 XP
+- Leveling up unlocks:
+  - Exclusive ambient sounds (e.g., "Space Station", "Medieval Library")
+  - Special YouTube background presets
+  - Custom themes and visual effects
+
+### Loot Drops & Rewards
+
+- Completing 2-hour session drops a "Coffee Break" item (15-minute timer that doesn't break streak)
+- Rare drops for milestone achievements
+- Collectible badges for different study patterns
+
+### Achievements System
+
+- "Night Owl" - Study past midnight
+- "Early Bird" - Study before 6 AM
+- "Marathon Runner" - 4+ hour session
+- "Consistency King" - 30-day streak
+
+---
+
+## 5. AI Study Buddy Tools - Premium Feature
+
+### Flashcard Generator
+
+- Paste paragraph of notes
+- AI generates 5 key flashcards automatically
+- Export to Anki or Quizlet format
+
+### Socratic Mode
+
+- AI never gives direct answers
+- Asks guiding questions to help users solve problems themselves
+- Encourages critical thinking
+
+### Summary Writer
+
+- At end of session, user speaks voice note summarizing what they learned
+- AI cleans it up into bulleted list for session log
+- Creates searchable study notes automatically
+
+### Study Technique Suggestions
+
+- Based on subject and session patterns
+- Recommends techniques: Pomodoro, Feynman Method, Spaced Repetition
+- Personalized learning style analysis
+
+---
+
+## 6. Advanced Focus Room Features
+
+### Custom Environment Presets
+
+- Save unlimited room configurations (Free: 3, Pro: Unlimited)
+- Mix of YouTube video + ambient sounds + volume levels
+- Quick-switch between "Deep Focus", "Light Reading", "Coding Mode"
+
+### Playlist System
+
+- Create study playlists of YouTube videos
+- Auto-rotate through playlist during long sessions
+- Smart transitions between videos
+
+### Multi-Monitor Support
+
+- Use focus room on secondary monitor
+- Keep main monitor for actual work
+- Sync controls across displays
+
+---
+
+## 7. Productivity Integrations - Premium Feature
+
+### Calendar Sync
+
+- Google Calendar / Outlook integration
+- Auto-create focus sessions from calendar events
+- Block time automatically for upcoming assignments
+
+### Notion / Obsidian Integration
+
+- Link study sessions to notes
+- Auto-tag notes with session data
+- Export session summaries to knowledge base
+
+### Slack / Discord Webhooks
+
+- Share study streaks with friends
+- Get accountability reminders
+- Celebrate milestones automatically
+
+---
+
+## 8. Advanced Timer Features
+
+### Pomodoro Integration
+
+- Built-in Pomodoro timer with customizable intervals
+- Auto-break reminders
+- Track Pomodoro completion rate
+
+### Smart Breaks
+
+- AI suggests break timing based on focus quality
+- Break activity suggestions
+- Prevents burnout with intelligent scheduling
+
+### Session Templates
+
+- Pre-configured session types: "Deep Work", "Review", "Practice Problems"
+- Each template has different timer settings, ambient sounds, and goals
+
+---
+
+## 9. Study Material Management
+
+### Note-Taking Integration
+
+- Built-in markdown editor during sessions
+- Link notes to specific study sessions
+- Search across all session notes
+
+### Resource Library
+
+- Save helpful YouTube videos, articles, PDFs
+- Tag resources by subject
+- Quick access during focus sessions
+
+### Study Plan Builder
+
+- Create multi-day study plans
+- Break down large goals into sessions
+- Track progress through plan
+
+---
+
+## 10. Mobile Companion App
+
+### Quick Start Sessions
+
+- Start focus session from phone
+- Sync with desktop app
+- Push notifications for break reminders
+
+### On-the-Go Tracking
+
+- Log study time when away from computer
+- Voice notes for quick session summaries
+- View stats and streaks
+
+---
+
+## Premium Feature Summary
+
+### Free Tier
+
+- Basic focus room with YouTube + ambient sounds
+- Simple timer
+- Basic todo list
+- 7-day history
+- Limited analytics
+
+### Pro Tier ($X/month)
+
+- **Unlimited History**: All-time heatmaps and trends
+- **Smart Analytics**: Chronotype analysis, distraction reports, focus quality metrics
+- **LMS Integration**: Canvas/Blackboard sync
+- **Cloud Sync**: Unlimited environment presets
+- **AI Study Buddy**: Flashcard generator, Socratic mode, summary writer
+- **Social Features**: Study Together, accountability groups
+- **Integrations**: Calendar, Notion, Slack/Discord
+- **Advanced Timers**: Pomodoro, smart breaks, templates
+- **Export**: CSV/JSON data exports, API access
+
+### Teams/Education Tier
+
+- All Pro features
+- Shared dashboards and analytics
+- Seat management
+- SSO support (add-on)
+- Institutional pricing
+
+---
+
+## Implementation Priority Suggestions
+
+### Phase 1 (Quick Wins)
+
+1. Focus Heatmap (analytics foundation)
+2. Gamification basics (XP system)
+3. Session Templates
+
+### Phase 2 (High Value)
+
+1. Canvas Integration (major differentiator)
+2. Deep Analytics Dashboard
+3. AI Study Buddy (flashcard generator first)
+
+### Phase 3 (Engagement)
+
+1. Study Together (social features)
+2. Mobile Companion App
+3. Advanced Integrations
+
+### Phase 4 (Scale)
+
+1. Teams/Education features
+2. Marketplace for templates
+3. Advanced AI features
