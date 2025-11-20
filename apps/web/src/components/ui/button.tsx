@@ -1,7 +1,8 @@
+import { Slottable } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { Loader2 } from 'lucide-react';
 import { Slot as SlotPrimitive } from 'radix-ui';
 import type * as React from 'react';
-
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
@@ -40,19 +41,53 @@ function Button({
   variant,
   size,
   asChild = false,
+  fullWidth = false,
+  isLoading = false,
+  disabled = false,
+  ref,
+  icon,
+  children,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    fullWidth?: boolean;
+    isLoading?: boolean;
+    disabled?: boolean;
+    ref?: React.RefObject<HTMLButtonElement>;
+    icon?: React.ReactNode;
   }) {
   const Comp = asChild ? SlotPrimitive.Slot : 'button';
 
   return (
     <Comp
-      className={cn(buttonVariants({ variant, size, className }))}
-      data-slot="button"
+      className={cn(
+        fullWidth && 'w-full',
+        buttonVariants({ variant, size, className })
+      )}
+      disabled={isLoading || disabled}
+      ref={ref}
       {...props}
-    />
+    >
+      {isLoading ? (
+        <Loader2
+          className="h-5 w-5 animate-spin"
+          stroke="currentColor"
+          strokeWidth={1.5}
+        />
+      ) : icon ? (
+        icon
+      ) : // to prevent button from collapsing
+      null}
+
+      <Slottable>{children}</Slottable>
+
+      {/* display a dropdown if button is set to have one, otherwise add spacing so button text doesn't move */}
+
+      {(fullWidth && isLoading) || (fullWidth && icon) ? (
+        <div className="w-5" />
+      ) : null}
+    </Comp>
   );
 }
 
