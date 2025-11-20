@@ -1,29 +1,20 @@
 'use client';
 
-import { Laptop, LogOut, Moon, Shield, Sun, User } from 'lucide-react';
+import { Laptop, LogOut, Shield, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useTheme } from 'next-themes';
 import { useEffect } from 'react';
 import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { authClient } from '@/lib/auth-client';
 import ApiKeys from './api-keys';
+import Appearance from './appearance';
 import Passkeys from './passkeys';
+import Profile from './profile';
 
 export default function SettingsPage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     if (!(session || isPending)) {
@@ -71,94 +62,14 @@ export default function SettingsPage() {
         </nav>
 
         <div className="space-y-6">
-          {/* Profile Section */}
-          <section className="scroll-mt-16 space-y-4" id="profile">
-            <div className="space-y-1">
-              <h2 className="font-semibold text-lg">Profile</h2>
-              <p className="text-muted-foreground text-sm">
-                Manage your public profile information.
-              </p>
-            </div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">
-                  Personal Information
-                </CardTitle>
-                <CardDescription>
-                  Update your name and email address.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input defaultValue={session.user.name} disabled id="name" />
-                  <p className="text-[0.8rem] text-muted-foreground">
-                    This is your display name.
-                  </p>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    defaultValue={session.user.email}
-                    disabled
-                    id="email"
-                  />
-                  <p className="text-[0.8rem] text-muted-foreground">
-                    Your email address is managed by your authentication
-                    provider.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
+          <Profile
+            userEmail={session?.user.email}
+            userName={session?.user.name}
+          />
 
           <Separator />
 
-          {/* Appearance Section */}
-          <section className="scroll-mt-16 space-y-4" id="appearance">
-            <div className="space-y-1">
-              <h2 className="font-semibold text-lg">Appearance</h2>
-              <p className="text-muted-foreground text-sm">
-                Customize the look and feel of the application.
-              </p>
-            </div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Theme</CardTitle>
-                <CardDescription>
-                  Select your preferred theme for the application.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-4">
-                  <Button
-                    className="w-32 justify-start"
-                    onClick={() => setTheme('light')}
-                    variant={theme === 'light' ? 'default' : 'outline'}
-                  >
-                    <Sun className="mr-2 h-4 w-4" />
-                    Light
-                  </Button>
-                  <Button
-                    className="w-32 justify-start"
-                    onClick={() => setTheme('dark')}
-                    variant={theme === 'dark' ? 'default' : 'outline'}
-                  >
-                    <Moon className="mr-2 h-4 w-4" />
-                    Dark
-                  </Button>
-                  <Button
-                    className="w-32 justify-start"
-                    onClick={() => setTheme('system')}
-                    variant={theme === 'system' ? 'default' : 'outline'}
-                  >
-                    <Laptop className="mr-2 h-4 w-4" />
-                    System
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
+          <Appearance />
 
           <Separator />
 
