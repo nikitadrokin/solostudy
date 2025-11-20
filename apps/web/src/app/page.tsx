@@ -2,15 +2,20 @@
 
 import type { UrlObject } from 'node:url';
 import {
+  ArrowRight,
   CheckCircle2,
+  CloudRain,
   Focus,
+  Headphones,
   LayoutDashboard,
   Shield,
   Smartphone,
+  TreePine,
   Waves,
   Youtube,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import InstallPWAPrompt from '@/components/InstallPWAPrompt';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,41 +27,98 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useFocusStore } from '@/stores/focus-store';
+
+const FOCUS_PRESETS = [
+  {
+    id: 'jfKfPfyJRdk',
+    title: 'Lofi Beats',
+    description: 'Chill beats for studying and relaxing',
+    icon: Headphones,
+    color: 'bg-purple-500/10 text-purple-500',
+  },
+  {
+    id: 'xNN7iTA57jM',
+    title: 'Forest Ambience',
+    description: 'Peaceful sounds of nature',
+    icon: TreePine,
+    color: 'bg-green-500/10 text-green-500',
+  },
+  {
+    id: 'mPZkdNFkNps',
+    title: 'Rainy Mood',
+    description: 'Calming rain sounds',
+    icon: CloudRain,
+    color: 'bg-blue-500/10 text-blue-500',
+  },
+];
 
 export default function Home() {
+  const router = useRouter();
+  const setVideoId = useFocusStore((state) => state.setVideoId);
+
+  const startSession = (videoId: string) => {
+    setVideoId(videoId);
+    router.push('/focus');
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden px-4 py-20 text-center md:py-32">
-          <div className="-z-10 absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background opacity-50" />
-          <div className="container mx-auto max-w-4xl">
-            <div className="mb-6 inline-flex items-center rounded-full border bg-background/50 px-3 py-1 backdrop-blur-sm">
-              <span className="flex h-2 w-2 rounded-full bg-primary" />
-              <span className="ml-2 text-muted-foreground text-sm">
-                v1.0 Now Available
-              </span>
+        <section className="relative overflow-hidden px-4 py-12 md:py-24">
+          <div className="-z-10 absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background opacity-50" />
+          <div className="container mx-auto max-w-5xl">
+            <div className="mb-12 text-center">
+              <div className="mb-6 inline-flex items-center rounded-full border bg-background/50 px-3 py-1 backdrop-blur-sm">
+                <span className="flex h-2 w-2 rounded-full bg-primary" />
+                <span className="ml-2 text-muted-foreground text-sm">
+                  v1.0 Now Available
+                </span>
+              </div>
+              <h1 className="mb-6 font-bold text-4xl tracking-tight sm:text-6xl lg:text-7xl">
+                Your Personal <span className="text-primary">Focus Space</span>
+              </h1>
+              <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
+                No distractions. Just you, your tasks, and the perfect
+                environment. Choose a vibe to get started immediately.
+              </p>
             </div>
-            <h1 className="mb-6 font-bold text-4xl tracking-tight sm:text-6xl lg:text-7xl">
-              Master Your Focus with{' '}
-              <span className="text-primary">SoloStudy</span>
-            </h1>
-            <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-              Create your perfect study environment. Combine ambient sounds,
-              video backgrounds, and task management into one distraction-free
-              space.
-            </p>
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button asChild className="h-12 px-8 text-lg" size="lg">
-                <Link href="/focus">Start Focusing Now</Link>
+
+            {/* Focus Launcher */}
+            <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-3">
+              {FOCUS_PRESETS.map((preset) => (
+                <Card
+                  className="cursor-pointer transition-all hover:border-primary/50 hover:bg-muted/50 hover:shadow-lg"
+                  key={preset.id}
+                  onClick={() => startSession(preset.id)}
+                >
+                  <CardHeader className="pb-2">
+                    <div
+                      className={`mb-2 inline-flex h-10 w-10 items-center justify-center rounded-lg ${preset.color}`}
+                    >
+                      <preset.icon className="h-5 w-5" />
+                    </div>
+                    <CardTitle className="text-lg">{preset.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-sm">
+                      {preset.description}
+                    </p>
+                    <div className="mt-4 flex items-center font-medium text-primary text-sm">
+                      Start Session <ArrowRight className="ml-1 h-4 w-4" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="mt-12 flex justify-center gap-4">
+              <Button asChild size="lg" variant="outline">
+                <Link href="/dashboard">View Dashboard</Link>
               </Button>
-              <Button
-                asChild
-                className="h-12 px-8 text-lg"
-                size="lg"
-                variant="outline"
-              >
-                <Link href="/dashboard">Go to Dashboard</Link>
+              <Button asChild size="lg" variant="ghost">
+                <Link href="/focus">Enter Custom Room</Link>
               </Button>
             </div>
           </div>
