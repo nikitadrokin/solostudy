@@ -43,7 +43,9 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     //   clientId: process.env.GITHUB_CLIENT_ID,
     //   clientSecret: process.env.GITHUB_CLIENT_SECRET,
     // }),
-    apiKey(),
+    apiKey({
+      maximumNameLength: 32,
+    }),
     passkey({
       rpID: process.env.PASSKEY_RP_ID || 'localhost',
       rpName: process.env.PASSKEY_RP_NAME || 'SoloStudy',
