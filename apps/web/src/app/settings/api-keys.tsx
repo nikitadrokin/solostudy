@@ -165,6 +165,8 @@ const ApiKeys: React.FC = () => {
     )
   );
 
+  const maximumApiKeysReached = apiKeys?.length >= 2;
+
   return (
     <Card>
       <CardHeader>
@@ -219,7 +221,14 @@ const ApiKeys: React.FC = () => {
       <CardFooter>
         <Dialog onOpenChange={handleDialogOpenChange} open={isDialogOpen}>
           <DialogTrigger asChild>
-            <Button icon={<Plus className="size-4" />}>Add New API Key</Button>
+            <Button
+              disabled={maximumApiKeysReached}
+              icon={<Plus className="size-4" />}
+            >
+              {maximumApiKeysReached
+                ? 'Maximum API Keys Reached'
+                : 'Add New API Key'}
+            </Button>
           </DialogTrigger>
           <DialogContent
             onInteractOutside={(e) => isLoading && e.preventDefault()}
