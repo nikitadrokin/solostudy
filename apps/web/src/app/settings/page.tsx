@@ -30,6 +30,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { authClient, type Passkey } from '@/lib/auth-client';
+import ApiKeys from './api-keys';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -257,7 +258,7 @@ export default function SettingsPage() {
             <div className="space-y-1">
               <h2 className="font-semibold text-lg">Security</h2>
               <p className="text-muted-foreground text-sm">
-                Manage your passkeys and authentication methods.
+                Manage your alternative authentication methods.
               </p>
             </div>
             <Card>
@@ -367,6 +368,8 @@ export default function SettingsPage() {
                 </Button>
               </CardFooter>
             </Card>
+
+            <ApiKeys />
           </section>
 
           <Separator />
