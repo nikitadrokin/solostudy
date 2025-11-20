@@ -312,13 +312,8 @@ const ApiKeys: React.FC = () => {
             <DialogHeader>
               <DialogTitle>API Key Created</DialogTitle>
             </DialogHeader>
-            <p className="text-muted-foreground text-sm">
-              Your API key has been created. Click the copy button to copy it to
-              the clipboard.
-            </p>
-            <FieldGroup>
+            <FieldGroup className="mt-4">
               <Field>
-                <FieldLabel htmlFor="api-key-value">API Key</FieldLabel>
                 <div className="flex gap-2">
                   <Input
                     className="font-mono text-xs"
@@ -357,12 +352,8 @@ const ApiKeys: React.FC = () => {
             <DialogHeader>
               <DialogTitle>View API Key</DialogTitle>
             </DialogHeader>
-            <p className="text-muted-foreground text-sm">
-              Click the copy button to copy your API key to the clipboard.
-            </p>
-            <FieldGroup>
+            <FieldGroup className="mt-4">
               <Field>
-                <FieldLabel htmlFor="view-api-key-value">API Key</FieldLabel>
                 <div className="flex gap-2">
                   {isLoadingKey ? (
                     <Skeleton className="h-9 flex-1" />
