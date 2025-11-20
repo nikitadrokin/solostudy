@@ -174,7 +174,6 @@ const ApiKeys: React.FC = () => {
           </div>
         </CardContent>
       )}
-      ;
       <CardFooter>
         <Dialog onOpenChange={handleDialogOpenChange} open={isDialogOpen}>
           <DialogTrigger asChild>
