@@ -6,6 +6,7 @@ import { passkey } from 'better-auth/plugins/passkey';
 import { db } from '../db';
 import {
   account,
+  apikey as apikeyTable,
   passkey as passkeyTable,
   session,
   user,
@@ -21,6 +22,7 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       account,
       verification,
       passkey: passkeyTable,
+      apikey: apikeyTable,
     },
   }),
   emailAndPassword: {
