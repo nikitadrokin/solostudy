@@ -1,6 +1,7 @@
 'use client';
 
-import { Check, Copy, Key, Plus, Trash2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Check, Copy, Eye, Key, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,7 +26,9 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { authClient } from '@/lib/auth-client';
+import { trpc } from '@/utils/trpc';
 
 interface ApiKey {
   id: string;
@@ -44,6 +47,9 @@ const ApiKeys: React.FC = () => {
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [viewKeyDialogOpen, setViewKeyDialogOpen] = useState(false);
+  const [viewingKeyId, setViewingKeyId] = useState<string | null>(null);
+  const [viewCopied, setViewCopied] = useState(false);
 
   const loadApiKeys = useCallback(async () => {
     const { data } = await authClient.apiKey.list();
@@ -131,6 +137,34 @@ const ApiKeys: React.FC = () => {
     }
   };
 
+  const handleViewKeyClick = (apiKeyId: string) => {
+    setViewingKeyId(apiKeyId);
+    setViewKeyDialogOpen(true);
+  };
+
+  const handleViewKeyDialogOpenChange = (open: boolean) => {
+    setViewKeyDialogOpen(open);
+    if (!open) {
+      setViewingKeyId(null);
+      setViewCopied(false);
+    }
+  };
+
+  const handleViewCopyKey = async () => {
+    if (viewingKeyData?.key) {
+      await navigator.clipboard.writeText(viewingKeyData.key);
+      setViewCopied(true);
+      setTimeout(() => setViewCopied(false), 2000);
+    }
+  };
+
+  const { data: viewingKeyData, isLoading: isLoadingKey } = useQuery(
+    trpc.account.getApiKeyById.queryOptions(
+      { id: viewingKeyId ?? '' },
+      { enabled: !!viewingKeyId && viewKeyDialogOpen }
+    )
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -162,13 +196,21 @@ const ApiKeys: React.FC = () => {
                   </div>
                 </div>
 
-                <Button
-                  className="text-destructive hover:text-destructive/90"
-                  icon={<Trash2 className="size-4" stroke="currentColor" />}
-                  onClick={() => handleDeleteClick(apiKey.id)}
-                  size="icon"
-                  variant="ghost"
-                />
+                <div className="flex items-center gap-1">
+                  <Button
+                    icon={<Eye className="size-4" stroke="currentColor" />}
+                    onClick={() => handleViewKeyClick(apiKey.id)}
+                    size="icon"
+                    variant="ghost"
+                  />
+                  <Button
+                    className="text-destructive hover:text-destructive/90"
+                    icon={<Trash2 className="size-4" stroke="currentColor" />}
+                    onClick={() => handleDeleteClick(apiKey.id)}
+                    size="icon"
+                    variant="ghost"
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -304,6 +346,55 @@ const ApiKeys: React.FC = () => {
             </FieldGroup>
             <div className="mt-6 flex justify-end">
               <Button onClick={() => setKeyDialogOpen(false)}>Done</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          onOpenChange={handleViewKeyDialogOpenChange}
+          open={viewKeyDialogOpen}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>View API Key</DialogTitle>
+            </DialogHeader>
+            <p className="text-muted-foreground text-sm">
+              Click the copy button to copy your API key to the clipboard.
+            </p>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="view-api-key-value">API Key</FieldLabel>
+                <div className="flex gap-2">
+                  {isLoadingKey ? (
+                    <Skeleton className="h-9 flex-1" />
+                  ) : (
+                    <Input
+                      className="font-mono text-xs"
+                      id="view-api-key-value"
+                      readOnly
+                      value={viewingKeyData?.key || ''}
+                    />
+                  )}
+                  <Button
+                    disabled={!viewingKeyData?.key || isLoadingKey}
+                    icon={
+                      viewCopied ? (
+                        <Check className="size-4" />
+                      ) : (
+                        <Copy className="size-4" />
+                      )
+                    }
+                    onClick={handleViewCopyKey}
+                    size="icon"
+                    variant="outline"
+                  />
+                </div>
+                <FieldDescription>
+                  Click the copy button to copy your API key to the clipboard.
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
+            <div className="mt-6 flex justify-end">
+              <Button onClick={() => setViewKeyDialogOpen(false)}>Done</Button>
             </div>
           </DialogContent>
         </Dialog>

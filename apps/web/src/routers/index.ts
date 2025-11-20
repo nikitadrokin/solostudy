@@ -6,8 +6,10 @@ import { db } from '../db';
 import { user } from '../db/schema/auth';
 import { todo } from '../db/schema/todos';
 import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
+import { accountRouter } from './account';
 
 export const appRouter = router({
+  account: accountRouter,
   healthCheck: publicProcedure.query(() => {
     return 'OK';
   }),
