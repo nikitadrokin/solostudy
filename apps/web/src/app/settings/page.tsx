@@ -1,16 +1,36 @@
 'use client';
 
+import type { UrlObject } from 'node:url';
 import { Laptop, LogOut, Shield, User } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Loader from '@/components/loader';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { authClient } from '@/lib/auth-client';
 import ApiKeys from './api-keys';
 import Appearance from './appearance';
 import Passkeys from './passkeys';
 import Profile from './profile';
+
+const navItems = [
+  {
+    href: '#profile',
+    label: 'Profile',
+    icon: User,
+  },
+  {
+    href: '#appearance',
+    label: 'Appearance',
+    icon: Laptop,
+  },
+  {
+    href: '#security',
+    label: 'Security',
+    icon: Shield,
+  },
+];
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -47,18 +67,19 @@ export default function SettingsPage() {
 
       <div className="grid gap-8 md:grid-cols-[240px_1fr]">
         <nav className="flex flex-col space-y-1">
-          <Button className="justify-start hover:bg-muted" variant="ghost">
-            <User className="mr-2 h-4 w-4" />
-            Profile
-          </Button>
-          <Button className="justify-start hover:bg-muted" variant="ghost">
-            <Shield className="mr-2 h-4 w-4" />
-            Security
-          </Button>
-          <Button className="justify-start hover:bg-muted" variant="ghost">
-            <Laptop className="mr-2 h-4 w-4" />
-            Appearance
-          </Button>
+          {navItems.map((item) => (
+            <Link
+              className={buttonVariants({
+                className: 'justify-start hover:bg-muted',
+                variant: 'ghost',
+              })}
+              href={item.href as unknown as UrlObject}
+              key={item.href}
+            >
+              <item.icon className="size-4" />
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="space-y-6">
