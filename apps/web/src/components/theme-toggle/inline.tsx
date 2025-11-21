@@ -10,6 +10,7 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const [highlightStyle, setHighlightStyle] = useState<React.CSSProperties>({});
+  const [mounted, setMounted] = useState(false);
 
   const themes = [
     { id: 'light' as const, icon: Sun, label: 'Light' },
@@ -17,9 +18,13 @@ export function ThemeToggle() {
     { id: 'dark' as const, icon: Moon, label: 'Dark' },
   ];
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: removed `themes` from dependencies
   useEffect(() => {
-    if (!containerRef.current) {
+    if (!(containerRef.current && mounted)) {
       return;
     }
 
@@ -43,7 +48,31 @@ export function ThemeToggle() {
       } as React.CSSProperties);
     }
     // Removed themes from dependencies
-  }, [theme]);
+  }, [theme, mounted]);
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-between gap-3.5 pl-[15px]">
+        <Sun className="h-[1.2rem] w-[1.2rem] flex-shrink-0" />
+        <span className="mr-auto select-none text-sm">Theme</span>
+        <div className="relative inline-flex gap-1 rounded-full bg-muted">
+          {themes.map((t) => {
+            const Icon = t.icon;
+            return (
+              <button
+                className="relative z-10 flex size-8 items-center justify-center rounded-full"
+                disabled
+                key={t.id}
+                type="button"
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-between gap-3.5 pl-[15px]">
