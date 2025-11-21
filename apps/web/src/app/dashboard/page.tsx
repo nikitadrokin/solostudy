@@ -1,18 +1,15 @@
 'use client';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowRight,
   Calendar,
   CheckCircle2,
   Clock,
-  MoreVertical,
-  Plus,
-  Trash2,
   Trophy,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import TaskList from '@/components/task-list';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,27 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import ScrollArea from '@/components/ui/scroll-area';
 import { authClient } from '@/lib/auth-client';
-import { cn } from '@/lib/utils';
-import { trpcClient } from '@/utils/trpc';
-
-type Task = {
-  id: string;
-  title: string;
-  completed: boolean;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-};
 
 export default function Dashboard() {
   const router = useRouter();
@@ -193,7 +170,11 @@ export default function Dashboard() {
 
         {/* Right Column (Sidebar) */}
         <div className="space-y-6 lg:col-span-4">
-          <TaskListCard />
+          <Card className="flex flex-col pb-0">
+            <CardContent className="px-4">
+              <TaskList />
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>
@@ -226,169 +207,5 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
-  );
-}
-
-function TaskListCard() {
-  const [newTodo, setNewTodo] = useState('');
-  const queryClient = useQueryClient();
-  const { data: session } = authClient.useSession();
-
-  const { data: tasks = [] } = useQuery({
-    queryKey: [['todos', 'list']],
-    queryFn: () => trpcClient.todos.list.query(),
-    enabled: !!session,
-  });
-  const createMutation = useMutation({
-    mutationFn: (input: { title: string }) =>
-      trpcClient.todos.create.mutate(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [['todos', 'list']] });
-    },
-  });
-  const updateMutation = useMutation({
-    mutationFn: (input: { id: string; completed?: boolean }) =>
-      trpcClient.todos.update.mutate(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [['todos', 'list']] });
-    },
-  });
-  const deleteMutation = useMutation({
-    mutationFn: (input: { id: string }) =>
-      trpcClient.todos.delete.mutate(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [['todos', 'list']] });
-    },
-  });
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddTask();
-    }
-  };
-
-  const handleAddTask = async () => {
-    if (!newTodo.trim()) {
-      return;
-    }
-    try {
-      await createMutation.mutateAsync({ title: newTodo });
-      setNewTodo('');
-    } catch {
-      // Error handling is done by the query client
-    }
-  };
-
-  const handleToggleTask = async (taskId: string) => {
-    const task = tasks.find((t: Task) => t.id === taskId);
-    if (!task) {
-      return;
-    }
-    try {
-      await updateMutation.mutateAsync({
-        id: taskId,
-        completed: !task.completed,
-      });
-    } catch {
-      // Error handling is done by the query client
-    }
-  };
-
-  const handleRemoveTask = async (taskId: string) => {
-    try {
-      await deleteMutation.mutateAsync({ id: taskId });
-    } catch {
-      // Error handling is done by the query client
-    }
-  };
-
-  const completedCount = tasks.filter((task: Task) => task.completed).length;
-  const totalCount = tasks.length;
-
-  return (
-    <Card className="flex h-[400px] flex-col">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Tasks</CardTitle>
-          <Badge className="font-normal" variant="secondary">
-            {completedCount}/{totalCount} Done
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-4 overflow-hidden">
-        <div className="flex gap-2">
-          <Input
-            className="h-9"
-            onChange={(e) => setNewTodo(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Add a new task..."
-            value={newTodo}
-          />
-          <Button
-            className="h-9 w-9 shrink-0"
-            disabled={!newTodo.trim() || createMutation.isPending}
-            onClick={handleAddTask}
-            size="icon"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <ScrollArea className="flex-1 pr-4">
-          <div className="space-y-2">
-            {tasks.length === 0 ? (
-              <div className="flex h-32 flex-col items-center justify-center text-center text-muted-foreground text-sm">
-                <p>No tasks yet</p>
-                <p className="text-xs">Add one to get started!</p>
-              </div>
-            ) : (
-              tasks.map((task: Task) => (
-                <div
-                  className="group flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent/50"
-                  key={task.id}
-                >
-                  <Checkbox
-                    checked={task.completed}
-                    className="rounded-full"
-                    onCheckedChange={() => handleToggleTask(task.id)}
-                  />
-                  <span
-                    className={cn(
-                      'flex-1 truncate text-sm transition-all',
-                      task.completed
-                        ? 'text-muted-foreground line-through'
-                        : 'font-medium'
-                    )}
-                  >
-                    {task.title}
-                  </span>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        className="h-6 w-6 opacity-0 group-hover:opacity-100"
-                        size="icon"
-                        variant="ghost"
-                      >
-                        <MoreVertical className="h-3 w-3" />
-                        <span className="sr-only">Menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        className="text-destructive focus:text-destructive"
-                        onClick={() => handleRemoveTask(task.id)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              ))
-            )}
-          </div>
-        </ScrollArea>
-      </CardContent>
-    </Card>
   );
 }
