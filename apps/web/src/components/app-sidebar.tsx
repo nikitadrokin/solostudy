@@ -10,14 +10,17 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
   SidebarTrigger,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { ModeToggle } from './mode-toggle';
+import { ThemeToggle } from './theme-toggle';
 import UserMenu from './user-menu';
 
 const links = [
@@ -29,6 +32,7 @@ const links = [
 
 export default function AppSidebar() {
   const pathname = usePathname();
+  const { open } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
@@ -43,6 +47,7 @@ export default function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>SoloStudy</SidebarGroupLabel>
           <SidebarMenu>
             {links.map(({ href, label, icon: Icon }) => (
               <SidebarMenuItem key={href}>
@@ -64,7 +69,7 @@ export default function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <ModeToggle />
+            {open ? <ThemeToggle /> : <ModeToggle />}
           </SidebarMenuItem>
           <SidebarMenuItem>
             <UserMenu />
