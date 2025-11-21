@@ -19,8 +19,8 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { ModeToggle } from './mode-toggle';
-import { ThemeToggle } from './theme-toggle';
+import { ModeToggle } from './theme-toggle/dropdown';
+import { ThemeToggle } from './theme-toggle/inline';
 import UserMenu from './user-menu';
 
 const links = [
