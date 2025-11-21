@@ -1,6 +1,7 @@
 'use client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -30,6 +31,7 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   const { data: session } = authClient.useSession();
+  const posthog = usePostHog();
 
   const { data: tasks = [] } = useQuery({
     queryKey: [['todos', 'list']],
@@ -70,6 +72,10 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
     }
     try {
       await createMutation.mutateAsync({ title: newTodo });
+      posthog.capture('task_created', {
+        task_length: newTodo.length,
+        platform: isMobile ? 'mobile' : 'desktop',
+      });
       setNewTodo('');
     } catch {
       // Error handling is done by the query client
@@ -86,14 +92,32 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
         id: taskId,
         completed: !task.completed,
       });
+      posthog.capture('task_completed', {
+        completed: !task.completed,
+        task_age_days: Math.floor(
+          (Date.now() - new Date(task.createdAt).getTime()) /
+            (1000 * 60 * 60 * 24)
+        ),
+      });
     } catch {
       // Error handling is done by the query client
     }
   };
 
   const handleRemoveTask = async (taskId: string) => {
+    const task = tasks.find((t: Task) => t.id === taskId);
+    if (!task) {
+      return;
+    }
     try {
       await deleteMutation.mutateAsync({ id: taskId });
+      posthog.capture('task_deleted', {
+        was_completed: task.completed,
+        task_age_days: Math.floor(
+          (Date.now() - new Date(task.createdAt).getTime()) /
+            (1000 * 60 * 60 * 24)
+        ),
+      });
     } catch {
       // Error handling is done by the query client
     }

@@ -14,8 +14,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-      person_profiles: 'identified_only', // or 'always' to create profiles for anonymous users as well
+      person_profiles: 'identified_only',
       defaults: '2025-05-24',
+      // loaded: () => {
+      //   if (typeof window !== 'undefined') {
+      //     window.posthog = posthog;
+      //   }
+      // },
     });
   }, []);
 

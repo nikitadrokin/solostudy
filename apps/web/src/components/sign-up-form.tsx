@@ -1,5 +1,6 @@
 import { useForm } from '@tanstack/react-form';
 import { useRouter } from 'next/navigation';
+import { usePostHog } from 'posthog-js/react';
 import { toast } from 'sonner';
 import z from 'zod';
 import { authClient } from '@/lib/auth-client';
@@ -24,6 +25,7 @@ export default function SignUpForm({
 }) {
   const router = useRouter();
   const { isPending, refetch } = authClient.useSession();
+  const posthog = usePostHog();
 
   const form = useForm({
     defaultValues: {
@@ -42,10 +44,20 @@ export default function SignUpForm({
           onSuccess: async () => {
             // Refetch session to update React state
             await refetch();
+            posthog.capture('user_signed_up', {
+              method: 'email',
+              name_length: value.name.length,
+              email_domain: value.email.split('@')[1]
+            });
+            posthog.identify(value.email);
             toast.success('Sign up successful');
             router.push('/dashboard');
           },
           onError: (error) => {
+            posthog.capture('sign_up_failed', {
+              method: 'email',
+              error: error.error.message || error.error.statusText
+            });
             toast.error(error.error.message || error.error.statusText);
           },
         }

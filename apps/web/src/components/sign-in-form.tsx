@@ -2,6 +2,7 @@ import { useForm } from '@tanstack/react-form';
 import type { BetterFetchOption } from 'better-auth/react';
 import { Fingerprint } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -29,6 +30,7 @@ export default function SignInForm({
   const { isPending, refetch } = authClient.useSession();
   const [isPasskeySubmitting, setIsPasskeySubmitting] =
     useState<boolean>(false);
+  const posthog = usePostHog();
 
   const form = useForm({
     defaultValues: {
@@ -45,10 +47,19 @@ export default function SignInForm({
           onSuccess: async () => {
             // Refetch session to update React state
             await refetch();
+            posthog.capture('user_signed_in', {
+              method: 'email',
+              email_domain: value.email.split('@')[1],
+            });
+            posthog.identify(value.email);
             toast.success('Sign in successful');
             router.push('/dashboard');
           },
           onError: (error) => {
+            posthog.capture('sign_in_failed', {
+              method: 'email',
+              error: error.error.message || error.error.statusText,
+            });
             toast.error(error.error.message || error.error.statusText);
           },
         }

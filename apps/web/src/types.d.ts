@@ -86,3 +86,9 @@ export interface AmbientVideoOption {
   thumbnail: string;
   channel: string;
 }
+
+declare global {
+  interface Window {
+    posthog: typeof posthog;
+  }
+}
