@@ -169,7 +169,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   return (
     // biome-ignore lint/a11y/useSemanticElements: can't nest button in button
     <div
-      className="group flex items-center gap-2 rounded-md p-2 hover:bg-muted/50"
+      className="group flex items-start gap-2 rounded-md p-2 hover:bg-muted/50"
       key={task.id}
       onClick={() => handleToggleTask(task.id)}
       onKeyDown={(e) => {
@@ -181,14 +181,16 @@ const TaskItem: React.FC<TaskItemProps> = ({
       role="button"
       tabIndex={0}
     >
-      <Checkbox
-        checked={task.completed}
-        className="flex-shrink-0"
-        onCheckedChange={() => {
-          handleToggleTask(task.id);
-        }}
-        onClick={(e) => e.stopPropagation()}
-      />
+      <div className="h-[1lh] place-items-center">
+        <Checkbox
+          checked={task.completed}
+          className="flex-shrink-0"
+          onCheckedChange={() => {
+            handleToggleTask(task.id);
+          }}
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
       <span
         className={cn(
           'flex-1 select-none text-sm',
