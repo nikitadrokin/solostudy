@@ -1,6 +1,7 @@
 'use client';
 
 import { QueryClientProvider } from '@tanstack/react-query';
+import { usePathname } from 'next/navigation';
 import posthog from 'posthog-js';
 import { PostHogProvider as PHProvider } from 'posthog-js/react';
 import { useEffect } from 'react';
@@ -10,6 +11,7 @@ import { Toaster } from './ui/sonner';
 import { TooltipProvider } from './ui/tooltip';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   // posthog initialization
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
@@ -26,6 +28,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         defaultTheme="system"
         disableTransitionOnChange
         enableSystem
+        forcedTheme={pathname === '/focus' ? 'dark' : undefined}
       >
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>{children}</TooltipProvider>
