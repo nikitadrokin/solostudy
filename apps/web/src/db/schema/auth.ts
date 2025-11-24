@@ -13,6 +13,8 @@ export const user = pgTable('user', {
   emailVerified: boolean('email_verified').default(false).notNull(),
   image: text('image'),
   lastPlayedVideoId: text('last_played_video_id'),
+  // Instructure Canvas for students
+  canvasIntegrationToken: text('canvas_access_token'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
