@@ -4,7 +4,7 @@ import { and, count, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
 import { user } from '../db/schema/auth';
-import { todo } from '../db/schema/todos';
+import { todo } from '../db/schema/focus';
 import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
 import { accountRouter } from './account';
 
