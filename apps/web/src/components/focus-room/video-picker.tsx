@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: Skeletons need unique keys */
 import { useQuery } from '@tanstack/react-query';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { YOUTUBE_VALIDATION_PATTERNS } from '@/lib/constants';
@@ -46,9 +46,16 @@ const VideoPicker: React.FC = () => {
     return YOUTUBE_VALIDATION_PATTERNS.some((pattern) => pattern.test(url));
   }, []);
 
+  useEffect(() => {
+    if (videoId) {
+      setUrlInput(`https://www.youtube.com/watch?v=${videoId}`);
+    }
+  }, [videoId]);
+
   const handleVideoSelect = (id: string) => {
     handleVideoIdChange(id);
     handleLoadVideo();
+    setUrlInput(`https://www.youtube.com/watch?v=${id}`);
   };
 
   if (isLoading) {
