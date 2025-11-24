@@ -21,7 +21,7 @@ export default function ControlsPanel() {
   const {
     isVideoLoaded,
     videoError,
-    isPlaying, // Move this here
+    isPlaying,
     handleVideoIdChange,
     handleLoadVideo,
     handlePlayPause,
