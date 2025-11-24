@@ -29,7 +29,9 @@ export default function ControlsPanel() {
     handleMuteToggle,
   } = useVideoStore();
 
-  const [urlInput, setUrlInput] = useState(videoId);
+  const [urlInput, setUrlInput] = useState(
+    `https://www.youtube.com/watch?v=${videoId}`
+  );
 
   const handleUrlSubmit = useCallback(() => {
     // Extract video ID from URL if needed, otherwise use as-is (already an ID)

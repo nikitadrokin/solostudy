@@ -85,7 +85,7 @@ const OverlayControls: React.FC = () => {
 
           <DynamicPopover
             align="end"
-            className="md:w-80"
+            className="md:w-96"
             side="bottom"
             tooltip="Focus Room Settings"
             trigger={
