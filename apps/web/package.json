@@ -15,7 +15,8 @@
     "db:pull": "drizzle-kit pull",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:migrate-programming-vibes": "tsx scripts/migrate-programming-vibes.ts"
   },
   "dependencies": {
     "@better-auth/passkey": "^1.4.1",
@@ -67,6 +68,7 @@
     "@types/react-dom": "^19",
     "@vite-pwa/assets-generator": "^1.0.1",
     "tailwindcss": "^4.1.10",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/suspicious/noConsole: Migration scripts need console output for progress logging */
-import { randomUUID } from 'node:crypto';
+
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import playlistData from '../src/data/programming_vibes';
@@ -39,9 +39,8 @@ async function migrateProgrammingVibes() {
     console.log(`Filtered to ${validEntries.length} valid entries`);
 
     const videosToInsert = validEntries.map((entry) => ({
-      id: randomUUID(),
-      videoId: entry.id,
-      videoTitle: entry.title,
+      id: entry.id,
+      title: entry.title,
     }));
 
     console.log(`Prepared ${videosToInsert.length} videos for insertion`);
