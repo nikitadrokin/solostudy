@@ -7,9 +7,11 @@ import { user } from '../db/schema/auth';
 import { todo } from '../db/schema/focus';
 import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
 import { accountRouter } from './account';
+import { focusRouter } from './focus';
 
 export const appRouter = router({
   account: accountRouter,
+  focus: focusRouter,
   healthCheck: publicProcedure.query(() => {
     return 'OK';
   }),
