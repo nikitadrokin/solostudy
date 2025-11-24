@@ -1,7 +1,7 @@
+import { passkey } from '@better-auth/passkey';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { apiKey } from 'better-auth/plugins';
-import { passkey } from 'better-auth/plugins/passkey';
 // import { github } from 'better-auth/social-providers';
 import { db } from '../db';
 import {
