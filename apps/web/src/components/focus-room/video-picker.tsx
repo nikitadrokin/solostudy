@@ -6,6 +6,9 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { useVideoStore } from '@/stores/video-store';
 import { trpc } from '@/utils/trpc';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Skeleton } from '../ui/skeleton';
 
 const VideoPicker: React.FC = () => {
@@ -52,9 +55,45 @@ const VideoPicker: React.FC = () => {
     <div
       className={cn(
         'grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4 overflow-y-auto',
-        isMobile ? 'h-full min-w-full flex-1 px-2' : 'h-full py-2 pr-4 pl-2'
+        'before:pointer-events-none before:absolute before:inset-x-0 before:top-[73.5px] before:z-10 before:h-5 before:bg-gradient-to-b before:from-background/80 before:to-transparent before:content-[""]',
+        'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-5 after:bg-gradient-to-t after:from-background/80 after:to-transparent after:content-[""]',
+        isMobile
+          ? 'h-full min-w-full flex-1 px-2 pt-24 before:top-[106px]'
+          : 'h-full pt-24 pr-4 pb-2 pl-2'
       )}
     >
+      <div
+        className={cn(
+          'absolute top-0 right-0 left-0 z-10 space-y-2 bg-background/80',
+          isMobile ? 'px-2 pt-12' : 'pt-4 pr-6 pl-4'
+        )}
+      >
+        <Label htmlFor="video-picker-url">Custom Video URL</Label>
+        <div className="flex gap-2">
+          <Input
+            className={cn(
+              'flex-1'
+              // urlInput && !isValidYouTubeUrl(urlInput)
+              //   ? 'border-destructive'
+              //   : ''
+            )}
+            id="video-picker-url"
+            // onChange={(e) => setUrlInput(e.target.value)}
+            // onKeyPress={handleKeyPress}
+            placeholder="https://youtube.com/watch?v=..."
+            type="url"
+            // value={urlInput}
+          />
+          <Button
+            // disabled={!(urlInput && isValidYouTubeUrl(urlInput))}
+            // onClick={handleUrlSubmit}
+            size="default"
+          >
+            Load
+          </Button>
+        </div>
+      </div>
+
       {videos.map((video) => (
         <button
           className="cursor-pointer rounded-lg p-2 text-left hover:bg-muted/50"

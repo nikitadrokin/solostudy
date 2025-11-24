@@ -67,7 +67,7 @@ const OverlayControls: React.FC = () => {
           <DynamicPopover
             align="end"
             className="p-0 md:h-[500px] md:min-h-full md:w-[600px]"
-            showScrollFadeOnPopover
+            // showScrollFadeOnPopover={isMobile}
             side="bottom"
             tooltip="Select background"
             trigger={
