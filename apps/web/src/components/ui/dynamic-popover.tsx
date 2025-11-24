@@ -37,7 +37,7 @@ const DynamicPopover: React.FC<DynamicPopoverProps> = ({
   const isMobile = useIsMobile();
 
   return isMobile ? (
-    <Drawer>
+    <Drawer repositionInputs={false}>
       {tooltip ? (
         <Tooltip>
           <TooltipTrigger asChild>
