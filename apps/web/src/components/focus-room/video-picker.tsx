@@ -1,22 +1,50 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: Skeletons need unique keys */
 import { useQuery } from '@tanstack/react-query';
-import { memo } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { YOUTUBE_VALIDATION_PATTERNS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
 import { trpc } from '@/utils/trpc';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Skeleton } from '../ui/skeleton';
+import { extractVideoId } from './youtube-player';
 
 const VideoPicker: React.FC = () => {
   const { handleVideoIdChange, handleLoadVideo } = useVideoStore();
+  const { videoId } = useFocusStore();
   const isMobile = useIsMobile();
   const { data: videos = [], isLoading } = useQuery(
     trpc.focus.listVideos.queryOptions()
   );
+
+  const [urlInput, setUrlInput] = useState(
+    `https://www.youtube.com/watch?v=${videoId}`
+  );
+
+  const handleUrlSubmit = useCallback(() => {
+    // Extract video ID from URL if needed, otherwise use as-is (already an ID)
+    const extractedId = extractVideoId(urlInput) || urlInput;
+    handleVideoIdChange(extractedId);
+    handleLoadVideo();
+  }, [urlInput, handleVideoIdChange, handleLoadVideo]);
+
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleUrlSubmit();
+      }
+    },
+    [handleUrlSubmit]
+  );
+
+  const isValidYouTubeUrl = useCallback((url: string): boolean => {
+    return YOUTUBE_VALIDATION_PATTERNS.some((pattern) => pattern.test(url));
+  }, []);
 
   const handleVideoSelect = (id: string) => {
     handleVideoIdChange(id);
@@ -72,21 +100,21 @@ const VideoPicker: React.FC = () => {
         <div className="flex gap-2">
           <Input
             className={cn(
-              'flex-1'
-              // urlInput && !isValidYouTubeUrl(urlInput)
-              //   ? 'border-destructive'
-              //   : ''
+              'flex-1',
+              urlInput && !isValidYouTubeUrl(urlInput)
+                ? 'border-destructive'
+                : ''
             )}
             id="video-picker-url"
-            // onChange={(e) => setUrlInput(e.target.value)}
-            // onKeyPress={handleKeyPress}
+            onChange={(e) => setUrlInput(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder="https://youtube.com/watch?v=..."
             type="url"
-            // value={urlInput}
+            value={urlInput}
           />
           <Button
-            // disabled={!(urlInput && isValidYouTubeUrl(urlInput))}
-            // onClick={handleUrlSubmit}
+            disabled={!(urlInput && isValidYouTubeUrl(urlInput))}
+            onClick={handleUrlSubmit}
             size="default"
           >
             Load

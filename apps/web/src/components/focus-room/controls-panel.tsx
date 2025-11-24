@@ -5,15 +5,10 @@ import { extractVideoId } from '@/components/focus-room/youtube-player';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { YOUTUBE_VALIDATION_PATTERNS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
-
-// YouTube URL validation patterns
-const YOUTUBE_VALIDATION_PATTERNS = [
-  /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-  /^([a-zA-Z0-9_-]{11})$/, // Direct video ID
-];
 
 export default function ControlsPanel() {
   // Get state and actions from stores
