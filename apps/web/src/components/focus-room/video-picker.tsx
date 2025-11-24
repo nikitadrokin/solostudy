@@ -93,7 +93,7 @@ const VideoPicker: React.FC = () => {
         'before:pointer-events-none before:absolute before:inset-x-0 before:top-[73.5px] before:z-10 before:h-5 before:bg-gradient-to-b before:from-background/80 before:to-transparent before:content-[""]',
         'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-5 after:bg-gradient-to-t after:from-background/80 after:to-transparent after:content-[""]',
         isMobile
-          ? 'h-full min-w-full flex-1 px-2 pt-24 before:top-[106px]'
+          ? '!pt-28 !px-0 h-full min-w-full flex-1 gap-0 before:top-[106px]'
           : 'h-full pt-24 pr-4 pb-2 pl-2'
       )}
     >
