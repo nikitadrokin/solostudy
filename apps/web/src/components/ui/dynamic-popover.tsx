@@ -52,7 +52,7 @@ const DynamicPopover: React.FC<DynamicPopoverProps> = ({
       )}
       <DrawerContent
         className={cn(
-          'h-[calc(100vh-2.5rem)] overflow-hidden bg-background/95 backdrop-blur-sm',
+          'h-[calc(100vh-3.5rem)] overflow-hidden bg-background/95 backdrop-blur-sm',
           className
         )}
       >

@@ -66,7 +66,7 @@ const OverlayControls: React.FC = () => {
         <div className="flex items-center gap-2">
           <DynamicPopover
             align="end"
-            className="p-0 md:h-[500px] md:min-h-full md:w-[600px]"
+            className="p-0 md:h-[500px] md:max-h-none md:min-h-full md:w-[600px]"
             // showScrollFadeOnPopover={isMobile}
             side="bottom"
             tooltip="Select background"
