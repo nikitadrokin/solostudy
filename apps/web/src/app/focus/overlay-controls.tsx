@@ -19,9 +19,10 @@ const OverlayControls: React.FC = () => {
   const isMobile = useIsMobile();
   const { data: session } = useSession();
 
-  const { data: uncompletedTasks } = useQuery(
-    trpc.todos.getUncompletedCount.queryOptions()
-  );
+  const { data: uncompletedTasks } = useQuery({
+    ...trpc.todos.getUncompletedCount.queryOptions(),
+    enabled: !!session,
+  });
 
   return (
     <div className="absolute top-4 right-4 left-4 z-10">
