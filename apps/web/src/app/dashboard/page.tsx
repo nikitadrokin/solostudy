@@ -1,4 +1,3 @@
-'use client';
 import {
   ArrowRight,
   Calendar,
@@ -7,8 +6,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { redirect } from 'next/navigation';
 import TaskList from '@/components/task-list';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,27 +19,11 @@ import {
 } from '@/components/ui/card';
 import { authClient } from '@/lib/auth-client';
 
-export default function Dashboard() {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: infinite rerender
-  useEffect(() => {
-    if (!(session || isPending)) {
-      router.push('/login');
-    }
-  }, [session, isPending]);
-
-  if (isPending) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
+export default async function Dashboard() {
+  const { data: session } = await authClient.getSession();
 
   if (!session) {
-    return null;
+    redirect('/login');
   }
 
   const getGreeting = () => {
