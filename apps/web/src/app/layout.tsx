@@ -28,12 +28,12 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon-180x180.png',
   },
   manifest: '/manifest.json',
-  themeColor: '#000000',
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#000000',
   // viewportFit: 'cover',
 };
 
