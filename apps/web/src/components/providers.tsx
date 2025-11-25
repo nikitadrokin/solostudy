@@ -4,22 +4,28 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
 import posthog from 'posthog-js';
 import { PostHogProvider as PHProvider } from 'posthog-js/react';
-import { useEffect } from 'react';
 import { queryClient } from '@/utils/trpc';
 import { ThemeProvider } from './theme-provider';
 import { Toaster } from './ui/sonner';
 import { TooltipProvider } from './ui/tooltip';
 
+// Initialize PostHog synchronously if key is available
+let posthogInitialized = false;
+if (
+  typeof window !== 'undefined' &&
+  process.env.NEXT_PUBLIC_POSTHOG_KEY &&
+  !posthogInitialized
+) {
+  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    person_profiles: 'identified_only',
+    defaults: '2025-05-24',
+  });
+  posthogInitialized = true;
+}
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // posthog initialization
-  useEffect(() => {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-      person_profiles: 'identified_only',
-      defaults: '2025-05-24',
-    });
-  }, []);
 
   return (
     <PHProvider client={posthog}>
