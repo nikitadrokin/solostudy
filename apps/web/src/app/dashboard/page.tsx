@@ -20,9 +20,13 @@ import {
 import { authClient } from '@/lib/auth-client';
 
 export default async function Dashboard() {
-  const { data: session } = await authClient.getSession();
+  const { data: session, error } = await authClient.getSession();
 
-  if (!session) {
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!session?.user) {
     redirect('/login');
   }
 
