@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Script from 'next/script';
 import '../index.css';
-import { Databuddy } from '@databuddy/sdk/react';
 import { cookies } from 'next/headers';
 import AppHeader from '@/components/app-header';
 import AppSidebar from '@/components/app-sidebar';
@@ -79,22 +78,6 @@ export default async function RootLayout({
             </div>
           </SidebarProvider>
         </Providers>
-
-        <Databuddy
-          clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID || ''}
-          disabled={process.env.NODE_ENV === 'development'}
-          enableBatching={true}
-          trackAttributes={true}
-          trackBounceRate={true}
-          trackEngagement={true}
-          trackErrors={true}
-          trackExitIntent={true}
-          trackHashChanges={true}
-          trackInteractions={true}
-          trackOutgoingLinks={true}
-          trackScrollDepth={true}
-          trackWebVitals={true}
-        />
       </body>
     </html>
   );
