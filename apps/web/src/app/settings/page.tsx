@@ -1,12 +1,10 @@
 'use client';
 
-import type { UrlObject } from 'node:url';
-import { Laptop, Link as LinkIcon, LogOut, Shield, User } from 'lucide-react';
-import Link from 'next/link';
+import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Loader from '@/components/loader';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { authClient } from '@/lib/auth-client';
 import ApiKeys from './api-keys';
@@ -14,29 +12,6 @@ import Appearance from './appearance';
 import CanvasIntegration from './canvas';
 import Passkeys from './passkeys';
 import Profile from './profile';
-
-const navItems = [
-  {
-    href: '#profile',
-    label: 'Profile',
-    icon: User,
-  },
-  {
-    href: '#appearance',
-    label: 'Appearance',
-    icon: Laptop,
-  },
-  {
-    href: '#security',
-    label: 'Security',
-    icon: Shield,
-  },
-  {
-    href: '#integrations',
-    label: 'Integrations',
-    icon: LinkIcon,
-  },
-];
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -71,74 +46,56 @@ export default function SettingsPage() {
 
       <Separator />
 
-      <div className="grid gap-8 md:grid-cols-[240px_1fr]">
-        <nav className="flex flex-col space-y-1">
-          {navItems.map((item) => (
-            <Link
-              className={buttonVariants({
-                className: 'justify-start hover:bg-muted',
-                variant: 'ghost',
-              })}
-              href={item.href as unknown as UrlObject}
-              key={item.href}
-            >
-              <item.icon className="size-4" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+      <div className="space-y-6">
+        <Profile
+          userEmail={session?.user.email}
+          userName={session?.user.name}
+        />
 
-        <div className="space-y-6">
-          <Profile
-            userEmail={session?.user.email}
-            userName={session?.user.name}
-          />
+        <Separator />
 
-          <Separator />
+        <Appearance />
 
-          <Appearance />
+        <Separator />
 
-          <Separator />
-
-          {/* Security Section */}
-          <section className="scroll-mt-16 space-y-4" id="security">
-            <div className="space-y-1">
-              <h2 className="font-semibold text-lg">Security</h2>
-              <p className="text-muted-foreground text-sm">
-                Manage your alternative authentication methods.
-              </p>
-            </div>
-            <Passkeys userEmail={session?.user.email} />
-            <ApiKeys />
-          </section>
-
-          <Separator />
-
-          {/* Integrations Section */}
-          <section className="scroll-mt-16 space-y-4" id="integrations">
-            <div className="space-y-1">
-              <h2 className="font-semibold text-lg">Integrations</h2>
-              <p className="text-muted-foreground text-sm">
-                Connect external services to enhance your study experience.
-              </p>
-            </div>
-            <CanvasIntegration />
-          </section>
-
-          <Separator />
-
-          <div className="flex justify-end">
-            <Button
-              onClick={async () => {
-                await authClient.signOut();
-                router.push('/login');
-              }}
-              variant="destructive"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
-            </Button>
+        {/* Security Section */}
+        <section className="scroll-mt-16 space-y-4" id="security">
+          <div className="space-y-1">
+            <h2 className="font-semibold text-lg">Security</h2>
+            <p className="text-muted-foreground text-sm">
+              Manage your alternative authentication methods.
+            </p>
           </div>
+          <Passkeys userEmail={session?.user.email} />
+          <ApiKeys />
+        </section>
+
+        <Separator />
+
+        {/* Integrations Section */}
+        <section className="scroll-mt-16 space-y-4" id="integrations">
+          <div className="space-y-1">
+            <h2 className="font-semibold text-lg">Integrations</h2>
+            <p className="text-muted-foreground text-sm">
+              Connect external services to enhance your study experience.
+            </p>
+          </div>
+          <CanvasIntegration />
+        </section>
+
+        <Separator />
+
+        <div className="flex justify-end">
+          <Button
+            onClick={async () => {
+              await authClient.signOut();
+              router.push('/login');
+            }}
+            variant="destructive"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
         </div>
       </div>
     </div>
