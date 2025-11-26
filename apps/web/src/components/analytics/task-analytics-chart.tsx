@@ -8,7 +8,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { trpcClient } from '@/utils/trpc';
+import { apiClient } from '@/utils/trpc';
 
 const chartConfig = {
   created: {
@@ -28,7 +28,7 @@ const chartConfig = {
 export function TaskAnalyticsChart() {
   const { data, isLoading } = useQuery({
     queryKey: [['analytics', 'getTaskAnalytics'], { days: 7 }],
-    queryFn: () => trpcClient.analytics.getTaskAnalytics.query({ days: 7 }),
+    queryFn: () => apiClient.analytics.getTaskAnalytics.query({ days: 7 }),
   });
 
   if (isLoading) {

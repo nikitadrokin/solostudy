@@ -28,7 +28,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { authClient } from '@/lib/auth-client';
-import { trpc } from '@/utils/trpc';
+import { api } from '@/utils/trpc';
 
 interface ApiKey {
   id: string;
@@ -159,7 +159,7 @@ const ApiKeys: React.FC = () => {
   };
 
   const { data: viewingKeyData, isLoading: isLoadingKey } = useQuery(
-    trpc.account.getApiKeyById.queryOptions(
+    api.account.getApiKeyById.queryOptions(
       { id: viewingKeyId ?? '' },
       { enabled: !!viewingKeyId && viewKeyDialogOpen }
     )

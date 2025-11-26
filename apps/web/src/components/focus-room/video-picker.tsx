@@ -7,7 +7,7 @@ import { YOUTUBE_VALIDATION_PATTERNS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
-import { trpc } from '@/utils/trpc';
+import { api } from '@/utils/trpc';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -19,7 +19,7 @@ const VideoPicker: React.FC = () => {
   const { videoId } = useFocusStore();
   const isMobile = useIsMobile();
   const { data: videos = [], isLoading } = useQuery(
-    trpc.focus.listVideos.queryOptions()
+    api.focus.listVideos.queryOptions()
   );
 
   const [urlInput, setUrlInput] = useState(

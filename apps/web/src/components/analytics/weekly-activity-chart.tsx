@@ -8,7 +8,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { trpcClient } from '@/utils/trpc';
+import { apiClient } from '@/utils/trpc';
 
 const chartConfig = {
   tasks: {
@@ -28,7 +28,7 @@ const chartConfig = {
 export function WeeklyActivityChart() {
   const { data, isLoading } = useQuery({
     queryKey: [['analytics', 'getEventCounts'], { days: 7 }],
-    queryFn: () => trpcClient.analytics.getEventCounts.query({ days: 7 }),
+    queryFn: () => apiClient.analytics.getEventCounts.query({ days: 7 }),
   });
 
   if (isLoading) {

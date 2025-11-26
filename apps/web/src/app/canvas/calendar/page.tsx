@@ -22,7 +22,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { authClient } from '@/lib/auth-client';
-import { trpcClient } from '@/utils/trpc';
+import { apiClient } from '@/utils/trpc';
 
 export default function CanvasCalendarPage() {
   const router = useRouter();
@@ -30,7 +30,7 @@ export default function CanvasCalendarPage() {
 
   const { data: status } = useQuery({
     queryKey: [['canvas', 'getStatus']],
-    queryFn: () => trpcClient.canvas.getStatus.query(),
+    queryFn: () => apiClient.canvas.getStatus.query(),
     enabled: !!session,
   });
 

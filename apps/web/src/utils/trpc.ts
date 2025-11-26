@@ -22,7 +22,7 @@ export const queryClient = new QueryClient({
   }),
 });
 
-export const trpcClient = createTRPCClient<AppRouter>({
+export const apiClient = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/trpc`,
@@ -36,7 +36,7 @@ export const trpcClient = createTRPCClient<AppRouter>({
   ],
 });
 
-export const trpc = createTRPCOptionsProxy<AppRouter>({
-  client: trpcClient,
+export const api = createTRPCOptionsProxy<AppRouter>({
+  client: apiClient,
   queryClient,
 });

@@ -12,7 +12,7 @@ import DynamicPopover from '@/components/ui/dynamic-popover';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSession } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import { trpc } from '@/utils/trpc';
+import { api } from '@/utils/trpc';
 import SidebarTrigger from './sidebar-trigger';
 
 const OverlayControls: React.FC = () => {
@@ -20,7 +20,7 @@ const OverlayControls: React.FC = () => {
   const { data: session } = useSession();
 
   const { data: uncompletedTasks } = useQuery({
-    ...trpc.todos.getUncompletedCount.queryOptions(),
+    ...api.todos.getUncompletedCount.queryOptions(),
     enabled: !!session,
   });
 

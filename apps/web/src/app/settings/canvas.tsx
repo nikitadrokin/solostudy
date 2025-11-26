@@ -38,7 +38,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { trpcClient } from '@/utils/trpc';
+import { apiClient } from '@/utils/trpc';
 
 const CanvasIntegration: React.FC = () => {
   const queryClient = useQueryClient();
@@ -49,18 +49,18 @@ const CanvasIntegration: React.FC = () => {
 
   const { data: status, isLoading: isLoadingStatus } = useQuery({
     queryKey: [['canvas', 'getStatus']],
-    queryFn: () => trpcClient.canvas.getStatus.query(),
+    queryFn: () => apiClient.canvas.getStatus.query(),
   });
 
   const { data: courses = [] } = useQuery({
     queryKey: [['canvas', 'getCourses']],
-    queryFn: () => trpcClient.canvas.getCourses.query(),
+    queryFn: () => apiClient.canvas.getCourses.query(),
     enabled: status?.connected === true,
   });
 
   const connectMutation = useMutation({
     mutationFn: (input: { accessToken: string; canvasUrl: string }) =>
-      trpcClient.canvas.connect.mutate(input),
+      apiClient.canvas.connect.mutate(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [['canvas']] });
       setIsConnectDialogOpen(false);
@@ -74,7 +74,7 @@ const CanvasIntegration: React.FC = () => {
   });
 
   const disconnectMutation = useMutation({
-    mutationFn: () => trpcClient.canvas.disconnect.mutate(),
+    mutationFn: () => apiClient.canvas.disconnect.mutate(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [['canvas']] });
       setIsDisconnectDialogOpen(false);
@@ -86,7 +86,7 @@ const CanvasIntegration: React.FC = () => {
   });
 
   const syncMutation = useMutation({
-    mutationFn: () => trpcClient.canvas.sync.mutate(),
+    mutationFn: () => apiClient.canvas.sync.mutate(),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [['canvas']] });
       toast.success(

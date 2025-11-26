@@ -22,20 +22,20 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { authClient } from '@/lib/auth-client';
-import { trpc } from '@/utils/trpc';
+import { api } from '@/utils/trpc';
 
 export default function CanvasCoursesPage() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
 
   const { data: status } = useQuery(
-    trpc.canvas.getStatus.queryOptions(undefined, {
+    api.canvas.getStatus.queryOptions(undefined, {
       enabled: !!session,
     })
   );
 
   const { data: courses = [], isLoading: isLoadingCourses } = useQuery(
-    trpc.canvas.getCourses.queryOptions(undefined, {
+    api.canvas.getCourses.queryOptions(undefined, {
       enabled: status?.connected === true,
     })
   );

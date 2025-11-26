@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import { trpcClient } from '@/utils/trpc';
+import { apiClient } from '@/utils/trpc';
 import { CardDescription, CardTitle } from './ui/card';
 import { DrawerDescription, DrawerTitle } from './ui/drawer';
 
@@ -35,26 +35,25 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
 
   const { data: tasks = [] } = useQuery({
     queryKey: [['todos', 'list']],
-    queryFn: () => trpcClient.todos.list.query(),
+    queryFn: () => apiClient.todos.list.query(),
     enabled: !!session,
   });
   const createMutation = useMutation({
     mutationFn: (input: { title: string }) =>
-      trpcClient.todos.create.mutate(input),
+      apiClient.todos.create.mutate(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [['todos', 'list']] });
     },
   });
   const updateMutation = useMutation({
     mutationFn: (input: { id: string; completed?: boolean }) =>
-      trpcClient.todos.update.mutate(input),
+      apiClient.todos.update.mutate(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [['todos', 'list']] });
     },
   });
   const deleteMutation = useMutation({
-    mutationFn: (input: { id: string }) =>
-      trpcClient.todos.delete.mutate(input),
+    mutationFn: (input: { id: string }) => apiClient.todos.delete.mutate(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [['todos', 'list']] });
     },

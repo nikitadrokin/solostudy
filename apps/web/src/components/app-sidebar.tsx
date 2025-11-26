@@ -39,7 +39,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { authClient } from '@/lib/auth-client';
-import { trpcClient } from '@/utils/trpc';
+import { apiClient } from '@/utils/trpc';
 import { ModeToggle } from './theme-toggle/dropdown';
 import { ThemeToggle } from './theme-toggle/inline';
 import UserMenu from './user-menu';
@@ -65,7 +65,7 @@ export default function AppSidebar() {
 
   const { data: canvasStatus } = useQuery({
     queryKey: [['canvas', 'getStatus']],
-    queryFn: () => trpcClient.canvas.getStatus.query(),
+    queryFn: () => apiClient.canvas.getStatus.query(),
     enabled: !!session,
   });
 

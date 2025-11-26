@@ -38,7 +38,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { authClient } from '@/lib/auth-client';
-import { trpcClient } from '@/utils/trpc';
+import { apiClient } from '@/utils/trpc';
 
 type AssignmentCardProps = {
   assignment: {
@@ -207,13 +207,13 @@ export default function CanvasAssignmentsPage() {
 
   const { data: status } = useQuery({
     queryKey: [['canvas', 'getStatus']],
-    queryFn: () => trpcClient.canvas.getStatus.query(),
+    queryFn: () => apiClient.canvas.getStatus.query(),
     enabled: !!session,
   });
 
   const { data: courses = [] } = useQuery({
     queryKey: [['canvas', 'getCourses']],
-    queryFn: () => trpcClient.canvas.getCourses.query(),
+    queryFn: () => apiClient.canvas.getCourses.query(),
     enabled: status?.connected === true,
   });
 
@@ -223,7 +223,7 @@ export default function CanvasAssignmentsPage() {
       { courseId: selectedCourseId, includeCompleted },
     ],
     queryFn: () =>
-      trpcClient.canvas.getAssignments.query({
+      apiClient.canvas.getAssignments.query({
         courseId: selectedCourseId,
         includeCompleted,
       }),
@@ -232,7 +232,7 @@ export default function CanvasAssignmentsPage() {
 
   const importMutation = useMutation({
     mutationFn: (assignmentIds: number[]) =>
-      trpcClient.canvas.importAssignmentsAsTodos.mutate({
+      apiClient.canvas.importAssignmentsAsTodos.mutate({
         assignmentIds,
       }),
     onSuccess: (_, assignmentIds) => {

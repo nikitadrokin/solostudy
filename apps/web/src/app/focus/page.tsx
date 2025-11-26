@@ -6,7 +6,7 @@ import YouTubePlayer from '@/components/focus-room/youtube-player';
 import { authClient } from '@/lib/auth-client';
 import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
-import { trpc, trpcClient } from '@/utils/trpc';
+import { api, apiClient } from '@/utils/trpc';
 import OverlayControls from './overlay-controls';
 
 const DEFAULT_VIDEO_ID = 'jfKfPfyJRdk';
@@ -29,7 +29,7 @@ export default function FocusRoom() {
 
   const { data: lastPlayedVideo, isLoading: isLoadingLastPlayedVideo } =
     useQuery(
-      trpc.video.getLastPlayed.queryOptions(undefined, {
+      api.video.getLastPlayed.queryOptions(undefined, {
         enabled: !!session,
         retry: false,
       })
@@ -37,7 +37,7 @@ export default function FocusRoom() {
 
   const { mutate: setLastPlayed } = useMutation({
     mutationFn: (input: { videoId: string }) =>
-      trpcClient.video.setLastPlayed.mutate(input),
+      apiClient.video.setLastPlayed.mutate(input),
   });
 
   useEffect(() => {

@@ -8,7 +8,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { trpcClient } from '@/utils/trpc';
+import { apiClient } from '@/utils/trpc';
 
 const chartConfig = {
   sessions: {
@@ -24,7 +24,7 @@ const chartConfig = {
 export function FocusAnalyticsChart() {
   const { data, isLoading } = useQuery({
     queryKey: [['analytics', 'getFocusAnalytics'], { days: 7 }],
-    queryFn: () => trpcClient.analytics.getFocusAnalytics.query({ days: 7 }),
+    queryFn: () => apiClient.analytics.getFocusAnalytics.query({ days: 7 }),
   });
 
   if (isLoading) {
