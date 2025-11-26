@@ -1,7 +1,7 @@
 'use client';
 
 import type { UrlObject } from 'node:url';
-import { Laptop, LogOut, Shield, User } from 'lucide-react';
+import { Laptop, Link as LinkIcon, LogOut, Shield, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { authClient } from '@/lib/auth-client';
 import ApiKeys from './api-keys';
 import Appearance from './appearance';
+import CanvasIntegration from './canvas';
 import Passkeys from './passkeys';
 import Profile from './profile';
 
@@ -29,6 +30,11 @@ const navItems = [
     href: '#security',
     label: 'Security',
     icon: Shield,
+  },
+  {
+    href: '#integrations',
+    label: 'Integrations',
+    icon: LinkIcon,
   },
 ];
 
@@ -104,6 +110,19 @@ export default function SettingsPage() {
             </div>
             <Passkeys userEmail={session?.user.email} />
             <ApiKeys />
+          </section>
+
+          <Separator />
+
+          {/* Integrations Section */}
+          <section className="scroll-mt-16 space-y-4" id="integrations">
+            <div className="space-y-1">
+              <h2 className="font-semibold text-lg">Integrations</h2>
+              <p className="text-muted-foreground text-sm">
+                Connect external services to enhance your study experience.
+              </p>
+            </div>
+            <CanvasIntegration />
           </section>
 
           <Separator />
