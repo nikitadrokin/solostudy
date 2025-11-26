@@ -52,7 +52,7 @@ export default async function RootLayout({
             crossOrigin="anonymous"
             data-enabled="true"
             src="//unpkg.com/react-grab/dist/index.global.js"
-            strategy="beforeInteractive"
+            strategy="afterInteractive"
           />
         )}
       </head>
