@@ -5,7 +5,7 @@ import { BookOpen, ExternalLink, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -22,23 +22,25 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { authClient } from '@/lib/auth-client';
-import { trpcClient } from '@/utils/trpc';
+import { trpc } from '@/utils/trpc';
 
 export default function CanvasCoursesPage() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
 
-  const { data: status } = useQuery({
-    queryKey: [['canvas', 'getStatus']],
-    queryFn: () => trpcClient.canvas.getStatus.query(),
-    enabled: !!session,
-  });
+  const { data: status } = useQuery(
+    trpc.canvas.getStatus.queryOptions(undefined, {
+      enabled: !!session,
+    })
+  );
 
-  const { data: courses = [], isLoading: isLoadingCourses } = useQuery({
-    queryKey: [['canvas', 'getCourses']],
-    queryFn: () => trpcClient.canvas.getCourses.query(),
-    enabled: status?.connected === true,
-  });
+  const { data: courses = [], isLoading: isLoadingCourses } = useQuery(
+    trpc.canvas.getCourses.queryOptions(undefined, {
+      enabled: status?.connected === true,
+    })
+  );
+
+  const s = courses.length > 0 ? 's' : '';
 
   useEffect(() => {
     if (!session) {
@@ -99,7 +101,7 @@ export default function CanvasCoursesPage() {
           <CardDescription>
             {isLoadingCourses
               ? 'Loading courses...'
-              : `${courses.length} course(s) found`}
+              : `${courses.length} course${s} found`}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -166,15 +168,17 @@ export default function CanvasCoursesPage() {
                         )}
                       </div>
                       {status?.canvasUrl && (
-                        <Button asChild size="sm" variant="ghost">
-                          <a
-                            href={`${status.canvasUrl}/courses/${course.canvasId}`}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        </Button>
+                        <a
+                          className={buttonVariants({
+                            variant: 'ghost',
+                            size: 'sm',
+                          })}
+                          href={`${status.canvasUrl}/courses/${course.canvasId}`}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
                       )}
                     </div>
                   </CardContent>
