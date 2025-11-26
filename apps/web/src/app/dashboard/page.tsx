@@ -8,8 +8,8 @@ import {
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { WeeklyActivityChart } from '@/components/analytics/weekly-activity-chart';
 import TaskList from '@/components/task-list';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -132,23 +132,16 @@ export default async function Dashboard() {
             </Card>
           </div>
 
-          {/* Analytics Placeholder */}
+          {/* Analytics */}
           <Card className="col-span-1">
             <CardHeader>
               <CardTitle>Weekly Activity</CardTitle>
               <CardDescription>
-                Your focus trends over the last 7 days
+                Your activity trends over the last 7 days
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex h-[200px] items-center justify-center rounded-md border border-dashed bg-muted/50">
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                  <Badge variant="outline">Coming Soon</Badge>
-                  <span className="text-sm">
-                    Detailed analytics are on the way
-                  </span>
-                </div>
-              </div>
+              <WeeklyActivityChart />
             </CardContent>
           </Card>
         </div>

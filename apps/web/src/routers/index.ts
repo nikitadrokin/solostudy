@@ -7,20 +7,13 @@ import { user } from '../db/schema/auth';
 import { todo } from '../db/schema/focus';
 import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
 import { accountRouter } from './account';
+import { analyticsRouter } from './analytics';
 import { focusRouter } from './focus';
 
 export const appRouter = router({
   account: accountRouter,
+  analytics: analyticsRouter,
   focus: focusRouter,
-  healthCheck: publicProcedure.query(() => {
-    return 'OK';
-  }),
-  privateData: protectedProcedure.query(({ ctx }) => {
-    return {
-      message: 'This is private',
-      user: ctx.session.user,
-    };
-  }),
   todos: {
     list: protectedProcedure.query(async ({ ctx }) => {
       try {
