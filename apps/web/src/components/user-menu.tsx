@@ -17,13 +17,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { SidebarMenuButton, useSidebar } from '@/components/ui/sidebar';
 import { authClient } from '@/lib/auth-client';
+import { cn } from '@/lib/utils';
 import { Skeleton } from './ui/skeleton';
 
 export default function UserMenu() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const { open } = useSidebar();
 
   if (isPending) {
     return <Skeleton className="h-8 w-full" />;
@@ -48,7 +50,12 @@ export default function UserMenu() {
           size="lg"
           tooltip={session.user.name}
         >
-          <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-secondary text-secondary-foreground transition-colors">
+          <div
+            className={cn(
+              'flex aspect-square size-8 items-center justify-center rounded-md text-secondary-foreground transition-colors',
+              open && 'bg-secondary'
+            )}
+          >
             <User className="size-4" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
