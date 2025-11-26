@@ -1,8 +1,9 @@
 'use client';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -21,10 +22,15 @@ type TaskListProps = {
 
 const TaskList: React.FC<TaskListProps> = ({ className }) => {
   const [newTodo, setNewTodo] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   const { data: session } = authClient.useSession();
   const posthog = usePostHog();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const { data: tasks = [], isLoading: isLoadingTasks } = useQuery({
     queryKey: [['todos', 'list']],
@@ -154,7 +160,7 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
           className="-mr-4 space-y-2 overflow-y-auto py-4 pr-4 md:max-h-64"
           data-task-list-container
         >
-          {isLoadingTasks ? (
+          {!isMounted || isLoadingTasks ? (
             Array.from({ length: 10 }).map((_, index) => (
               <TaskItemSkeleton
                 // biome-ignore lint/suspicious/noArrayIndexKey: skeleton
