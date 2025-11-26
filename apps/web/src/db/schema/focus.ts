@@ -8,6 +8,8 @@ export const todo = pgTable('todo', {
     .references(() => user.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   completed: boolean('completed').notNull().default(false),
+  canvasAssignmentId: text('canvas_assignment_id'),
+  canvasCourseId: text('canvas_course_id'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
