@@ -180,7 +180,7 @@ const ApiKeys: React.FC = () => {
           <div className="space-y-3">
             {apiKeys?.map((apiKey) => (
               <div
-                className="flex items-center justify-between rounded-md border p-3"
+                className="flex items-center justify-between rounded-2xl border p-3"
                 key={apiKey.id}
               >
                 <div className="flex items-center gap-3">

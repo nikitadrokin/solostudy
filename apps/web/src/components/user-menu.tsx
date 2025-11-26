@@ -94,6 +94,7 @@ export default function UserMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
+          className="hover:!text-destructive hover:!stroke-destructive"
           onClick={() => {
             authClient.signOut({
               fetchOptions: {
@@ -104,7 +105,7 @@ export default function UserMenu() {
             });
           }}
         >
-          <LogOut className="mr-2 size-4" />
+          <LogOut className="group-hover:!text-destructive mr-2 size-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

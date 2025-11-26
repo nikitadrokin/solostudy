@@ -10,10 +10,11 @@ import {
   RefreshCw,
   Trash2,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -146,7 +147,7 @@ const CanvasIntegration: React.FC = () => {
       <CardContent>
         {status?.connected ? (
           <div className="space-y-4">
-            <div className="flex items-center justify-between rounded-md border p-3">
+            <div className="flex items-center justify-between rounded-2xl border p-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                   <BookOpen className="h-5 w-5 text-muted-foreground" />
@@ -162,7 +163,6 @@ const CanvasIntegration: React.FC = () => {
                 <Button
                   disabled={syncMutation.isPending}
                   onClick={handleSync}
-                  size="sm"
                   variant="outline"
                 >
                   {syncMutation.isPending ? (
@@ -173,8 +173,8 @@ const CanvasIntegration: React.FC = () => {
                   Sync
                 </Button>
                 <Button
+                  className="hover:text-destructive"
                   onClick={() => setIsDisconnectDialogOpen(true)}
-                  size="sm"
                   variant="outline"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -187,24 +187,12 @@ const CanvasIntegration: React.FC = () => {
               <div className="space-y-2">
                 <p className="font-medium text-sm">Synced Courses</p>
                 <div className="space-y-1">
-                  {courses.slice(0, 5).map((course) => (
-                    <div
-                      className="flex items-center justify-between rounded-md border p-2 text-sm"
-                      key={course.id}
-                    >
-                      <span>{course.name}</span>
-                      {course.courseCode && (
-                        <span className="text-muted-foreground text-xs">
-                          {course.courseCode}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                  {courses.length > 5 && (
-                    <p className="text-muted-foreground text-xs">
-                      +{courses.length - 5} more courses
-                    </p>
-                  )}
+                  <Link
+                    className={buttonVariants({ variant: 'secondary' })}
+                    href="/canvas/courses"
+                  >
+                    View synced courses
+                  </Link>
                 </div>
               </div>
             )}

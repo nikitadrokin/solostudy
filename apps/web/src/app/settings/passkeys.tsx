@@ -1,6 +1,6 @@
 'use client';
 
-import { Key, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Key, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -147,7 +147,7 @@ const Passkeys: React.FC<{ userEmail?: string | null }> = ({ userEmail }) => {
           <div className="space-y-3">
             {passkeys.map((passkey) => (
               <div
-                className="flex items-center justify-between rounded-md border p-3"
+                className="flex items-center justify-between rounded-2xl border p-3"
                 key={passkey.id}
               >
                 <div className="flex items-center gap-3">
@@ -178,7 +178,7 @@ const Passkeys: React.FC<{ userEmail?: string | null }> = ({ userEmail }) => {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   {editingPasskey === passkey.id ? (
                     <>
                       <Button
@@ -201,17 +201,14 @@ const Passkeys: React.FC<{ userEmail?: string | null }> = ({ userEmail }) => {
                   ) : (
                     <>
                       <Button
+                        icon={<Pencil stroke="currentColor" />}
                         onClick={() => startEditing(passkey)}
-                        size="sm"
+                        size="icon"
                         variant="ghost"
-                      >
-                        Rename
-                      </Button>
+                      />
                       <Button
                         className="text-destructive hover:text-destructive/90"
-                        icon={
-                          <Trash2 className="size-4" stroke="currentColor" />
-                        }
+                        icon={<Trash2 stroke="currentColor" />}
                         onClick={() => handleDeleteClick(passkey.id)}
                         size="icon"
                         variant="ghost"
