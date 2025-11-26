@@ -5,6 +5,7 @@ import {
   Clock,
   Trophy,
 } from 'lucide-react';
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import TaskList from '@/components/task-list';
@@ -17,16 +18,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { authClient } from '@/lib/auth-client';
+import { auth } from '@/lib/auth';
 
 export default async function Dashboard() {
-  const { data: session, error } = await authClient.getSession();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  if (!session?.user) {
+  if (!session) {
     redirect('/login');
   }
 
