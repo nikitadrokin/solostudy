@@ -40,13 +40,18 @@ export default async function Dashboard() {
     return 'Good evening';
   };
 
+  const name =
+    session.user.name?.split(' ')[0] ||
+    session.user.email?.split('@')[0] ||
+    'there';
+
   return (
     <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
       {/* Header */}
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="font-bold text-3xl tracking-tight">
-            {getGreeting()}, {session.user.name?.split(' ')[0]}
+            {getGreeting()}, {name}
           </h1>
           <p className="text-muted-foreground">
             Ready to get back in the zone?
