@@ -8,7 +8,7 @@ import {
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { WeeklyActivityChart } from '@/components/analytics/weekly-activity-chart';
+import { AnalyticsTabs } from '@/components/analytics/analytics-tabs';
 import TaskList from '@/components/task-list';
 import { Button } from '@/components/ui/button';
 import {
@@ -135,13 +135,13 @@ export default async function Dashboard() {
           {/* Analytics */}
           <Card className="col-span-1">
             <CardHeader>
-              <CardTitle>Weekly Activity</CardTitle>
+              <CardTitle>Analytics</CardTitle>
               <CardDescription>
                 Your activity trends over the last 7 days
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <WeeklyActivityChart />
+              <AnalyticsTabs />
             </CardContent>
           </Card>
         </div>
