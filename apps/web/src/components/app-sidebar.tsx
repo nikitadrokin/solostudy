@@ -1,7 +1,6 @@
 'use client';
 
 import type { UrlObject } from 'node:url';
-import { useQuery } from '@tanstack/react-query';
 import {
   Award,
   Bell,
@@ -42,8 +41,6 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { authClient } from '@/lib/auth-client';
-import { apiClient } from '@/utils/trpc';
 import { ModeToggle } from './theme-toggle/dropdown';
 import { ThemeToggle } from './theme-toggle/inline';
 import UserMenu from './user-menu';
@@ -71,8 +68,6 @@ const settingsLinks = [
 export default function AppSidebar() {
   const pathname = usePathname();
   const { open } = useSidebar();
-  const { data: session } = authClient.useSession();
-  const [canvasOpen, setCanvasOpen] = useState(pathname.startsWith('/canvas'));
   const [settingsOpen, setSettingsOpen] = useState(pathname === '/settings');
   const [currentHash, setCurrentHash] = useState('');
 
@@ -94,14 +89,6 @@ export default function AppSidebar() {
     }
   }, [pathname]);
 
-  const { data: canvasStatus } = useQuery({
-    queryKey: [['canvas', 'getStatus']],
-    queryFn: () => apiClient.canvas.getStatus.query(),
-    enabled: !!session,
-  });
-
-  const isCanvasConnected = canvasStatus?.connected === true;
-  const isCanvasPath = pathname.startsWith('/canvas');
   const isSettingsPath = pathname === '/settings';
 
   return (
@@ -133,46 +120,6 @@ export default function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-
-            {isCanvasConnected && (
-              <Collapsible
-                asChild
-                defaultOpen={canvasOpen}
-                onOpenChange={setCanvasOpen}
-                open={canvasOpen}
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton isActive={isCanvasPath} tooltip="Canvas">
-                      <FileText />
-                      <span>Canvas</span>
-                      <ChevronRight
-                        className={`ml-auto transition-transform duration-200 ${
-                          canvasOpen ? 'rotate-90' : ''
-                        }`}
-                      />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {canvasLinks.map(({ href, label, icon: Icon }) => (
-                        <SidebarMenuSubItem key={href}>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={pathname === href}
-                          >
-                            <Link href={href as unknown as UrlObject}>
-                              <Icon />
-                              <span>{label}</span>
-                            </Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
-            )}
 
             <Collapsible
               asChild
@@ -222,6 +169,21 @@ export default function AppSidebar() {
                 </CollapsibleContent>
               </SidebarMenuItem>
             </Collapsible>
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Canvas</SidebarGroupLabel>
+          <SidebarMenu>
+            {canvasLinks.map(({ href, label, icon: Icon }) => (
+              <SidebarMenuItem key={href}>
+                <SidebarMenuButton asChild isActive={pathname === href}>
+                  <Link href={href as unknown as UrlObject}>
+                    <Icon />
+                    <span>{label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
