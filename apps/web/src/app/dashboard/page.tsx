@@ -1,10 +1,4 @@
-import {
-  ArrowRight,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  Trophy,
-} from 'lucide-react';
+import { ArrowRight, Calendar, Clock, Trophy } from 'lucide-react';
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -19,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { auth } from '@/lib/auth';
-import { cn } from '@/lib/utils';
+import CompletedTasksCard from './completed-tasks';
 
 export default async function Dashboard() {
   const session = await auth.api.getSession({
@@ -115,18 +109,7 @@ export default async function Dashboard() {
                 <p className="text-muted-foreground text-xs">Today's total</p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-medium text-sm">
-                  Tasks Done
-                </CardTitle>
-                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-2xl">0</div>
-                <p className="text-muted-foreground text-xs">Completed today</p>
-              </CardContent>
-            </Card>
+            <CompletedTasksCard completedTasks={0} />
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="font-medium text-sm">Streak</CardTitle>
