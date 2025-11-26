@@ -40,17 +40,12 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { trpcClient } from '@/utils/trpc';
 
-const canvasUrl = `${process.env.NEXT_PUBLIC_CANVAS_URL}/api/v1`;
-
-if (!canvasUrl) {
-  throw new Error('NEXT_PUBLIC_CANVAS_URL is not set.');
-}
-
 const CanvasIntegration: React.FC = () => {
   const queryClient = useQueryClient();
   const [isConnectDialogOpen, setIsConnectDialogOpen] = useState(false);
   const [isDisconnectDialogOpen, setIsDisconnectDialogOpen] = useState(false);
   const [accessToken, setAccessToken] = useState('');
+  const [canvasUrlInput, setCanvasUrlInput] = useState('');
 
   const { data: status, isLoading: isLoadingStatus } = useQuery({
     queryKey: [['canvas', 'getStatus']],
@@ -70,6 +65,7 @@ const CanvasIntegration: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: [['canvas']] });
       setIsConnectDialogOpen(false);
       setAccessToken('');
+      setCanvasUrlInput('');
       toast.success('Canvas connected successfully');
     },
     onError: (error) => {
@@ -103,16 +99,18 @@ const CanvasIntegration: React.FC = () => {
   });
 
   const handleConnect = () => {
+    const urlTrimmed = canvasUrlInput.trim();
     const tokenTrimmed = accessToken.trim();
+    const hasUrl = Boolean(urlTrimmed);
     const hasToken = Boolean(tokenTrimmed);
 
-    if (!hasToken) {
-      toast.error('Please provide your Canvas access token');
+    if (!(hasUrl && hasToken)) {
+      toast.error('Please provide both Canvas URL and access token');
       return;
     }
 
     connectMutation.mutate({
-      canvasUrl,
+      canvasUrl: urlTrimmed,
       accessToken: tokenTrimmed,
     });
   };
@@ -219,7 +217,21 @@ const CanvasIntegration: React.FC = () => {
               instance.
             </p>
             <Dialog
-              onOpenChange={setIsConnectDialogOpen}
+              onOpenChange={(open) => {
+                setIsConnectDialogOpen(open);
+                if (open && status?.canvasUrl) {
+                  setCanvasUrlInput(status.canvasUrl);
+                } else if (
+                  open &&
+                  !canvasUrlInput &&
+                  process.env.NEXT_PUBLIC_CANVAS_URL
+                ) {
+                  setCanvasUrlInput(process.env.NEXT_PUBLIC_CANVAS_URL);
+                } else if (!open) {
+                  setAccessToken('');
+                  setCanvasUrlInput('');
+                }
+              }}
               open={isConnectDialogOpen}
             >
               <DialogTrigger asChild>
@@ -229,18 +241,22 @@ const CanvasIntegration: React.FC = () => {
                 <DialogHeader>
                   <DialogTitle>Connect Canvas</DialogTitle>
                   <DialogDescription>
-                    Enter your Canvas personal access token.
+                    Enter your Canvas instance URL and personal access token.
                   </DialogDescription>
                 </DialogHeader>
-                <FieldGroup className="mt-6">
+                <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="canvas-url">Canvas URL</FieldLabel>
                     <Input
-                      disabled
                       id="canvas-url"
-                      readOnly
-                      value={canvasUrl}
+                      onChange={(e) => setCanvasUrlInput(e.target.value)}
+                      placeholder="https://canvas.instructure.com"
+                      value={canvasUrlInput}
                     />
+                    <FieldDescription>
+                      Your institution's Canvas URL (e.g.
+                      https://canvas.instructure.com)
+                    </FieldDescription>
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="access-token">
@@ -290,7 +306,11 @@ const CanvasIntegration: React.FC = () => {
                     Cancel
                   </Button>
                   <Button
-                    disabled={connectMutation.isPending || !accessToken.trim()}
+                    disabled={
+                      connectMutation.isPending ||
+                      !canvasUrlInput.trim() ||
+                      !accessToken.trim()
+                    }
                     isLoading={connectMutation.isPending}
                     onClick={handleConnect}
                   >

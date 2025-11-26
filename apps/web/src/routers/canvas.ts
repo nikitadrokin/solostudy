@@ -9,29 +9,29 @@ import {
   fetchAllAssignments,
   fetchCanvasCourses,
   fetchCourseAssignments,
+  normalizeCanvasUrl,
   validateCanvasToken,
 } from '../lib/canvas';
 import { protectedProcedure, router } from '../lib/trpc';
 
-const canvasUrl = `${process.env.NEXT_PUBLIC_CANVAS_URL}/api/v1`;
-
-if (!canvasUrl) {
-  throw new Error('NEXT_PUBLIC_CANVAS_URL is not set.');
-}
-
 export const canvasRouter = router({
   /**
-   * Connect Canvas account by storing access token
+   * Connect Canvas account by storing access token and URL
    */
   connect: protectedProcedure
     .input(
       z.object({
         accessToken: z.string().min(1),
+        canvasUrl: z.string().min(1),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // Normalize and validate URL
+      const normalizedUrl = normalizeCanvasUrl(input.canvasUrl);
+      const apiUrl = `${normalizedUrl}/api/v1`;
+
       // Validate token
-      const isValid = await validateCanvasToken(canvasUrl, input.accessToken);
+      const isValid = await validateCanvasToken(apiUrl, input.accessToken);
 
       if (!isValid) {
         throw new TRPCError({
@@ -40,11 +40,12 @@ export const canvasRouter = router({
         });
       }
 
-      // Store token
+      // Store token and URL
       await db
         .update(user)
         .set({
           canvasIntegrationToken: input.accessToken,
+          canvasUrl: normalizedUrl,
           updatedAt: new Date(),
         })
         .where(eq(user.id, ctx.session.user.id));
@@ -60,6 +61,7 @@ export const canvasRouter = router({
       .update(user)
       .set({
         canvasIntegrationToken: null,
+        canvasUrl: process.env.NEXT_PUBLIC_CANVAS_URL ?? '',
         updatedAt: new Date(),
       })
       .where(eq(user.id, ctx.session.user.id));
@@ -74,6 +76,7 @@ export const canvasRouter = router({
     const userData = await db
       .select({
         canvasIntegrationToken: user.canvasIntegrationToken,
+        canvasUrl: user.canvasUrl,
       })
       .from(user)
       .where(eq(user.id, ctx.session.user.id))
@@ -81,16 +84,19 @@ export const canvasRouter = router({
 
     const userRecord = userData[0];
     const token = userRecord?.canvasIntegrationToken;
+    const storedUrl = userRecord?.canvasUrl;
 
-    if (!token) {
-      return { connected: false };
+    if (!(token && storedUrl)) {
+      return { connected: false, canvasUrl: storedUrl ?? null };
     }
 
     // Validate token is still valid
-    const isValid = await validateCanvasToken(canvasUrl, token);
+    const apiUrl = `${storedUrl}/api/v1`;
+    const isValid = await validateCanvasToken(apiUrl, token);
 
     return {
       connected: isValid,
+      canvasUrl: storedUrl,
     };
   }),
 
@@ -101,6 +107,7 @@ export const canvasRouter = router({
     const userData = await db
       .select({
         canvasIntegrationToken: user.canvasIntegrationToken,
+        canvasUrl: user.canvasUrl,
       })
       .from(user)
       .where(eq(user.id, ctx.session.user.id))
@@ -108,8 +115,9 @@ export const canvasRouter = router({
 
     const userRecord = userData[0];
     const token = userRecord?.canvasIntegrationToken;
+    const storedUrl = userRecord?.canvasUrl;
 
-    if (!token) {
+    if (!(token && storedUrl)) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'Canvas not connected',
@@ -118,8 +126,9 @@ export const canvasRouter = router({
 
     try {
       // Just validate connection by fetching courses
-      const courses = await fetchCanvasCourses(canvasUrl, token);
-      const assignments = await fetchAllAssignments(canvasUrl, token);
+      const apiUrl = `${storedUrl}/api/v1`;
+      const courses = await fetchCanvasCourses(apiUrl, token);
+      const assignments = await fetchAllAssignments(apiUrl, token);
 
       return {
         success: true,
@@ -142,6 +151,7 @@ export const canvasRouter = router({
     const userData = await db
       .select({
         canvasIntegrationToken: user.canvasIntegrationToken,
+        canvasUrl: user.canvasUrl,
       })
       .from(user)
       .where(eq(user.id, ctx.session.user.id))
@@ -149,8 +159,9 @@ export const canvasRouter = router({
 
     const userRecord = userData[0];
     const token = userRecord?.canvasIntegrationToken;
+    const storedUrl = userRecord?.canvasUrl;
 
-    if (!token) {
+    if (!(token && storedUrl)) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'Canvas not connected',
@@ -158,7 +169,8 @@ export const canvasRouter = router({
     }
 
     try {
-      const courses = await fetchCanvasCourses(canvasUrl, token);
+      const apiUrl = `${storedUrl}/api/v1`;
+      const courses = await fetchCanvasCourses(apiUrl, token);
       return courses.map((course) => ({
         id: String(course.id),
         canvasId: course.id,
@@ -190,6 +202,7 @@ export const canvasRouter = router({
       const userData = await db
         .select({
           canvasIntegrationToken: user.canvasIntegrationToken,
+          canvasUrl: user.canvasUrl,
         })
         .from(user)
         .where(eq(user.id, ctx.session.user.id))
@@ -197,8 +210,9 @@ export const canvasRouter = router({
 
       const userRecord = userData[0];
       const token = userRecord?.canvasIntegrationToken;
+      const storedUrl = userRecord?.canvasUrl;
 
-      if (!token) {
+      if (!(token && storedUrl)) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Canvas not connected',
@@ -206,9 +220,10 @@ export const canvasRouter = router({
       }
 
       try {
+        const apiUrl = `${storedUrl}/api/v1`;
         const assignments = input.courseId
-          ? await fetchCourseAssignments(canvasUrl, token, input.courseId)
-          : await fetchAllAssignments(canvasUrl, token);
+          ? await fetchCourseAssignments(apiUrl, token, input.courseId)
+          : await fetchAllAssignments(apiUrl, token);
 
         // Sort by due date
         assignments.sort((a, b) => {
@@ -284,6 +299,7 @@ export const canvasRouter = router({
       const userData = await db
         .select({
           canvasIntegrationToken: user.canvasIntegrationToken,
+          canvasUrl: user.canvasUrl,
         })
         .from(user)
         .where(eq(user.id, ctx.session.user.id))
@@ -291,8 +307,9 @@ export const canvasRouter = router({
 
       const userRecord = userData[0];
       const token = userRecord?.canvasIntegrationToken;
+      const storedUrl = userRecord?.canvasUrl;
 
-      if (!token) {
+      if (!(token && storedUrl)) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Canvas not connected',
@@ -301,7 +318,8 @@ export const canvasRouter = router({
 
       try {
         // Fetch all assignments to find the ones we need
-        const allAssignments = await fetchAllAssignments(canvasUrl, token);
+        const apiUrl = `${storedUrl}/api/v1`;
+        const allAssignments = await fetchAllAssignments(apiUrl, token);
         const assignmentsToImport = allAssignments.filter((a) =>
           input.assignmentIds.includes(a.id)
         );
