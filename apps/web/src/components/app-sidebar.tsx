@@ -2,7 +2,7 @@
 
 import type { UrlObject } from 'node:url';
 // biome-ignore lint/correctness/noUnusedImports: required imports
-import { Focus, Home, LayoutDashboard, Settings } from 'lucide-react';
+import { FileText, Focus, Home, LayoutDashboard, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -27,6 +27,7 @@ const links = [
   // { href: '/', label: 'Home', icon: Home },
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/focus', label: 'Focus Room', icon: Focus },
+  { href: '/canvas-assignments', label: 'Canvas Assignments', icon: FileText },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 

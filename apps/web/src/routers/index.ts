@@ -8,11 +8,13 @@ import { todo } from '../db/schema/focus';
 import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
 import { accountRouter } from './account';
 import { analyticsRouter } from './analytics';
+import { canvasRouter } from './canvas';
 import { focusRouter } from './focus';
 
 export const appRouter = router({
   account: accountRouter,
   analytics: analyticsRouter,
+  canvas: canvasRouter,
   focus: focusRouter,
   todos: {
     list: protectedProcedure.query(async ({ ctx }) => {

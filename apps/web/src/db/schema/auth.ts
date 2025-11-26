@@ -15,6 +15,7 @@ export const user = pgTable('user', {
   lastPlayedVideoId: text('last_played_video_id'),
   // Instructure Canvas for students
   canvasIntegrationToken: text('canvas_access_token'),
+  // canvasUrl: text('canvas_url'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
