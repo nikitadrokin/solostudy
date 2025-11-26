@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { AnalyticsTabs } from '@/components/analytics/analytics-tabs';
 import TaskList from '@/components/task-list';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -89,7 +89,7 @@ export default async function Dashboard() {
               </div>
 
               <Link
-                className={cn({
+                className={buttonVariants({
                   size: 'lg',
                   variant: 'secondary',
                   className: 'shrink-0 gap-2 shadow-sm',
@@ -182,7 +182,7 @@ export default async function Dashboard() {
               </Button>
 
               <Link
-                className={cn({
+                className={buttonVariants({
                   variant: 'outline',
                   className: 'w-full justify-start',
                 })}
