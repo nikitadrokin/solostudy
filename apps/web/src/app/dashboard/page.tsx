@@ -19,6 +19,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { auth } from '@/lib/auth';
+import { cn } from '@/lib/utils';
 
 export default async function Dashboard() {
   const session = await auth.api.getSession({
@@ -86,16 +87,17 @@ export default async function Dashboard() {
                   and video backgrounds.
                 </CardDescription>
               </div>
-              <Button
-                asChild
-                className="shrink-0 shadow-sm"
-                size="lg"
-                variant="secondary"
+
+              <Link
+                className={cn({
+                  size: 'lg',
+                  variant: 'secondary',
+                  className: 'shrink-0 gap-2 shadow-sm',
+                })}
+                href="/focus"
               >
-                <Link className="gap-2" href="/focus">
-                  Enter Focus Room <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
+                Enter Focus Room <ArrowRight className="h-4 w-4" />
+              </Link>
             </CardContent>
           </Card>
 
@@ -178,13 +180,16 @@ export default async function Dashboard() {
               >
                 Manage Goals
               </Button>
-              <Button
-                asChild
-                className="w-full justify-start"
-                variant="outline"
+
+              <Link
+                className={cn({
+                  variant: 'outline',
+                  className: 'w-full justify-start',
+                })}
+                href="/settings"
               >
-                <Link href="/settings">Settings</Link>
-              </Button>
+                Settings
+              </Link>
             </CardContent>
           </Card>
         </div>
