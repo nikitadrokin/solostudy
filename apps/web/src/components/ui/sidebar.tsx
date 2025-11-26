@@ -1,6 +1,6 @@
 'use client';
 
-import { Slot } from '@radix-ui/react-slot';
+import { Slot, Slottable } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
 import * as React from 'react';
@@ -674,18 +674,25 @@ function SidebarMenuSubButton({
   size = 'md',
   isActive = false,
   className,
+  children: childrenProp,
   ...props
 }: React.ComponentProps<'a'> & {
   asChild?: boolean;
   size?: 'sm' | 'md';
   isActive?: boolean;
+  children?: React.ReactNode;
 }) {
   const Comp = asChild ? Slot : 'a';
+  const children = asChild ? (
+    <Slottable>{childrenProp}</Slottable>
+  ) : (
+    childrenProp
+  );
 
   return (
     <Comp
       className={cn(
-        '-translate-x-px flex h-7 min-w-0 select-none items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground outline-hidden ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground',
+        '-translate-x-px flex h-7 min-w-0 select-none items-center gap-2 rounded-md px-2 text-sidebar-foreground outline-hidden ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground',
         'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
         size === 'sm' && 'text-xs',
         size === 'md' && 'text-sm',
@@ -697,7 +704,10 @@ function SidebarMenuSubButton({
       data-size={size}
       data-slot="sidebar-menu-sub-button"
       {...props}
-    />
+    >
+      {children}
+      <span className="-left-6 -right-6 absolute inset-y-0 z-0" />
+    </Comp>
   );
 }
 
