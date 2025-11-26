@@ -10,6 +10,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { apiClient } from '@/utils/trpc';
+import Loader from './loader';
 import { CardDescription, CardTitle } from './ui/card';
 import { DrawerDescription, DrawerTitle } from './ui/drawer';
 
@@ -33,7 +34,7 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
   const { data: session } = authClient.useSession();
   const posthog = usePostHog();
 
-  const { data: tasks = [] } = useQuery({
+  const { data: tasks = [], isLoading: isLoadingTasks } = useQuery({
     queryKey: [['todos', 'list']],
     queryFn: () => apiClient.todos.list.query(),
     enabled: !!session,
@@ -161,7 +162,9 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
           className="-mr-4 space-y-2 overflow-y-auto py-4 pr-4 md:max-h-64"
           data-task-list-container
         >
-          {tasks.length === 0 ? (
+          {isLoadingTasks ? (
+            <Loader />
+          ) : tasks.length === 0 ? (
             <p className="py-4 text-center text-muted-foreground text-sm">
               No tasks yet. Add one above!
             </p>
