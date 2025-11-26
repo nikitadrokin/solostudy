@@ -157,7 +157,7 @@ export default async function Dashboard() {
         <div className="space-y-6 lg:col-span-4">
           <Card className="flex flex-col pb-0">
             <CardContent className="px-4">
-              <TaskList />
+              <TaskList className="**:data-[task-list-container]:!max-h-[37.75rem] h-[640px]" />
             </CardContent>
           </Card>
 
