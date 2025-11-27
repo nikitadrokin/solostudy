@@ -176,7 +176,11 @@ export default function AppSidebar() {
           <SidebarMenu>
             {canvasLinks.map(({ href, label, icon: Icon }) => (
               <SidebarMenuItem key={href}>
-                <SidebarMenuButton asChild isActive={pathname === href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === href}
+                  tooltip={label}
+                >
                   <Link href={href as unknown as UrlObject}>
                     <Icon />
                     <span>{label}</span>
