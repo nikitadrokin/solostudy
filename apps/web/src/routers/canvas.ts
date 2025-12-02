@@ -7,8 +7,12 @@ import { user } from '../db/schema/auth';
 import { todo } from '../db/schema/focus';
 import {
   fetchAllAssignments,
+  fetchAnnouncements,
+  fetchCalendarEvents,
   fetchCanvasCourses,
+  fetchCanvasUser,
   fetchCourseAssignments,
+  fetchUserEnrollment,
   normalizeCanvasUrl,
   validateCanvasToken,
 } from '../lib/canvas';
@@ -363,4 +367,196 @@ export const canvasRouter = router({
         });
       }
     }),
+
+  /**
+   * Get grades for all courses
+   */
+  getGrades: protectedProcedure.query(async ({ ctx }) => {
+    const userData = await db
+      .select({
+        canvasIntegrationToken: user.canvasIntegrationToken,
+        canvasUrl: user.canvasUrl,
+      })
+      .from(user)
+      .where(eq(user.id, ctx.session.user.id))
+      .limit(1);
+
+    const userRecord = userData[0];
+    const token = userRecord?.canvasIntegrationToken;
+    const storedUrl = userRecord?.canvasUrl;
+
+    if (!(token && storedUrl)) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Canvas not connected',
+      });
+    }
+
+    try {
+      const apiUrl = `${storedUrl}/api/v1`;
+      const courses = await fetchCanvasCourses(apiUrl, token);
+      const canvasUser = await fetchCanvasUser(apiUrl, token);
+
+      const gradesPromises = courses.map(async (course) => {
+        try {
+          const enrollment = await fetchUserEnrollment(
+            apiUrl,
+            token,
+            course.id,
+            canvasUser.id
+          );
+          return {
+            courseId: course.id,
+            courseName: course.name,
+            courseCode: course.course_code,
+            currentScore: enrollment?.grades?.current_score ?? null,
+            currentGrade: enrollment?.grades?.current_grade ?? null,
+            finalScore: enrollment?.grades?.final_score ?? null,
+            finalGrade: enrollment?.grades?.final_grade ?? null,
+          };
+        } catch {
+          return {
+            courseId: course.id,
+            courseName: course.name,
+            courseCode: course.course_code,
+            currentScore: null,
+            currentGrade: null,
+            finalScore: null,
+            finalGrade: null,
+          };
+        }
+      });
+
+      return await Promise.all(gradesPromises);
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to fetch grades: ${error instanceof Error ? error.message : String(error)}`,
+        cause: error,
+      });
+    }
+  }),
+
+  /**
+   * Get calendar events for all courses
+   */
+  getCalendarEvents: protectedProcedure
+    .input(
+      z.object({
+        startDate: z.string(),
+        endDate: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const userData = await db
+        .select({
+          canvasIntegrationToken: user.canvasIntegrationToken,
+          canvasUrl: user.canvasUrl,
+        })
+        .from(user)
+        .where(eq(user.id, ctx.session.user.id))
+        .limit(1);
+
+      const userRecord = userData[0];
+      const token = userRecord?.canvasIntegrationToken;
+      const storedUrl = userRecord?.canvasUrl;
+
+      if (!(token && storedUrl)) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Canvas not connected',
+        });
+      }
+
+      try {
+        const apiUrl = `${storedUrl}/api/v1`;
+        const courses = await fetchCanvasCourses(apiUrl, token);
+        const contextCodes = courses.map((c) => `course_${c.id}`);
+
+        const events = await fetchCalendarEvents(
+          apiUrl,
+          token,
+          contextCodes,
+          input.startDate,
+          input.endDate
+        );
+
+        return events.map((event) => ({
+          id: event.id,
+          title: event.title,
+          description: event.description,
+          startAt: event.start_at,
+          endAt: event.end_at,
+          allDay: event.all_day,
+          contextCode: event.context_code,
+          contextName: event.context_name,
+          type: event.type,
+          htmlUrl: event.html_url,
+        }));
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to fetch calendar events: ${error instanceof Error ? error.message : String(error)}`,
+          cause: error,
+        });
+      }
+    }),
+
+  /**
+   * Get announcements for all courses
+   */
+  getAnnouncements: protectedProcedure.query(async ({ ctx }) => {
+    const userData = await db
+      .select({
+        canvasIntegrationToken: user.canvasIntegrationToken,
+        canvasUrl: user.canvasUrl,
+      })
+      .from(user)
+      .where(eq(user.id, ctx.session.user.id))
+      .limit(1);
+
+    const userRecord = userData[0];
+    const token = userRecord?.canvasIntegrationToken;
+    const storedUrl = userRecord?.canvasUrl;
+
+    if (!(token && storedUrl)) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Canvas not connected',
+      });
+    }
+
+    try {
+      const apiUrl = `${storedUrl}/api/v1`;
+      const courses = await fetchCanvasCourses(apiUrl, token);
+      const contextCodes = courses.map((c) => `course_${c.id}`);
+
+      const announcements = await fetchAnnouncements(
+        apiUrl,
+        token,
+        contextCodes
+      );
+
+      // Create a map of course IDs to names for display
+      const courseMap = new Map(courses.map((c) => [`course_${c.id}`, c.name]));
+
+      return announcements.map((announcement) => ({
+        id: announcement.id,
+        title: announcement.title,
+        message: announcement.message,
+        postedAt: announcement.posted_at,
+        contextCode: announcement.context_code,
+        courseName:
+          courseMap.get(announcement.context_code) ?? 'Unknown Course',
+        htmlUrl: announcement.html_url,
+        userName: announcement.user_name,
+      }));
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to fetch announcements: ${error instanceof Error ? error.message : String(error)}`,
+        cause: error,
+      });
+    }
+  }),
 });

@@ -122,67 +122,64 @@ export default function CanvasCoursesPage() {
               </EmptyHeader>
             </Empty>
           ) : (
-            <div className="space-y-4">
+            <div className="divide-y">
               {courses.map((course) => (
-                <Card key={course.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 space-y-1">
-                        <h3 className="font-semibold text-base">
-                          {course.name}
-                        </h3>
-                        {course.courseCode && (
-                          <p className="text-muted-foreground text-sm">
-                            {course.courseCode}
-                          </p>
+                <div
+                  className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0"
+                  key={course.id}
+                >
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate font-medium">{course.name}</h3>
+                    {course.courseCode && (
+                      <p className="truncate text-muted-foreground text-sm">
+                        {course.courseCode}
+                      </p>
+                    )}
+                    {(course.startAt || course.endAt) && (
+                      <div className="flex flex-wrap gap-4 text-muted-foreground text-sm">
+                        {course.startAt && (
+                          <span>
+                            Starts:{' '}
+                            {new Date(course.startAt).toLocaleDateString(
+                              undefined,
+                              {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              }
+                            )}
+                          </span>
                         )}
-                        {(course.startAt || course.endAt) && (
-                          <div className="flex flex-wrap gap-4 text-muted-foreground text-sm">
-                            {course.startAt && (
-                              <span>
-                                Starts:{' '}
-                                {new Date(course.startAt).toLocaleDateString(
-                                  undefined,
-                                  {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                  }
-                                )}
-                              </span>
+                        {course.endAt && (
+                          <span>
+                            Ends:{' '}
+                            {new Date(course.endAt).toLocaleDateString(
+                              undefined,
+                              {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              }
                             )}
-                            {course.endAt && (
-                              <span>
-                                Ends:{' '}
-                                {new Date(course.endAt).toLocaleDateString(
-                                  undefined,
-                                  {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                  }
-                                )}
-                              </span>
-                            )}
-                          </div>
+                          </span>
                         )}
                       </div>
-                      {status?.canvasUrl && (
-                        <a
-                          className={buttonVariants({
-                            variant: 'ghost',
-                            size: 'sm',
-                          })}
-                          href={`${status.canvasUrl}/courses/${course.canvasId}`}
-                          rel="noopener noreferrer"
-                          target="_blank"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                    )}
+                  </div>
+                  {status?.canvasUrl && (
+                    <a
+                      className={buttonVariants({
+                        variant: 'ghost',
+                        size: 'sm',
+                      })}
+                      href={`${status.canvasUrl}/courses/${course.canvasId}`}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
           )}

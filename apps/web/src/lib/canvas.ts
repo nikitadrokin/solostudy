@@ -1,6 +1,9 @@
 import type {
+  CanvasAnnouncement,
   CanvasAssignment,
+  CanvasCalendarEvent,
   CanvasCourse,
+  CanvasEnrollment,
   CanvasUser,
 } from '../types/canvas';
 
@@ -113,6 +116,98 @@ export async function fetchAllAssignments(
 
   const assignmentArrays = await Promise.all(assignmentPromises);
   return assignmentArrays.flat();
+}
+
+/**
+ * Fetches enrollments for a specific course with grade information
+ */
+export async function fetchCourseEnrollments(
+  canvasUrl: string,
+  accessToken: string,
+  courseId: number
+): Promise<CanvasEnrollment[]> {
+  const initialUrl = `${canvasUrl}/courses/${courseId}/enrollments?type[]=StudentEnrollment&include[]=current_grading_period_scores&per_page=100`;
+  return await fetchPaginatedData<CanvasEnrollment>(
+    initialUrl,
+    accessToken,
+    []
+  );
+}
+
+/**
+ * Fetches user's own enrollment for a course (for getting grades)
+ */
+export async function fetchUserEnrollment(
+  canvasUrl: string,
+  accessToken: string,
+  courseId: number,
+  userId: number
+): Promise<CanvasEnrollment | null> {
+  const response = await fetch(
+    `${canvasUrl}/courses/${courseId}/enrollments?user_id=${userId}&include[]=current_grading_period_scores`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const enrollments: CanvasEnrollment[] = await response.json();
+  return enrollments.find((e) => e.type === 'StudentEnrollment') ?? null;
+}
+
+/**
+ * Fetches calendar events for specified courses
+ */
+export async function fetchCalendarEvents(
+  canvasUrl: string,
+  accessToken: string,
+  contextCodes: string[],
+  startDate: string,
+  endDate: string
+): Promise<CanvasCalendarEvent[]> {
+  const contextParams = contextCodes
+    .map((code) => `context_codes[]=${code}`)
+    .join('&');
+  const initialUrl = `${canvasUrl}/calendar_events?${contextParams}&start_date=${startDate}&end_date=${endDate}&type=event&per_page=100`;
+
+  try {
+    return await fetchPaginatedData<CanvasCalendarEvent>(
+      initialUrl,
+      accessToken,
+      []
+    );
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Fetches announcements for specified courses
+ */
+export async function fetchAnnouncements(
+  canvasUrl: string,
+  accessToken: string,
+  contextCodes: string[]
+): Promise<CanvasAnnouncement[]> {
+  const contextParams = contextCodes
+    .map((code) => `context_codes[]=${code}`)
+    .join('&');
+  const initialUrl = `${canvasUrl}/announcements?${contextParams}&per_page=50`;
+
+  try {
+    return await fetchPaginatedData<CanvasAnnouncement>(
+      initialUrl,
+      accessToken,
+      []
+    );
+  } catch {
+    return [];
+  }
 }
 
 /**
