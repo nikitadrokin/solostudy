@@ -12,7 +12,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -231,9 +231,12 @@ export default function CanvasCalendarPage() {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button asChild>
-                  <Link href="/settings#integrations">Go to Settings</Link>
-                </Button>
+                <Link
+                  className={buttonVariants()}
+                  href="/settings#integrations"
+                >
+                  Go to Settings
+                </Link>
               </EmptyContent>
             </Empty>
           </CardContent>

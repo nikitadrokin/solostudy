@@ -1,0 +1,26 @@
+---
+description: When you plan on adding links (internal or global)
+alwaysApply: false
+---
+
+# Button Component Patterns
+
+## Prefer `buttonVariants()` over `Button asChild`
+
+When styling links or anchor elements as buttons, use `buttonVariants()` directly instead of wrapping with `Button` and `asChild`.
+
+**Preferred:**
+
+```tsx
+<Link className={buttonVariants()} href="/path">Text</Link>
+<a className={buttonVariants({ variant: 'ghost', size: 'sm' })} href="/path">Text</a>
+```
+
+**Avoid:**
+
+```tsx
+<Button asChild><Link href="/path">Text</Link></Button>
+<Button asChild><a href="/path">Text</a></Button>
+```
+
+This pattern avoids React child validation errors and simplifies the component tree.

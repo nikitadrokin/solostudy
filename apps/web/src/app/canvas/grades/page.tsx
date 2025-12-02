@@ -5,7 +5,7 @@ import { Award, ExternalLink, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -100,9 +100,12 @@ export default function CanvasGradesPage() {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button asChild>
-                  <Link href="/settings#integrations">Go to Settings</Link>
-                </Button>
+                <Link
+                  className={buttonVariants()}
+                  href="/settings#integrations"
+                >
+                  Go to Settings
+                </Link>
               </EmptyContent>
             </Empty>
           </CardContent>
