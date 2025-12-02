@@ -17,7 +17,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import InstallPWAPrompt from '@/components/InstallPWAPrompt';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
@@ -114,12 +114,19 @@ export default function Home() {
             </div>
 
             <div className="mt-12 flex justify-center gap-4">
-              <Button asChild size="lg" variant="outline">
-                <Link href="/dashboard">View Dashboard</Link>
-              </Button>
-              <Button asChild size="lg" variant="ghost">
-                <Link href="/focus">Enter Custom Room</Link>
-              </Button>
+              <Link
+                className={buttonVariants({ size: 'lg', variant: 'outline' })}
+                href="/dashboard"
+              >
+                View Dashboard
+              </Link>
+              <Link
+                className={buttonVariants({ size: 'lg', variant: 'ghost' })}
+                href="/focus"
+              >
+                Start Focus Session
+                <ArrowRight />
+              </Link>
             </div>
           </div>
         </section>

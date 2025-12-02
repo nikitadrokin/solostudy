@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -180,15 +180,14 @@ function AssignmentCard({
                 Add to Tasks
               </Button>
             )}
-            <Button asChild size="sm" variant="ghost">
-              <a
-                href={`https://canvas.instructure.com/courses/${assignment.courseId}/assignments/${assignment.canvasId}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            </Button>
+            <a
+              className={buttonVariants({ size: 'sm', variant: 'ghost' })}
+              href={`https://canvas.instructure.com/courses/${assignment.courseId}/assignments/${assignment.canvasId}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </a>
           </div>
         </div>
       </CardContent>
@@ -279,9 +278,12 @@ export default function CanvasAssignmentsPage() {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button asChild>
-                  <Link href="/settings#integrations">Go to Settings</Link>
-                </Button>
+                <Link
+                  className={buttonVariants({ size: 'lg' })}
+                  href="/settings#integrations"
+                >
+                  Go to Settings
+                </Link>
               </EmptyContent>
             </Empty>
           </CardContent>

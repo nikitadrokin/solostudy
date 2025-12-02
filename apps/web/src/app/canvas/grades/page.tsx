@@ -101,7 +101,7 @@ export default function CanvasGradesPage() {
               </EmptyHeader>
               <EmptyContent>
                 <Link
-                  className={buttonVariants()}
+                  className={buttonVariants({ size: 'lg' })}
                   href="/settings#integrations"
                 >
                   Go to Settings
