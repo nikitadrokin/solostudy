@@ -181,8 +181,12 @@ export async function fetchCalendarEvents(
       accessToken,
       []
     );
-  } catch {
-    return [];
+  } catch (error) {
+    if (error instanceof Error) {
+      throw formattedCanvasError(error);
+    }
+
+    throw new Error('Failed to fetch calendar events from Canvas API');
   }
 }
 
