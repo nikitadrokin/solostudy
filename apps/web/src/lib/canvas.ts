@@ -205,8 +205,15 @@ export async function fetchAnnouncements(
       accessToken,
       []
     );
-  } catch {
-    return [];
+  } catch (error) {
+    // Check if it's a rate limit error (429) or other API errors
+    if (error instanceof Error) {
+      // If the error message contains rate limit information, throw it
+
+      throw formattedCanvasError(error);
+    }
+    // If it's not an Error instance, throw a generic error
+    throw new Error('Failed to fetch announcements from Canvas API');
   }
 }
 
@@ -238,4 +245,32 @@ export function normalizeCanvasUrl(url: string): string {
   // Remove trailing slash
   normalized = normalized.replace(TRAILING_SLASH_REGEX, '');
   return normalized;
+}
+
+function formattedCanvasError(error: Error): Error {
+  if (
+    error.message.includes('429') ||
+    error.message.toLowerCase().includes('rate limit')
+  ) {
+    throw new Error('Canvas API rate limit exceeded. Please try again later.');
+  }
+  // For other API errors, throw with more context
+  if (error.message.includes('401')) {
+    throw new Error(
+      'Canvas API authentication failed. Please check your access token.'
+    );
+  }
+  if (error.message.includes('403')) {
+    throw new Error(
+      'Canvas API access forbidden. Please check your permissions.'
+    );
+  }
+  if (error.message.includes('404')) {
+    throw new Error(
+      'Canvas API endpoint not found. Please check your Canvas URL.'
+    );
+  }
+
+  // For other errors, throw the original error
+  throw error;
 }

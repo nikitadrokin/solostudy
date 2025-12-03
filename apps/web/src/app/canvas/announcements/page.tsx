@@ -5,7 +5,7 @@ import { Bell, ExternalLink, Loader2, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -78,6 +78,11 @@ export default function CanvasAnnouncementsPage() {
     }
   }, [session, router]);
 
+  console.log(
+    'API response for announcements:',
+    JSON.stringify(announcements, null, 2)
+  );
+
   if (!session) {
     return null;
   }
@@ -96,7 +101,7 @@ export default function CanvasAnnouncementsPage() {
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">
-                  <Bell className="h-6 w-6" />
+                  <Bell className="size-6" />
                 </EmptyMedia>
                 <EmptyTitle>Canvas Not Connected</EmptyTitle>
                 <EmptyDescription>
@@ -139,13 +144,13 @@ export default function CanvasAnnouncementsPage() {
         <CardContent>
           {isLoadingAnnouncements ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              <Loader2 className="size-6 animate-spin text-muted-foreground" />
             </div>
           ) : announcements.length === 0 ? (
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">
-                  <Bell className="h-6 w-6" />
+                  <Bell className="size-6" />
                 </EmptyMedia>
                 <EmptyTitle>No announcements</EmptyTitle>
                 <EmptyDescription>
@@ -173,7 +178,7 @@ export default function CanvasAnnouncementsPage() {
                             <>
                               <span>·</span>
                               <span className="flex items-center gap-1">
-                                <User className="h-3 w-3" />
+                                <User className="size-3" />
                                 {announcement.userName}
                               </span>
                             </>
@@ -188,12 +193,15 @@ export default function CanvasAnnouncementsPage() {
                     </div>
                     {announcement.htmlUrl && (
                       <a
-                        className="shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        className={buttonVariants({
+                          variant: 'outline',
+                          size: 'icon',
+                        })}
                         href={announcement.htmlUrl}
                         rel="noopener noreferrer"
                         target="_blank"
                       >
-                        <ExternalLink className="h-4 w-4" />
+                        <ExternalLink className="size-4" />
                       </a>
                     )}
                   </div>
