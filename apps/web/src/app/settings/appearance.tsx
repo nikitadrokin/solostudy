@@ -32,27 +32,27 @@ const Appearance: React.FC = () => {
         <CardContent>
           <div className="flex items-center gap-4">
             <Button
-              className="w-32 justify-start"
+              className="justify-start"
               onClick={() => setTheme('light')}
               variant={theme === 'light' ? 'default' : 'outline'}
             >
-              <Sun className="mr-2 h-4 w-4" />
+              <Sun />
               Light
             </Button>
             <Button
-              className="w-32 justify-start"
+              className="justify-start"
               onClick={() => setTheme('dark')}
               variant={theme === 'dark' ? 'default' : 'outline'}
             >
-              <Moon className="mr-2 h-4 w-4" />
+              <Moon />
               Dark
             </Button>
             <Button
-              className="w-32 justify-start"
+              className="justify-start"
               onClick={() => setTheme('system')}
               variant={theme === 'system' ? 'default' : 'outline'}
             >
-              <Laptop className="mr-2 h-4 w-4" />
+              <Laptop />
               System
             </Button>
           </div>
