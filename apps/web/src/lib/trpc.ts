@@ -1,4 +1,7 @@
 import { initTRPC, TRPCError } from '@trpc/server';
+import { eq } from 'drizzle-orm';
+import { db } from '@/db';
+import { user } from '@/db/schema/auth';
 import type { Context } from '../lib/context';
 
 export const t = initTRPC.context<Context>().create();
@@ -19,6 +22,39 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
     ctx: {
       ...ctx,
       session: ctx.session,
+    },
+  });
+});
+
+export const canvasProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const userData = await db
+    .select({
+      canvasIntegrationToken: user.canvasIntegrationToken,
+      canvasUrl: user.canvasUrl,
+    })
+    .from(user)
+    .where(eq(user.id, ctx.session.user.id))
+    .limit(1);
+
+  const userRecord = userData[0];
+  const token = userRecord?.canvasIntegrationToken;
+  const storedUrl = userRecord?.canvasUrl;
+
+  if (!(token && storedUrl)) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'Canvas not connected',
+    });
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      canvas: {
+        token,
+        storedUrl,
+        apiUrl: `${storedUrl}/api/v1`,
+      },
     },
   });
 });
