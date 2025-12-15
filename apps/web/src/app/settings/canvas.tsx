@@ -8,11 +8,10 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
-  Loader2,
   Pencil,
-  RefreshCw,
   Trash2,
 } from 'lucide-react';
+import type { Route } from 'next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -45,6 +44,7 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api, apiClient } from '@/utils/trpc';
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: why not
 const CanvasIntegration: React.FC = () => {
   const queryClient = useQueryClient();
   const [isConnectDialogOpen, setIsConnectDialogOpen] = useState(false);
@@ -109,19 +109,6 @@ const CanvasIntegration: React.FC = () => {
     },
   });
 
-  const syncMutation = useMutation({
-    mutationFn: () => apiClient.canvas.sync.mutate(),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [['canvas']] });
-      toast.success(
-        `Found ${data.coursesFound} courses and ${data.assignmentsFound} assignments`
-      );
-    },
-    onError: (error) => {
-      toast.error(error.message || 'Failed to sync Canvas data');
-    },
-  });
-
   const handleConnect = () => {
     const urlTrimmed = canvasUrlInput.trim();
     const tokenTrimmed = accessToken.trim();
@@ -146,10 +133,6 @@ const CanvasIntegration: React.FC = () => {
 
   const handleDisconnect = () => {
     disconnectMutation.mutate();
-  };
-
-  const handleSync = () => {
-    syncMutation.mutate();
   };
 
   const handleEditClick = () => {
@@ -205,18 +188,6 @@ const CanvasIntegration: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button
-                  disabled={syncMutation.isPending}
-                  onClick={handleSync}
-                  variant="outline"
-                >
-                  {syncMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4" />
-                  )}
-                  Sync
-                </Button>
                 <Button icon={<Pencil />} onClick={handleEditClick} />
                 <Button
                   className="hover:text-destructive"
@@ -235,7 +206,7 @@ const CanvasIntegration: React.FC = () => {
                 <div className="space-y-1">
                   <Link
                     className={buttonVariants({ variant: 'secondary' })}
-                    href="/canvas/courses"
+                    href={'/canvas/courses' as Route}
                   >
                     View synced courses
                   </Link>
