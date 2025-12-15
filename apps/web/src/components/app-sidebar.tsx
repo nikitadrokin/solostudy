@@ -15,6 +15,7 @@ import {
   Shield,
   User,
 } from 'lucide-react';
+import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -112,7 +113,7 @@ export default function AppSidebar() {
                   isActive={pathname === href}
                   tooltip={label}
                 >
-                  <Link href={href}>
+                  <Link href={href as Route}>
                     <Icon />
                     <span>{label}</span>
                   </Link>
@@ -156,7 +157,7 @@ export default function AppSidebar() {
                               isSettingsPath && currentHash === `#${hash}`
                             }
                           >
-                            <Link href={href}>
+                            <Link href={href as Route}>
                               <Icon />
                               <span>{label}</span>
                             </Link>
@@ -180,7 +181,7 @@ export default function AppSidebar() {
                   isActive={pathname === href}
                   tooltip={label}
                 >
-                  <Link href={href}>
+                  <Link href={href as Route}>
                     <Icon />
                     <span>{label}</span>
                   </Link>
