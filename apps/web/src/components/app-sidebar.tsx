@@ -1,6 +1,5 @@
 'use client';
 
-import type { UrlObject } from 'node:url';
 import {
   Award,
   Bell,
@@ -113,7 +112,7 @@ export default function AppSidebar() {
                   isActive={pathname === href}
                   tooltip={label}
                 >
-                  <Link href={href as unknown as UrlObject}>
+                  <Link href={href}>
                     <Icon />
                     <span>{label}</span>
                   </Link>
@@ -134,7 +133,7 @@ export default function AppSidebar() {
                     isActive={isSettingsPath}
                     tooltip="Settings"
                   >
-                    <Link href={'/settings' as unknown as UrlObject}>
+                    <Link href="/settings">
                       <Settings />
                       <span>Settings</span>
                       <ChevronRight
@@ -157,7 +156,7 @@ export default function AppSidebar() {
                               isSettingsPath && currentHash === `#${hash}`
                             }
                           >
-                            <Link href={href as unknown as UrlObject}>
+                            <Link href={href}>
                               <Icon />
                               <span>{label}</span>
                             </Link>
@@ -181,7 +180,7 @@ export default function AppSidebar() {
                   isActive={pathname === href}
                   tooltip={label}
                 >
-                  <Link href={href as unknown as UrlObject}>
+                  <Link href={href}>
                     <Icon />
                     <span>{label}</span>
                   </Link>
