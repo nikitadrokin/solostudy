@@ -95,6 +95,7 @@ interface CustomYouTubeAPI {
 // Augment window without conflicting with existing types
 declare global {
   interface Window {
+    YT?: CustomYouTubeAPI;
     CustomYT?: CustomYouTubeAPI;
     onYouTubeIframeAPIReady?: () => void;
   }
@@ -121,10 +122,7 @@ export function useYouTube({
 
   // Load YouTube IFrame API
   useEffect(() => {
-    // Use global YT object (fallback to window.YT for compatibility)
-    const YT = (window as unknown as Record<string, unknown>).YT as
-      | CustomYouTubeAPI
-      | undefined;
+    const YT = window.YT;
     if (YT?.Player) {
       return;
     }
@@ -162,10 +160,13 @@ export function useYouTube({
 
   const handleError = useCallback(
     (event: { data: number }) => {
-      onError?.({
-        data: event.data,
-        target: useYouTubeStore.getState().playerRef as YouTubePlayer,
-      });
+      const playerRef = useYouTubeStore.getState().playerRef;
+      if (playerRef) {
+        onError?.({
+          data: event.data,
+          target: playerRef,
+        });
+      }
     },
     [onError]
   );
@@ -176,10 +177,7 @@ export function useYouTube({
       if (!containerRef.current) {
         return;
       }
-      // Use global YT object
-      const YT = (window as unknown as Record<string, unknown>).YT as
-        | CustomYouTubeAPI
-        | undefined;
+      const YT = window.YT;
       if (!YT?.Player) {
         return;
       }
@@ -195,10 +193,7 @@ export function useYouTube({
       setPlayerRef(player);
     }
 
-    // Use global YT object
-    const YT = (window as unknown as Record<string, unknown>).YT as
-      | CustomYouTubeAPI
-      | undefined;
+    const YT = window.YT;
     if (YT?.Player) {
       createPlayer();
     } else {
