@@ -128,50 +128,6 @@ export const canvasRouter = router({
   }),
 
   /**
-   * Validate Canvas connection (no data storage)
-   */
-  sync: protectedProcedure.mutation(async ({ ctx }) => {
-    const userData = await db
-      .select({
-        canvasIntegrationToken: user.canvasIntegrationToken,
-        canvasUrl: user.canvasUrl,
-      })
-      .from(user)
-      .where(eq(user.id, ctx.session.user.id))
-      .limit(1);
-
-    const userRecord = userData[0];
-    const token = userRecord?.canvasIntegrationToken;
-    const storedUrl = userRecord?.canvasUrl;
-
-    if (!(token && storedUrl)) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'Canvas not connected',
-      });
-    }
-
-    try {
-      // Just validate connection by fetching courses
-      const apiUrl = `${storedUrl}/api/v1`;
-      const courses = await fetchCanvasCourses(apiUrl, token);
-      const assignments = await fetchAllAssignments(apiUrl, token);
-
-      return {
-        success: true,
-        coursesFound: courses.length,
-        assignmentsFound: assignments.length,
-      };
-    } catch (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to validate Canvas connection: ${error instanceof Error ? error.message : String(error)}`,
-        cause: error,
-      });
-    }
-  }),
-
-  /**
    * Get courses directly from Canvas API
    */
   getCourses: protectedProcedure.query(async ({ ctx }) => {
