@@ -78,11 +78,6 @@ export default function CanvasAnnouncementsPage() {
     }
   }, [session, router]);
 
-  console.log(
-    'API response for announcements:',
-    JSON.stringify(announcements, null, 2)
-  );
-
   if (!session) {
     return null;
   }
