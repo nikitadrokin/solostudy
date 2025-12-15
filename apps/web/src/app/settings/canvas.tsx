@@ -6,12 +6,15 @@ import {
   BookOpen,
   Check,
   ExternalLink,
+  Eye,
+  EyeOff,
   Loader2,
+  Pencil,
   RefreshCw,
   Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -39,7 +42,8 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { apiClient } from '@/utils/trpc';
+import { Skeleton } from '@/components/ui/skeleton';
+import { api, apiClient } from '@/utils/trpc';
 
 const CanvasIntegration: React.FC = () => {
   const queryClient = useQueryClient();
@@ -47,6 +51,7 @@ const CanvasIntegration: React.FC = () => {
   const [isDisconnectDialogOpen, setIsDisconnectDialogOpen] = useState(false);
   const [accessToken, setAccessToken] = useState('');
   const [canvasUrlInput, setCanvasUrlInput] = useState('');
+  const [showAccessToken, setShowAccessToken] = useState(false);
 
   const { data: status, isLoading: isLoadingStatus } = useQuery({
     queryKey: [['canvas', 'getStatus']],
@@ -59,14 +64,32 @@ const CanvasIntegration: React.FC = () => {
     enabled: status?.connected === true,
   });
 
+  const { data: credentials, isLoading: isLoadingCredentials } = useQuery(
+    api.canvas.getCredentials.queryOptions(undefined, {
+      enabled: isConnectDialogOpen,
+    })
+  );
+
+  useEffect(() => {
+    // this effect manages state in the dialog
+    if (!isConnectDialogOpen) {
+      return;
+    }
+
+    const canvasUrl =
+      credentials?.canvasUrl ?? process.env.NEXT_PUBLIC_CANVAS_URL ?? '';
+    const canvasIntegrationToken = credentials?.canvasIntegrationToken ?? '';
+
+    setCanvasUrlInput(canvasUrl);
+    setAccessToken(canvasIntegrationToken);
+  }, [credentials, isConnectDialogOpen]);
+
   const connectMutation = useMutation({
     mutationFn: (input: { accessToken: string; canvasUrl: string }) =>
       apiClient.canvas.connect.mutate(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [['canvas']] });
-      setIsConnectDialogOpen(false);
       setAccessToken('');
-      setCanvasUrlInput('');
       toast.success('Canvas connected successfully');
     },
     onError: (error) => {
@@ -105,8 +128,13 @@ const CanvasIntegration: React.FC = () => {
     const hasUrl = Boolean(urlTrimmed);
     const hasToken = Boolean(tokenTrimmed);
 
-    if (!(hasUrl && hasToken)) {
-      toast.error('Please provide both Canvas URL and access token');
+    if (!hasUrl) {
+      toast.error('Please provide Canvas URL');
+      return;
+    }
+
+    if (!hasToken) {
+      toast.error('Please provide access token');
       return;
     }
 
@@ -122,6 +150,23 @@ const CanvasIntegration: React.FC = () => {
 
   const handleSync = () => {
     syncMutation.mutate();
+  };
+
+  const handleEditClick = () => {
+    setIsConnectDialogOpen(true);
+  };
+
+  const handleConnectDialogOpenChange = (open: boolean) => {
+    if (!open && connectMutation.isPending) {
+      return;
+    }
+    setIsConnectDialogOpen(open);
+    if (!open) {
+      setAccessToken('');
+      if (!status?.connected) {
+        setCanvasUrlInput('');
+      }
+    }
   };
 
   if (isLoadingStatus) {
@@ -172,6 +217,7 @@ const CanvasIntegration: React.FC = () => {
                   )}
                   Sync
                 </Button>
+                <Button icon={<Pencil />} onClick={handleEditClick} />
                 <Button
                   className="hover:text-destructive"
                   onClick={() => setIsDisconnectDialogOpen(true)}
@@ -205,107 +251,12 @@ const CanvasIntegration: React.FC = () => {
               instance.
             </p>
             <Dialog
-              onOpenChange={(open) => {
-                setIsConnectDialogOpen(open);
-                if (open && status?.canvasUrl) {
-                  setCanvasUrlInput(status.canvasUrl);
-                } else if (
-                  open &&
-                  !canvasUrlInput &&
-                  process.env.NEXT_PUBLIC_CANVAS_URL
-                ) {
-                  setCanvasUrlInput(process.env.NEXT_PUBLIC_CANVAS_URL);
-                } else if (!open) {
-                  setAccessToken('');
-                  setCanvasUrlInput('');
-                }
-              }}
+              onOpenChange={handleConnectDialogOpenChange}
               open={isConnectDialogOpen}
             >
               <DialogTrigger asChild>
                 <Button>Connect Canvas</Button>
               </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Connect Canvas</DialogTitle>
-                  <DialogDescription>
-                    Enter your Canvas instance URL and personal access token.
-                  </DialogDescription>
-                </DialogHeader>
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel htmlFor="canvas-url">Canvas URL</FieldLabel>
-                    <Input
-                      id="canvas-url"
-                      onChange={(e) => setCanvasUrlInput(e.target.value)}
-                      placeholder="https://canvas.instructure.com"
-                      value={canvasUrlInput}
-                    />
-                    <FieldDescription>
-                      Your institution's Canvas URL (e.g.
-                      https://canvas.instructure.com)
-                    </FieldDescription>
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="access-token">
-                      Personal Access Token
-                    </FieldLabel>
-                    <Input
-                      id="access-token"
-                      onChange={(e) => setAccessToken(e.target.value)}
-                      placeholder="Enter your Canvas access token"
-                      type="password"
-                      value={accessToken}
-                    />
-                    <FieldDescription>
-                      Generate a personal access token in Canvas: Account →
-                      Settings → New Access Token
-                      <Button
-                        asChild
-                        className="ml-2 h-auto p-0 text-xs"
-                        variant="link"
-                      >
-                        <a
-                          href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/How-do-I-manage-API-access-tokens-as-a-student/ta-p/273823"
-                          rel="noopener noreferrer"
-                          target="_blank"
-                        >
-                          Learn more
-                          <ExternalLink className="ml-1 inline h-3 w-3" />
-                        </a>
-                      </Button>
-                    </FieldDescription>
-                  </Field>
-                </FieldGroup>
-                <Alert variant="destructive">
-                  <AlertTriangle />
-                  <AlertTitle>Terms of Service Warning</AlertTitle>
-                  <AlertDescription>
-                    This integration may violate Canvas Terms of Service. Use at
-                    your own personal risk.
-                  </AlertDescription>
-                </Alert>
-                <div className="mt-6 flex justify-end gap-2">
-                  <Button
-                    disabled={connectMutation.isPending}
-                    onClick={() => setIsConnectDialogOpen(false)}
-                    variant="outline"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    disabled={
-                      connectMutation.isPending ||
-                      !canvasUrlInput.trim() ||
-                      !accessToken.trim()
-                    }
-                    isLoading={connectMutation.isPending}
-                    onClick={handleConnect}
-                  >
-                    Connect
-                  </Button>
-                </div>
-              </DialogContent>
             </Dialog>
           </div>
         )}
@@ -329,6 +280,121 @@ const CanvasIntegration: React.FC = () => {
           </div>
         </CardFooter>
       )}
+      <Dialog
+        onOpenChange={handleConnectDialogOpenChange}
+        open={isConnectDialogOpen}
+      >
+        <DialogContent
+          onInteractOutside={(e) =>
+            connectMutation.isPending && e.preventDefault()
+          }
+        >
+          <DialogHeader>
+            <DialogTitle>
+              {status?.connected ? 'Edit Canvas' : 'Connect Canvas'}
+            </DialogTitle>
+            <DialogDescription>
+              {status?.connected
+                ? 'Update your Canvas instance URL and access token.'
+                : 'Enter your Canvas instance URL and personal access token.'}
+            </DialogDescription>
+          </DialogHeader>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="canvas-url">Canvas URL</FieldLabel>
+              {isLoadingCredentials ? (
+                <Skeleton className="h-9" />
+              ) : (
+                <Input
+                  disabled={connectMutation.isPending}
+                  id="canvas-url"
+                  onChange={(e) => setCanvasUrlInput(e.target.value)}
+                  placeholder="https://canvas.instructure.com"
+                  value={canvasUrlInput}
+                />
+              )}
+              <FieldDescription>
+                Your institution's Canvas URL (e.g.
+                https://canvas.instructure.com)
+              </FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="access-token">
+                Personal Access Token
+              </FieldLabel>
+              {isLoadingCredentials ? (
+                <Skeleton className="h-9" />
+              ) : (
+                <div className="relative">
+                  <Input
+                    disabled={connectMutation.isPending}
+                    id="access-token"
+                    onChange={(e) => setAccessToken(e.target.value)}
+                    placeholder="Enter your Canvas access token"
+                    type={showAccessToken ? 'text' : 'password'}
+                    value={accessToken}
+                  />
+                  <Button
+                    className="absolute top-0 right-0 h-full px-3"
+                    disabled={connectMutation.isPending}
+                    onClick={() => setShowAccessToken(!showAccessToken)}
+                    type="button"
+                    variant="ghost"
+                  >
+                    {showAccessToken ? <EyeOff /> : <Eye />}
+                  </Button>
+                </div>
+              )}
+              <FieldDescription>
+                Generate a personal access token in Canvas: Account → Settings →
+                New Access Token
+                <Button
+                  asChild
+                  className="ml-2 h-auto p-0 text-xs"
+                  variant="link"
+                >
+                  <a
+                    href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/How-do-I-manage-API-access-tokens-as-a-student/ta-p/273823"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Learn more
+                    <ExternalLink className="ml-1 inline h-3 w-3" />
+                  </a>
+                </Button>
+              </FieldDescription>
+            </Field>
+          </FieldGroup>
+          <Alert variant="destructive">
+            <AlertTriangle />
+            <AlertTitle>Terms of Service Warning</AlertTitle>
+            <AlertDescription>
+              This integration may violate Canvas Terms of Service. Use at your
+              own personal risk.
+            </AlertDescription>
+          </Alert>
+          <div className="mt-6 flex justify-end gap-2">
+            <Button
+              disabled={connectMutation.isPending}
+              onClick={() => setIsConnectDialogOpen(false)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={
+                connectMutation.isPending ||
+                !canvasUrlInput.trim() ||
+                !accessToken.trim()
+              }
+              isLoading={connectMutation.isPending}
+              onClick={handleConnect}
+            >
+              {status?.connected ? 'Update' : 'Connect'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <Dialog
         onOpenChange={setIsDisconnectDialogOpen}
         open={isDisconnectDialogOpen}

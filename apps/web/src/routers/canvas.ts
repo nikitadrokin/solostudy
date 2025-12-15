@@ -105,6 +105,29 @@ export const canvasRouter = router({
   }),
 
   /**
+   * Get Canvas credentials for editing (returns URL only, token is never exposed)
+   */
+  getCredentials: protectedProcedure.query(async ({ ctx }) => {
+    const userData = await db
+      .select({
+        canvasUrl: user.canvasUrl,
+        canvasIntegrationToken: user.canvasIntegrationToken,
+      })
+      .from(user)
+      .where(eq(user.id, ctx.session.user.id))
+      .limit(1);
+
+    const userRecord = userData[0];
+    const canvasUrl = userRecord?.canvasUrl ?? null;
+    const canvasIntegrationToken = userRecord?.canvasIntegrationToken ?? null;
+
+    return {
+      canvasUrl,
+      canvasIntegrationToken,
+    };
+  }),
+
+  /**
    * Validate Canvas connection (no data storage)
    */
   sync: protectedProcedure.mutation(async ({ ctx }) => {
