@@ -154,6 +154,7 @@ function SidebarProvider({
   );
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: complex
 function Sidebar({
   side = 'left',
   variant = 'sidebar',
@@ -185,26 +186,48 @@ function Sidebar({
 
   if (isMobile) {
     return (
-      <Sheet onOpenChange={setOpenMobile} open={openMobile} {...props}>
-        <SheetContent
-          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-          data-mobile="true"
-          data-sidebar="sidebar"
-          data-slot="sidebar"
-          side={side}
-          style={
-            {
-              '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
-            } as React.CSSProperties
-          }
-        >
-          <SheetHeader className="sr-only">
-            <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
-          </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
-        </SheetContent>
-      </Sheet>
+      <>
+        {/* Safari iOS 26 viewport bug workaround for mobile */}
+        {openMobile && (
+          <div
+            className="fixed top-0 z-[100]"
+            style={{
+              left: side === 'left' ? 0 : 'auto',
+              right: side === 'right' ? 0 : 'auto',
+              display: 'block',
+              width: '100vw',
+              height: '48px',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: 'hsl(var(--sidebar))',
+                height: '100vh',
+              }}
+            />
+          </div>
+        )}
+        <Sheet onOpenChange={setOpenMobile} open={openMobile} {...props}>
+          <SheetContent
+            className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            data-mobile="true"
+            data-sidebar="sidebar"
+            data-slot="sidebar"
+            side={side}
+            style={
+              {
+                '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
+              } as React.CSSProperties
+            }
+          >
+            <SheetHeader className="sr-only">
+              <SheetTitle>Sidebar</SheetTitle>
+              <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+            </SheetHeader>
+            <div className="flex h-full w-full flex-col">{children}</div>
+          </SheetContent>
+        </Sheet>
+      </>
     );
   }
 
@@ -229,6 +252,26 @@ function Sidebar({
         )}
         data-slot="sidebar-gap"
       />
+      {/* Safari iOS 26 viewport bug workaround */}
+      {state !== 'collapsed' && (
+        <div
+          className="fixed top-0 z-10 hidden md:block"
+          style={{
+            left: side === 'left' ? 0 : 'auto',
+            right: side === 'right' ? 0 : 'auto',
+            display: 'block',
+            width: '100vw',
+            height: '48px',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'hsl(var(--sidebar))',
+              height: '100vh',
+            }}
+          />
+        </div>
+      )}
       <div
         className={cn(
           'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-in-out md:flex',
