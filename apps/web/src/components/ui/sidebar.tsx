@@ -252,7 +252,7 @@ function Sidebar({
         )}
         data-slot="sidebar-gap"
       />
-      {/* Safari iOS 26 viewport bug workaround */}
+      {/* Safari iOS 26 viewport bug workaround
       {state !== 'collapsed' && (
         <div
           className="fixed top-0 z-10 hidden md:block"
@@ -271,7 +271,7 @@ function Sidebar({
             }}
           />
         </div>
-      )}
+      )} */}
       <div
         className={cn(
           'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-in-out md:flex',
