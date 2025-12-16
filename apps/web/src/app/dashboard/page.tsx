@@ -1,4 +1,4 @@
-import { ArrowRight, Calendar, Clock, Trophy } from 'lucide-react';
+import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { AnalyticsTabs } from '@/components/analytics/analytics-tabs';
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/card';
 import { auth } from '@/lib/auth';
 import CompletedTasksCard from './completed-tasks';
+import StreakCard from './streak-card';
 
 export default async function Dashboard() {
   const session = await auth.api.getSession({
@@ -107,18 +108,7 @@ export default async function Dashboard() {
                 </CardContent>
               </Card>
               <CompletedTasksCard completedTasks={0} />
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="font-medium text-sm">Streak</CardTitle>
-                  <Trophy className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="font-bold text-2xl">0</div>
-                  <p className="text-muted-foreground text-xs">
-                    Current streak
-                  </p>
-                </CardContent>
-              </Card>
+              <StreakCard />
             </div>
 
             {/* Analytics */}

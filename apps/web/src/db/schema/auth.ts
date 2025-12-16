@@ -18,6 +18,8 @@ export const user = pgTable('user', {
   canvasUrl: text('canvas_url')
     .notNull()
     .default(process.env.NEXT_PUBLIC_CANVAS_URL ?? ''),
+  lastLoginAt: timestamp('last_login_at'),
+  streak: integer('streak').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
