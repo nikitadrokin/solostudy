@@ -47,6 +47,13 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="SoloStudy" name="apple-mobile-web-app-title" />
+        <meta content="yes" name="mobile-web-app-capable" />
+        <meta
+          content="black-translucent"
+          name="apple-mobile-web-app-status-bar-style"
+        />
         {process.env.NODE_ENV === 'development' && (
           <Script
             crossOrigin="anonymous"
@@ -56,14 +63,6 @@ export default async function RootLayout({
           />
         )}
       </head>
-      <meta content="yes" name="apple-mobile-web-app-capable" />
-      <meta content="SoloStudy" name="apple-mobile-web-app-title" />
-      <meta content="yes" name="mobile-web-app-capable" />
-      <meta
-        content="black-translucent"
-        name="apple-mobile-web-app-status-bar-style"
-      />
-      <meta content="/apple-touch-icon-180x180.png" name="apple-touch-icon" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
