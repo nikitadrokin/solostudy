@@ -1,15 +1,24 @@
 'use client';
 
-import { useState } from 'react';
 import SignInForm from '@/components/sign-in-form';
 import SignUpForm from '@/components/sign-up-form';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export default function LoginPage() {
-  const [showSignIn, setShowSignIn] = useState(false);
+const LoginPage = () => (
+  <div className="m-auto w-full max-w-md">
+    <Tabs>
+      <TabsList>
+        <TabsTrigger value="sign-in">Sign In</TabsTrigger>
+        <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
+      </TabsList>
+      <TabsContent value="sign-in">
+        <SignInForm />
+      </TabsContent>
+      <TabsContent value="sign-up">
+        <SignUpForm />
+      </TabsContent>
+    </Tabs>
+  </div>
+);
 
-  return showSignIn ? (
-    <SignInForm onSwitchToSignUp={() => setShowSignIn(false)} />
-  ) : (
-    <SignUpForm onSwitchToSignIn={() => setShowSignIn(true)} />
-  );
-}
+export default LoginPage;
