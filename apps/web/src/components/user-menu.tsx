@@ -33,9 +33,9 @@ export default function UserMenu() {
 
   if (!session) {
     return (
-      <SidebarMenuButton asChild tooltip="Sign In">
+      <SidebarMenuButton asChild className="px-3" tooltip="Sign In">
         <Link href="/login">
-          <LogIn className="size-4" />
+          <LogIn className="!size-5" />
           <span>Sign In</span>
         </Link>
       </SidebarMenuButton>
