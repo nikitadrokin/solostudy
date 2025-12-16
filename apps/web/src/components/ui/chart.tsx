@@ -46,6 +46,11 @@ function ChartContainer({
 }) {
   const uniqueId = React.useId();
   const chartId = `chart-${id || uniqueId.replace(/:/g, '')}`;
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -59,9 +64,17 @@ function ChartContainer({
         {...props}
       >
         <ChartStyle config={config} id={chartId} />
-        <RechartsPrimitive.ResponsiveContainer>
-          {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        {isMounted ? (
+          <RechartsPrimitive.ResponsiveContainer height="100%" width="100%">
+            {children}
+          </RechartsPrimitive.ResponsiveContainer>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="text-muted-foreground text-sm">
+              Loading chart...
+            </div>
+          </div>
+        )}
       </div>
     </ChartContext.Provider>
   );

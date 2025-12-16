@@ -1,6 +1,7 @@
 'use client';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ChartErrorBoundary from './error-boundary';
 import { FocusAnalyticsChart } from './focus-analytics-chart';
 import { TaskAnalyticsChart } from './task-analytics-chart';
 import { WeeklyActivityChart } from './weekly-activity-chart';
@@ -14,13 +15,19 @@ export function AnalyticsTabs() {
         <TabsTrigger value="focus">Focus</TabsTrigger>
       </TabsList>
       <TabsContent className="mt-4" value="overview">
-        <WeeklyActivityChart />
+        <ChartErrorBoundary>
+          <WeeklyActivityChart />
+        </ChartErrorBoundary>
       </TabsContent>
       <TabsContent className="mt-4" value="tasks">
-        <TaskAnalyticsChart />
+        <ChartErrorBoundary>
+          <TaskAnalyticsChart />
+        </ChartErrorBoundary>
       </TabsContent>
       <TabsContent className="mt-4" value="focus">
-        <FocusAnalyticsChart />
+        <ChartErrorBoundary>
+          <FocusAnalyticsChart />
+        </ChartErrorBoundary>
       </TabsContent>
     </Tabs>
   );
