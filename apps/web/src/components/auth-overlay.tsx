@@ -121,5 +121,5 @@ export function AuthOverlay({ children }: AuthOverlayProps) {
     toastIdRef.current = id;
   }, [session, isPending]);
 
-  return <>{children}</>;
+  return children;
 }
