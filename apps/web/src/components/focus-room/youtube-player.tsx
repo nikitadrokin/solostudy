@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import type { CustomYouTubeAPI } from '@/stores/youtube-store';
 
 interface YouTubePlayerProps {
   videoId: string;
@@ -18,8 +17,16 @@ interface YouTubePlayerProps {
 // Extend Window interface to include YouTube API
 declare global {
   interface Window {
-    YT?: CustomYouTubeAPI;
-    CustomYT?: CustomYouTubeAPI;
+    YT?: {
+      Player: new (
+        elementId: string | HTMLElement,
+        config: YTPlayerOptions
+      ) => YTPlayer;
+      PlayerState: {
+        PLAYING: number;
+        PAUSED: number;
+      };
+    };
     onYouTubeIframeAPIReady?: () => void;
   }
 }
@@ -219,7 +226,7 @@ export default function YouTubePlayer({
               onReady?.({ target: playerInstance });
             },
             onStateChange: (event: YTOnStateChangeEvent) => {
-              const ytPlayerState = window.YT?.PlayerState;
+              const ytPlayerState = window.CustomYT?.PlayerState;
               if (!ytPlayerState) {
                 return;
               }
