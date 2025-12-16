@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const LoginPage = () => (
   <div className="m-auto w-full max-w-md">
-    <Tabs>
+    <Tabs defaultValue="sign-in">
       <TabsList>
         <TabsTrigger value="sign-in">Sign In</TabsTrigger>
         <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
