@@ -57,10 +57,10 @@ export function AuthOverlay({ children }: AuthOverlayProps) {
             <Lock className="h-4 w-4 text-primary" />
           </div>
           <div className="grid space-y-2">
-            <p className="font-medium text-sm">Sign in to use features</p>
+            <p className="font-medium text-sm">Sign in to use this feature</p>
             <p className="text-muted-foreground text-xs">
-              You can browse the content, but you&apos;ll need an account to
-              interact with features.
+              You can browse, but you&apos;ll need an account to interact with
+              these features.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Button
