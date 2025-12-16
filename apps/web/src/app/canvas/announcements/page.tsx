@@ -3,8 +3,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Bell, ExternalLink, Loader2, User } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
@@ -56,7 +54,6 @@ function stripHtml(html: string): string {
 }
 
 export default function CanvasAnnouncementsPage() {
-  const router = useRouter();
   const { data: session } = authClient.useSession();
 
   const { data: status } = useQuery(
@@ -71,16 +68,6 @@ export default function CanvasAnnouncementsPage() {
         enabled: status?.connected === true,
       })
     );
-
-  useEffect(() => {
-    if (!session) {
-      router.push('/login');
-    }
-  }, [session, router]);
-
-  if (!session) {
-    return null;
-  }
 
   if (!status?.connected) {
     return (

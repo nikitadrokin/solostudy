@@ -12,8 +12,7 @@ import {
   Plus,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
@@ -196,7 +195,6 @@ function AssignmentCard({
 }
 
 export default function CanvasAssignmentsPage() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { data: session } = authClient.useSession();
   const [selectedCourseId, setSelectedCourseId] = useState<number | undefined>(
@@ -248,12 +246,6 @@ export default function CanvasAssignmentsPage() {
   const handleImportAsTodos = (assignmentIds: number[]) => {
     importMutation.mutate(assignmentIds);
   };
-
-  useEffect(() => {
-    if (!session) {
-      router.push('/login');
-    }
-  }, [session, router]);
 
   if (!status?.connected) {
     return (

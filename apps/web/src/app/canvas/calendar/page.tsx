@@ -10,8 +10,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
@@ -77,7 +76,6 @@ function getDateOnly(dateString: string): string {
 }
 
 export default function CanvasCalendarPage() {
-  const router = useRouter();
   const { data: session } = authClient.useSession();
   const [dateRange, setDateRange] = useState<DateRange>('14');
 
@@ -120,12 +118,6 @@ export default function CanvasCalendarPage() {
       }
     )
   );
-
-  useEffect(() => {
-    if (!session) {
-      router.push('/login');
-    }
-  }, [session, router]);
 
   // Combine assignments and events into a unified list
   const calendarItems = useMemo(() => {
@@ -203,10 +195,6 @@ export default function CanvasCalendarPage() {
 
     return groups;
   }, [calendarItems]);
-
-  if (!session) {
-    return null;
-  }
 
   if (!status?.connected) {
     return (

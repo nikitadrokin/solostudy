@@ -3,8 +3,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Award, ExternalLink, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import {
   Card,
@@ -52,7 +50,6 @@ function getGradeColor(grade: string | null): string {
 }
 
 export default function CanvasGradesPage() {
-  const router = useRouter();
   const { data: session } = authClient.useSession();
 
   const { data: status } = useQuery(
@@ -66,16 +63,6 @@ export default function CanvasGradesPage() {
       enabled: status?.connected === true,
     })
   );
-
-  useEffect(() => {
-    if (!session) {
-      router.push('/login');
-    }
-  }, [session, router]);
-
-  if (!session) {
-    return null;
-  }
 
   if (!status?.connected) {
     return (

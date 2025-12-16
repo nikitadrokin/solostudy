@@ -3,8 +3,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { BookOpen, ExternalLink, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import {
   Card,
@@ -25,7 +23,6 @@ import { authClient } from '@/lib/auth-client';
 import { api } from '@/utils/trpc';
 
 export default function CanvasCoursesPage() {
-  const router = useRouter();
   const { data: session } = authClient.useSession();
 
   const { data: status } = useQuery(
@@ -41,16 +38,6 @@ export default function CanvasCoursesPage() {
   );
 
   const s = courses.length > 0 ? 's' : '';
-
-  useEffect(() => {
-    if (!session) {
-      router.push('/login');
-    }
-  }, [session, router]);
-
-  if (!session) {
-    return null;
-  }
 
   if (!status?.connected) {
     return (
