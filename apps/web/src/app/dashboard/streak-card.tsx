@@ -9,11 +9,13 @@ import { api } from '@/utils/trpc';
 export default function StreakCard() {
   const { data: session } = authClient.useSession();
 
-  const { data: streakData } = useQuery(
+  const { data: streakData, isLoading } = useQuery(
     api.account.getStreak.queryOptions(undefined, {
       enabled: !!session,
     })
   );
+
+  const streak = isLoading ? '...' : (streakData?.streak ?? 0);
 
   return (
     <Card>
@@ -22,7 +24,7 @@ export default function StreakCard() {
         <Trophy className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="font-bold text-2xl">{streakData?.streak ?? 0}</div>
+        <div className="font-bold text-2xl">{streak}</div>
         <p className="text-muted-foreground text-xs">Current streak</p>
       </CardContent>
     </Card>
