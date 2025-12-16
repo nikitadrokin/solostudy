@@ -13,6 +13,7 @@ import {
   Waves,
   Youtube,
 } from 'lucide-react';
+import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import InstallPWAPrompt from '@/components/InstallPWAPrompt';
@@ -228,7 +229,10 @@ function FeatureCard({
             className="group p-0 hover:bg-transparent"
             variant="ghost"
           >
-            <Link className="flex items-center text-primary" href={href}>
+            <Link
+              className="flex items-center text-primary"
+              href={href as Route}
+            >
               {cta}
               <span className="ml-1 transition-transform group-hover:translate-x-1">
                 →

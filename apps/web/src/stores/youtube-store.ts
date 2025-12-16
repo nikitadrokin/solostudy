@@ -67,7 +67,7 @@ interface CustomYTEvent {
   data: number;
 }
 
-interface CustomYouTubeAPI {
+export interface CustomYouTubeAPI {
   Player: new (
     element: HTMLElement,
     config: {
