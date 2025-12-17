@@ -30,7 +30,8 @@
         "noNamespaceImport": "off"
       },
       "suspicious": {
-        "noConsole": "warn"
+        "noConsole": "warn",
+        "noArrayIndexKey": "off"
       }
     }
   }
