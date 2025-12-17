@@ -33,6 +33,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item';
+import { Skeleton } from '@/components/ui/skeleton';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
@@ -376,11 +377,7 @@ const GradePredictorPage: React.FC = () => {
   return (
     <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
       {/* Header */}
-      <motion.div
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-4"
-        initial={{ opacity: 0, y: -10 }}
-      >
+      <div className="space-y-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-4">
             <div className="mt-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg">
@@ -416,7 +413,7 @@ const GradePredictorPage: React.FC = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </motion.div>
+      </div>
 
       {/* No course selected state */}
       {!selectedCourseId && (
@@ -434,24 +431,31 @@ const GradePredictorPage: React.FC = () => {
               </EmptyHeader>
               <EmptyContent className="max-w-3xl items-start overflow-x-auto">
                 <div className="grid w-full min-w-full grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
-                  {courses.map((course) => (
-                    <Item
-                      className="cursor-pointer flex-nowrap overflow-hidden rounded-xl p-3 transition-colors hover:bg-accent"
-                      key={course.id}
-                      onClick={() => setSelectedCourseId(course.canvasId)}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <ItemMedia variant="icon">
-                        <BookOpen className="size-4" />
-                      </ItemMedia>
-                      <ItemContent>
-                        <ItemTitle className="line-clamp-2 text-left">
-                          {course.name}
-                        </ItemTitle>
-                      </ItemContent>
-                    </Item>
-                  ))}
+                  {courses.length > 0
+                    ? courses.map((course) => (
+                        <Item
+                          className="cursor-pointer flex-nowrap overflow-hidden rounded-xl p-3 transition-colors hover:bg-accent"
+                          key={course.id}
+                          onClick={() => setSelectedCourseId(course.canvasId)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          <ItemMedia variant="icon">
+                            <BookOpen className="size-4" />
+                          </ItemMedia>
+                          <ItemContent>
+                            <ItemTitle className="line-clamp-2 text-left">
+                              {course.name}
+                            </ItemTitle>
+                          </ItemContent>
+                        </Item>
+                      ))
+                    : Array.from({ length: 10 }).map((_, index) => (
+                        <Skeleton
+                          className="h-[58px] w-full rounded-xl border opacity-50"
+                          key={`course-skeleton-${index}`}
+                        />
+                      ))}
                 </div>
               </EmptyContent>
             </Empty>
