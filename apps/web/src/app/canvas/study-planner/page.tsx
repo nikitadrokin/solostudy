@@ -29,7 +29,12 @@ import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
 
-type AssignmentStatus = 'overdue' | 'urgent' | 'upcoming' | 'later' | 'no-due-date';
+type AssignmentStatus =
+  | 'overdue'
+  | 'urgent'
+  | 'upcoming'
+  | 'later'
+  | 'no-due-date';
 
 const statusConfig: Record<
   AssignmentStatus,
@@ -73,9 +78,12 @@ function getImpactLabel(score: number): { label: string; color: string } {
   return { label: 'Low', color: 'text-emerald-500' };
 }
 
-function formatDueDate(dueAt: string | null, daysUntilDue: number | null): string {
+function formatDueDate(
+  dueAt: string | null,
+  daysUntilDue: number | null
+): string {
   if (!dueAt || daysUntilDue === null) return 'No due date';
-  
+
   if (daysUntilDue < 0) {
     const daysOverdue = Math.abs(daysUntilDue);
     return daysOverdue === 1 ? '1 day overdue' : `${daysOverdue} days overdue`;
@@ -83,7 +91,7 @@ function formatDueDate(dueAt: string | null, daysUntilDue: number | null): strin
   if (daysUntilDue === 0) return 'Due today';
   if (daysUntilDue === 1) return 'Due tomorrow';
   if (daysUntilDue <= 7) return `Due in ${daysUntilDue} days`;
-  
+
   return new Date(dueAt).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -157,7 +165,7 @@ function AssignmentRow({
   return (
     <motion.div
       animate={{ opacity: 1, x: 0 }}
-      className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-card/50 p-4 transition-colors hover:bg-accent/50"
+      className="group relative flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-card/50 p-4 hover:bg-accent/50"
       initial={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
     >
@@ -172,7 +180,19 @@ function AssignmentRow({
           {status.icon}
         </div>
         <div className="min-w-0">
-          <p className="truncate font-medium">{assignment.name}</p>
+          <a
+            className={buttonVariants({
+              variant: 'link',
+              className: 'group-hover:text-primary',
+            })}
+            href={assignment.htmlUrl}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {assignment.name}
+            <ExternalLink className="size-3" />
+            <span className="absolute inset-0" />
+          </a>
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
             <BookOpen className="h-3 w-3" />
             <span className="truncate">{assignment.courseName}</span>
@@ -183,15 +203,14 @@ function AssignmentRow({
       <div className="flex shrink-0 items-center gap-3">
         {assignment.pointsPossible && (
           <div className="hidden text-right sm:block">
-            <p className="font-medium text-sm">{assignment.pointsPossible} pts</p>
+            <p className="font-medium text-sm">
+              {assignment.pointsPossible} pts
+            </p>
             <p className={cn('text-xs', impact.color)}>{impact.label} impact</p>
           </div>
         )}
         <div className="text-right">
-          <Badge
-            className={cn('text-xs', status.color)}
-            variant="outline"
-          >
+          <Badge className={cn('text-xs', status.color)} variant="outline">
             {status.label}
           </Badge>
           <p className="mt-1 text-muted-foreground text-xs">
