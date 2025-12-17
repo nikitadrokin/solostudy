@@ -4,7 +4,6 @@ import { usePostHog } from 'posthog-js/react';
 import { toast } from 'sonner';
 import z from 'zod';
 import { authClient } from '@/lib/auth-client';
-import Loader from './loader';
 import { Button } from './ui/button';
 import {
   Card,
@@ -18,7 +17,7 @@ import { Label } from './ui/label';
 
 export default function SignUpForm() {
   const router = useRouter();
-  const { isPending, refetch } = authClient.useSession();
+  const { refetch } = authClient.useSession();
   const posthog = usePostHog();
 
   const form = useForm({
@@ -65,10 +64,6 @@ export default function SignUpForm() {
       }),
     },
   });
-
-  if (isPending) {
-    return <Loader />;
-  }
 
   return (
     <Card className="border-border/50 shadow-lg backdrop-blur-sm">
