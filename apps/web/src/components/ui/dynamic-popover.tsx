@@ -1,6 +1,11 @@
 import type * as PopoverPrimitive from '@radix-ui/react-popover';
 import type React from 'react';
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import {
   Popover,
   PopoverContent,
@@ -11,6 +16,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  VisuallyHidden,
+  VisuallyHiddenRoot,
+} from '@/components/ui/visually-hidden';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
@@ -56,6 +65,10 @@ const DynamicPopover: React.FC<DynamicPopoverProps> = ({
           className
         )}
       >
+        {/* apparently Radix UI wants this syntax, but i don't */}
+        <div className="relative">
+          <DrawerTitle className="sr-only">{tooltip}</DrawerTitle>
+        </div>
         {children}
       </DrawerContent>
     </Drawer>
