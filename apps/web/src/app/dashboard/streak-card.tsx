@@ -2,16 +2,22 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Trophy } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { authClient } from '@/lib/auth-client';
 import { api } from '@/utils/trpc';
 
 export default function StreakCard() {
   const { data: session } = authClient.useSession();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const { data: streakData, isLoading } = useQuery(
     api.account.getStreak.queryOptions(undefined, {
-      enabled: !!session,
+      enabled: !!session && isMounted,
     })
   );
 
