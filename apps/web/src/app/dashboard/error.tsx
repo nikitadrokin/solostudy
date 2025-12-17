@@ -48,7 +48,9 @@ const ErrorFallback: React.FC<ErrorProps> = ({ error, reset }) => {
     }
   };
 
-  const dmLink = getXDirectMessageLink(process.env.LEAD_DEV_X_USER_ID);
+  const dmLink = getXDirectMessageLink(
+    process.env.NEXT_PUBLIC_LEAD_DEV_X_USER_ID
+  );
 
   return (
     <div className="container mx-auto max-w-2xl space-y-6 p-6 md:p-8">
