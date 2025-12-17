@@ -306,7 +306,7 @@ function ProjectionCard({ projections }: { projections: Projection[] }) {
   );
 }
 
-export default function GradePredictorPage() {
+const GradePredictorPage: React.FC = () => {
   const { data: session } = authClient.useSession();
   const [selectedCourseId, setSelectedCourseId] = useState<number | undefined>(
     undefined
@@ -550,4 +550,6 @@ export default function GradePredictorPage() {
       )}
     </div>
   );
-}
+};
+
+export default GradePredictorPage;
