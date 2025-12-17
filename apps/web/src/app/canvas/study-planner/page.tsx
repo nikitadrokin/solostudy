@@ -225,11 +225,13 @@ function AssignmentRow({
 export default function StudyPlannerPage() {
   const { data: session } = authClient.useSession();
 
-  const { data: status } = useQuery(
+  const { data: status, status: statusStatus } = useQuery(
     api.canvas.getStatus.queryOptions(undefined, {
       enabled: !!session,
     })
   );
+
+  const notFetchedYet = statusStatus === 'pending';
 
   const {
     data: studyPlan,
@@ -241,7 +243,7 @@ export default function StudyPlannerPage() {
     })
   );
 
-  if (!status?.connected) {
+  if (!(status?.connected || notFetchedYet)) {
     return (
       <div className="container mx-auto max-w-7xl select-none space-y-8 p-6 md:p-8">
         <Card>
