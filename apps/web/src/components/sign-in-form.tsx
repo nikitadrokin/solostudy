@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import z from 'zod';
 import { authClient } from '@/lib/auth-client';
-import Loader from './loader';
 import { Button } from './ui/button';
 import {
   Card,
@@ -22,7 +21,7 @@ import { Separator } from './ui/separator';
 
 export default function SignInForm() {
   const router = useRouter();
-  const { isPending, refetch } = authClient.useSession();
+  const { refetch } = authClient.useSession();
   const [isPasskeySubmitting, setIsPasskeySubmitting] =
     useState<boolean>(false);
   const posthog = usePostHog();
@@ -129,10 +128,6 @@ export default function SignInForm() {
       setIsPasskeySubmitting(false);
     }
   };
-
-  if (isPending) {
-    return <Loader />;
-  }
 
   return (
     <Card className="border-border/50 shadow-lg backdrop-blur-sm">
