@@ -7,6 +7,7 @@ import {
   Calendar,
   ChevronRight,
   FileText,
+  FlaskConical,
   Focus,
   Laptop,
   LayoutDashboard,
@@ -41,6 +42,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 import { ModeToggle } from './theme-toggle/dropdown';
 import { ThemeToggle } from './theme-toggle/inline';
 import UserMenu from './user-menu';
@@ -58,6 +60,10 @@ const canvasLinks = [
   { href: '/canvas/announcements', label: 'Announcements', icon: Bell },
 ];
 
+const experimentalCanvasLinks = [
+  { href: '/canvas/study-lab', label: 'Study Lab', icon: BookOpen },
+];
+
 const settingsLinks = [
   { href: '/settings#profile', label: 'Profile', icon: User },
   { href: '/settings#appearance', label: 'Appearance', icon: Laptop },
@@ -69,6 +75,7 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const { open } = useSidebar();
   const [settingsOpen, setSettingsOpen] = useState(pathname === '/settings');
+  const [experimentalOpen, setExperimentalOpen] = useState(false);
   const [currentHash, setCurrentHash] = useState('');
 
   useEffect(() => {
@@ -138,9 +145,10 @@ export default function AppSidebar() {
                       <Settings />
                       <span>Settings</span>
                       <ChevronRight
-                        className={`ml-auto transition-transform duration-200 ${
-                          settingsOpen ? 'rotate-90' : ''
-                        }`}
+                        className={cn(
+                          'ml-auto transition-transform duration-200',
+                          settingsOpen && 'rotate-90'
+                        )}
                       />
                     </Link>
                   </SidebarMenuButton>
@@ -174,6 +182,48 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Canvas</SidebarGroupLabel>
           <SidebarMenu>
+            <Collapsible
+              asChild
+              defaultOpen={experimentalOpen}
+              onOpenChange={setExperimentalOpen}
+              open={experimentalOpen}
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip="Study Lab">
+                    <FlaskConical className="size-4" />
+                    <span>Experimental</span>
+                    <ChevronRight
+                      className={cn(
+                        'ml-auto transition-transform duration-200',
+                        experimentalOpen && 'rotate-90'
+                      )}
+                    />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {experimentalCanvasLinks.map(
+                      ({ href, label, icon: Icon }) => {
+                        return (
+                          <SidebarMenuSubItem key={href}>
+                            <SidebarMenuSubButton
+                              asChild
+                              isActive={pathname === href}
+                            >
+                              <Link href={href as Route}>
+                                <Icon />
+                                <span>{label}</span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        );
+                      }
+                    )}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
             {canvasLinks.map(({ href, label, icon: Icon }) => (
               <SidebarMenuItem key={href}>
                 <SidebarMenuButton
