@@ -1,7 +1,7 @@
 'use client';
 
-import { motion } from 'motion/react';
 import {
+  ArrowRight,
   Brain,
   Calendar,
   ChartLine,
@@ -11,8 +11,12 @@ import {
   Target,
   Zap,
 } from 'lucide-react';
+import { motion } from 'motion/react';
+import type { Route } from 'next';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 type FeatureStatus = 'coming-soon' | 'in-development' | 'available';
 
@@ -50,7 +54,7 @@ const features: StudyFeature[] = [
     description: 'Predict your final grade and get improvement tips',
     longDescription:
       'Analyzes your submissions, current grades, and assignment weights to predict your final grade. Suggests which assignments to focus on for maximum impact.',
-    status: 'coming-soon',
+    status: 'available',
     gradient: 'from-emerald-500 to-teal-600',
     benefits: [
       'Final grade predictions',
@@ -114,19 +118,37 @@ const statusConfig: Record<
   'coming-soon': { label: 'Coming Soon', variant: 'outline' },
 };
 
-function FeatureCard({ feature, index }: { feature: StudyFeature; index: number }) {
+function FeatureCard({
+  feature,
+  index,
+}: {
+  feature: StudyFeature;
+  index: number;
+}) {
   const status = statusConfig[feature.status];
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      className="relative select-none"
+      initial={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
     >
-      <Card className="group relative overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-primary/5">
+      <Card
+        className={cn(
+          'group relative overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300',
+          feature.status === 'available' &&
+            'hover:border-border hover:shadow-lg hover:shadow-primary/5'
+        )}
+      >
         {/* Gradient accent bar */}
         <div
-          className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${feature.gradient} opacity-60 transition-opacity group-hover:opacity-100`}
+          className={cn(
+            'absolute inset-x-0 top-0 h-1 bg-gradient-to-r opacity-60',
+            feature.gradient,
+            feature.status === 'available' &&
+              'transition-opacity group-hover:opacity-100'
+          )}
         />
 
         <CardHeader className="pb-3">
@@ -138,7 +160,18 @@ function FeatureCard({ feature, index }: { feature: StudyFeature; index: number 
             </div>
             <Badge variant={status.variant}>{status.label}</Badge>
           </div>
-          <h3 className="mt-4 font-semibold text-lg">{feature.title}</h3>
+          {feature.status === 'available' ? (
+            <Link
+              className="mt-4 inline-flex items-center gap-1.5 font-semibold text-lg transition-all group-hover:gap-2"
+              href={`/canvas/${feature.id}` as Route}
+            >
+              {feature.title}
+              <ArrowRight className="h-4 w-4" />
+              <span className="absolute inset-0" />
+            </Link>
+          ) : (
+            <h3 className="mt-4 font-semibold text-lg">{feature.title}</h3>
+          )}
           <p className="text-muted-foreground text-sm">{feature.description}</p>
         </CardHeader>
 
@@ -148,14 +181,14 @@ function FeatureCard({ feature, index }: { feature: StudyFeature; index: number 
           </p>
 
           <div className="space-y-2">
-            <p className="font-medium text-xs uppercase tracking-wider text-muted-foreground">
+            <p className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
               Key Benefits
             </p>
             <ul className="space-y-1.5">
               {feature.benefits.map((benefit) => (
                 <li
+                  className="flex items-center gap-2 text-muted-foreground text-sm"
                   key={benefit}
-                  className="flex items-center gap-2 text-sm text-muted-foreground"
                 >
                   <Sparkles className="h-3 w-3 text-primary" />
                   {benefit}
@@ -174,20 +207,23 @@ export default function StudyLabPage() {
     <div className="container mx-auto max-w-7xl space-y-12 p-6 md:p-8">
       {/* Hero Section */}
       <motion.div
+        animate={{ opacity: 1, y: 0 }}
         className="space-y-4 text-center"
         initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/25">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-purple-500/25 shadow-xl">
           <FlaskConical className="h-8 w-8" />
         </div>
         <h1 className="font-bold text-4xl tracking-tight md:text-5xl">
           Study Lab
         </h1>
         <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-          Unlock the full potential of your Canvas data. These AI-powered features go{' '}
-          <span className="font-medium text-foreground">beyond what Canvas offers</span>{' '}
+          Unlock the full potential of your Canvas data. These AI-powered
+          features go{' '}
+          <span className="font-medium text-foreground">
+            beyond what Canvas offers
+          </span>{' '}
           to help you study smarter, not harder.
         </p>
 
@@ -195,8 +231,12 @@ export default function StudyLabPage() {
         <div className="mx-auto mt-6 flex max-w-xl items-center justify-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
           <Zap className="h-5 w-5 text-primary" />
           <span>
-            <span className="font-medium text-foreground">Canvas shows your data.</span>{' '}
-            <span className="text-muted-foreground">We transform it into insights.</span>
+            <span className="font-medium text-foreground">
+              Canvas shows your data.
+            </span>{' '}
+            <span className="text-muted-foreground">
+              We transform it into insights.
+            </span>
           </span>
         </div>
       </motion.div>
@@ -204,21 +244,23 @@ export default function StudyLabPage() {
       {/* Features Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {features.map((feature, index) => (
-          <FeatureCard key={feature.id} feature={feature} index={index} />
+          <FeatureCard feature={feature} index={index} key={feature.id} />
         ))}
       </div>
 
       {/* Bottom CTA */}
       <motion.div
+        animate={{ opacity: 1 }}
         className="rounded-2xl border border-border/50 bg-gradient-to-br from-card to-card/50 p-8 text-center"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.6 }}
       >
-        <h2 className="font-semibold text-xl">Want to see these features sooner?</h2>
+        <h2 className="font-semibold text-xl">
+          Want to see these features sooner?
+        </h2>
         <p className="mt-2 text-muted-foreground">
-          We're actively developing Study Lab. Your feedback helps us prioritize which
-          features to build first.
+          We're actively developing Study Lab. Your feedback helps us prioritize
+          which features to build first.
         </p>
       </motion.div>
     </div>
