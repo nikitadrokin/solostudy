@@ -16,12 +16,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import {
-  VisuallyHidden,
-  VisuallyHiddenRoot,
-} from '@/components/ui/visually-hidden';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { VisuallyHidden } from './visually-hidden';
 
 interface DynamicPopoverProps
   extends Pick<
@@ -65,11 +62,10 @@ const DynamicPopover: React.FC<DynamicPopoverProps> = ({
           className
         )}
       >
-        {/* apparently Radix UI wants this syntax, but i don't */}
-        <div className="relative">
-          <DrawerTitle className="sr-only">{tooltip}</DrawerTitle>
-        </div>
         {children}
+        <VisuallyHidden>
+          <DrawerTitle>{tooltip}</DrawerTitle>
+        </VisuallyHidden>
       </DrawerContent>
     </Drawer>
   ) : (
