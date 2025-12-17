@@ -23,7 +23,8 @@
   "linter": {
     "rules": {
       "style": {
-        "noNestedTernary": "off"
+        "noNestedTernary": "off",
+        "useBlockStatements": "off"
       },
       "performance": {
         "noNamespaceImport": "off"
