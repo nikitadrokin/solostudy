@@ -3,7 +3,6 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { AnalyticsTabs } from '@/components/analytics/analytics-tabs';
 import { AuthOverlay } from '@/components/auth-overlay';
-import TaskList from '@/components/task-list';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
@@ -15,7 +14,7 @@ import {
 import { auth } from '@/lib/auth';
 import CompletedTasksCard from './completed-tasks';
 import StreakCard from './streak-card';
-
+import DashboardTaskList from './task-list';
 export default async function Dashboard() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -127,11 +126,7 @@ export default async function Dashboard() {
 
           {/* Right Column (Sidebar) */}
           <div className="space-y-6 lg:col-span-4">
-            <Card className="flex flex-col pb-0">
-              <CardContent className="px-4">
-                <TaskList className="**:data-[task-list-container]:!max-h-[37.75rem] h-[640px]" />
-              </CardContent>
-            </Card>
+            <DashboardTaskList className="flex flex-col pb-0" />
 
             <Card>
               <CardHeader>

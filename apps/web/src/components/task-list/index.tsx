@@ -9,9 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import { apiClient } from '@/utils/trpc';
-import { CardDescription, CardTitle } from '../ui/card';
-import { DrawerDescription, DrawerTitle } from '../ui/drawer';
+import { api, apiClient } from '@/utils/trpc';
 import TaskItem from './task-item';
 import TaskItemSkeleton from './task-item-skeleton';
 import type { Task } from './types';
@@ -32,11 +30,11 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
     setIsMounted(true);
   }, []);
 
-  const { data: tasks = [], isLoading: isLoadingTasks } = useQuery({
-    queryKey: [['todos', 'list']],
-    queryFn: () => apiClient.todos.list.query(),
-    enabled: !!session,
-  });
+  const { data: tasks = [], isLoading: isLoadingTasks } = useQuery(
+    api.todos.list.queryOptions(undefined, {
+      enabled: !!session,
+    })
+  );
   const createMutation = useMutation({
     mutationFn: (input: { title: string }) =>
       apiClient.todos.create.mutate(input),
@@ -121,69 +119,53 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
     }
   };
 
-  // dynamic DOM nodes based on viewport size
-  // the two variables under them are used for the title and description
-
-  const Title = isMobile ? DrawerTitle : CardTitle;
-  const Description = isMobile ? DrawerDescription : CardDescription;
-
-  const completedCount = tasks.filter((task: Task) => task.completed).length;
-  const totalCount = tasks.length;
-
   return (
-    <>
-      <Title>Task List</Title>
-      <Description>
-        {completedCount} of {totalCount} completed
-      </Description>
-
-      <div className={cn('mt-4', className)}>
-        <div className="flex gap-2">
-          <Input
-            className="flex-1"
-            onChange={(e) => setNewTodo(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Add a task..."
-            value={newTodo}
-          />
-          <Button
-            className="h-9 w-9"
-            disabled={!newTodo.trim() || createMutation.isPending}
-            onClick={handleAddTask}
-            size="icon"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div
-          className="-mr-4 space-y-2 overflow-y-auto py-4 pr-4 md:max-h-64"
-          data-task-list-container
+    <div className={cn('mt-4', className)}>
+      <div className="flex gap-2">
+        <Input
+          className="flex-1"
+          onChange={(e) => setNewTodo(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Add a task..."
+          value={newTodo}
+        />
+        <Button
+          className="h-9 w-9"
+          disabled={!newTodo.trim() || createMutation.isPending}
+          onClick={handleAddTask}
+          size="icon"
         >
-          {!isMounted || isLoadingTasks ? (
-            Array.from({ length: 10 }).map((_, index) => (
-              <TaskItemSkeleton
-                // biome-ignore lint/suspicious/noArrayIndexKey: skeleton
-                key={`task-item-skeleton-${index}`}
-              />
-            ))
-          ) : tasks.length === 0 ? (
-            <p className="py-4 text-center text-muted-foreground text-sm">
-              No tasks yet. Add one above!
-            </p>
-          ) : (
-            tasks.map((task: Task) => (
-              <TaskItem
-                handleRemoveTask={handleRemoveTask}
-                handleToggleTask={handleToggleTask}
-                key={task.id}
-                task={task}
-              />
-            ))
-          )}
-        </div>
+          <Plus className="h-4 w-4" />
+        </Button>
       </div>
-    </>
+
+      <div
+        className="-mr-4 space-y-2 overflow-y-auto py-4 pr-4 md:max-h-64"
+        data-task-list-container
+      >
+        {!isMounted || isLoadingTasks ? (
+          Array.from({ length: 10 }).map((_, index) => (
+            <TaskItemSkeleton
+              // biome-ignore lint/suspicious/noArrayIndexKey: skeleton
+              key={`task-item-skeleton-${index}`}
+            />
+          ))
+        ) : tasks.length === 0 ? (
+          <p className="py-4 text-center text-muted-foreground text-sm">
+            No tasks yet. Add one above!
+          </p>
+        ) : (
+          tasks.map((task: Task) => (
+            <TaskItem
+              handleRemoveTask={handleRemoveTask}
+              handleToggleTask={handleToggleTask}
+              key={task.id}
+              task={task}
+            />
+          ))
+        )}
+      </div>
+    </div>
   );
 };
 

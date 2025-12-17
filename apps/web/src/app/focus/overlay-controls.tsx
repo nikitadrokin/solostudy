@@ -1,4 +1,5 @@
 'use client';
+
 import { useQuery } from '@tanstack/react-query';
 import { Clapperboard, ListCheck, LogIn, Settings } from 'lucide-react';
 import Link from 'next/link';
@@ -6,8 +7,11 @@ import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
 import { FocusTimer } from '@/components/focus-timer';
 import TaskList from '@/components/task-list';
+import type { Task } from '@/components/task-list/types';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { CardDescription, CardTitle } from '@/components/ui/card';
+import { DrawerDescription, DrawerTitle } from '@/components/ui/drawer';
 import DynamicPopover from '@/components/ui/dynamic-popover';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSession } from '@/lib/auth-client';
@@ -19,10 +23,23 @@ const OverlayControls: React.FC = () => {
   const isMobile = useIsMobile();
   const { data: session } = useSession();
 
-  const { data: uncompletedTasks } = useQuery({
-    ...api.todos.getUncompletedCount.queryOptions(),
-    enabled: !!session,
-  });
+  const { data: uncompletedTasks } = useQuery(
+    api.todos.getUncompletedCount.queryOptions(undefined, {
+      enabled: !!session,
+    })
+  );
+
+  const { data: tasks = [] } = useQuery(
+    api.todos.list.queryOptions(undefined, {
+      enabled: !!session,
+    })
+  );
+
+  const completedCount = tasks.filter((task: Task) => task.completed).length;
+  const totalCount = tasks.length;
+
+  const Title = isMobile ? DrawerTitle : CardTitle;
+  const Description = isMobile ? DrawerDescription : CardDescription;
 
   return (
     <div className="absolute top-4 right-4 left-4 z-10">
@@ -56,7 +73,18 @@ const OverlayControls: React.FC = () => {
               </Button>
             }
           >
-            {session ? <TaskList className="" /> : <SignedOutTaskContent />}
+            {session ? (
+              <>
+                <Title>Task List</Title>
+                <Description>
+                  {completedCount} of {totalCount} completed
+                </Description>
+
+                <TaskList className="" />
+              </>
+            ) : (
+              <SignedOutTaskContent />
+            )}
           </DynamicPopover>
 
           <FocusTimer />
