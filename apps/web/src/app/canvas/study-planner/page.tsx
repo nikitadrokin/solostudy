@@ -217,15 +217,6 @@ function AssignmentRow({
             {formatDueDate(assignment.dueAt, assignment.daysUntilDue)}
           </p>
         </div>
-        <a
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          href={assignment.htmlUrl}
-          rel="noopener noreferrer"
-          target="_blank"
-          title="Open in Canvas"
-        >
-          <ExternalLink className="h-4 w-4" />
-        </a>
       </div>
     </motion.div>
   );
