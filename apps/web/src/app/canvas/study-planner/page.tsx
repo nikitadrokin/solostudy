@@ -117,7 +117,7 @@ function SummaryCard({
       initial={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.4, delay }}
     >
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden rounded-2xl py-0">
         <CardContent className="flex items-center gap-4 p-4">
           <div
             className={cn(
@@ -165,7 +165,7 @@ function AssignmentRow({
   return (
     <motion.div
       animate={{ opacity: 1, x: 0 }}
-      className="group relative flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-card/50 p-4 hover:bg-accent/50"
+      className="group relative flex items-center justify-between gap-4 rounded-2xl border border-border/50 bg-card/50 p-4 hover:bg-accent/50"
       initial={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
     >
@@ -243,7 +243,7 @@ export default function StudyPlannerPage() {
 
   if (!status?.connected) {
     return (
-      <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
+      <div className="container mx-auto max-w-7xl select-none space-y-8 p-6 md:p-8">
         <Card>
           <CardHeader>
             <CardTitle>Study Planner</CardTitle>
@@ -282,7 +282,7 @@ export default function StudyPlannerPage() {
         className="space-y-4"
         initial={{ opacity: 0, y: -10 }}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex select-none items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg">
             <Calendar className="h-6 w-6" />
           </div>
@@ -353,9 +353,9 @@ export default function StudyPlannerPage() {
           </div>
 
           {/* Assignment list */}
-          <Card>
+          <Card className="rounded-3xl">
             <CardHeader>
-              <div className="flex items-center gap-3">
+              <div className="flex select-none items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600">
                   <TrendingUp className="h-5 w-5 text-white" />
                 </div>
