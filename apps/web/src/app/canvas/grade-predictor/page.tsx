@@ -382,9 +382,9 @@ const GradePredictorPage: React.FC = () => {
         initial={{ opacity: 0, y: -10 }}
       >
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg">
-              <Calculator className="h-6 w-6" />
+          <div className="flex items-start gap-4">
+            <div className="mt-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg">
+              <Calculator className="size-6 shrink-0" />
             </div>
             <div>
               <h1 className="font-bold text-3xl tracking-tight">
@@ -422,7 +422,7 @@ const GradePredictorPage: React.FC = () => {
       {!selectedCourseId && (
         <Card>
           <CardContent>
-            <Empty className="!p-4">
+            <Empty className="!p-0">
               <EmptyHeader>
                 <EmptyMedia variant="icon">
                   <TrendingUp className="h-6 w-6" />
@@ -433,7 +433,7 @@ const GradePredictorPage: React.FC = () => {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent className="max-w-3xl items-start overflow-x-auto">
-                <div className="grid min-w-full grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
+                <div className="grid w-full min-w-full grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
                   {courses.map((course) => (
                     <Item
                       className="cursor-pointer flex-nowrap overflow-hidden rounded-xl p-3 transition-colors hover:bg-accent"
@@ -447,7 +447,7 @@ const GradePredictorPage: React.FC = () => {
                       </ItemMedia>
                       <ItemContent>
                         <ItemTitle className="line-clamp-2 text-left">
-                          {course.name.slice(0, 40)}
+                          {course.name}
                         </ItemTitle>
                       </ItemContent>
                     </Item>
