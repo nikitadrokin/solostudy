@@ -311,11 +311,13 @@ const GradePredictorPage: React.FC = () => {
     undefined
   );
 
-  const { data: status } = useQuery(
+  const { data: status, status: statusStatus } = useQuery(
     api.canvas.getStatus.queryOptions(undefined, {
       enabled: !!session,
     })
   );
+
+  const notFetchedYet = statusStatus === 'pending';
 
   const { data: courses = [] } = useQuery(
     api.canvas.getCourses.queryOptions(undefined, {
@@ -336,7 +338,7 @@ const GradePredictorPage: React.FC = () => {
     )
   );
 
-  if (!status?.connected) {
+  if (!(status?.connected || notFetchedYet)) {
     return (
       <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
         <Card>
@@ -430,11 +432,11 @@ const GradePredictorPage: React.FC = () => {
                   Choose a course to see your grade analysis and predictions.
                 </EmptyDescription>
               </EmptyHeader>
-              <EmptyContent className="max-w-3xl">
-                <div className="grid min-w-full grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+              <EmptyContent className="max-w-3xl items-start overflow-x-auto">
+                <div className="grid min-w-full grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
                   {courses.map((course) => (
                     <Item
-                      className="cursor-pointer flex-nowrap rounded-xl p-3 transition-colors hover:bg-accent"
+                      className="cursor-pointer flex-nowrap overflow-hidden rounded-xl p-3 transition-colors hover:bg-accent"
                       key={course.id}
                       onClick={() => setSelectedCourseId(course.canvasId)}
                       size="sm"
