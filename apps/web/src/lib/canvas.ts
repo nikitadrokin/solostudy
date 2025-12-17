@@ -1,6 +1,8 @@
 import type {
   CanvasAnnouncement,
   CanvasAssignment,
+  CanvasAssignmentGroup,
+  CanvasAssignmentWithSubmission,
   CanvasCalendarEvent,
   CanvasCourse,
   CanvasEnrollment,
@@ -278,3 +280,36 @@ function formattedCanvasError(error: Error): Error {
   // For other errors, throw the original error
   throw error;
 }
+
+/**
+ * Fetches assignment groups with weights for a course
+ */
+export async function fetchAssignmentGroups(
+  canvasUrl: string,
+  accessToken: string,
+  courseId: number
+): Promise<CanvasAssignmentGroup[]> {
+  const initialUrl = `${canvasUrl}/courses/${courseId}/assignment_groups?per_page=100`;
+  return await fetchPaginatedData<CanvasAssignmentGroup>(
+    initialUrl,
+    accessToken,
+    []
+  );
+}
+
+/**
+ * Fetches assignments with submission data for grade calculation
+ */
+export async function fetchAssignmentsWithSubmissions(
+  canvasUrl: string,
+  accessToken: string,
+  courseId: number
+): Promise<CanvasAssignmentWithSubmission[]> {
+  const initialUrl = `${canvasUrl}/courses/${courseId}/assignments?include[]=submission&per_page=100`;
+  return await fetchPaginatedData<CanvasAssignmentWithSubmission>(
+    initialUrl,
+    accessToken,
+    []
+  );
+}
+

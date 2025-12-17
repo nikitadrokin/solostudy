@@ -5,6 +5,7 @@ import {
   Bell,
   BookOpen,
   Calendar,
+  ChartLine,
   ChevronRight,
   FileText,
   FlaskConical,
@@ -61,7 +62,8 @@ const canvasLinks = [
 ];
 
 const experimentalCanvasLinks = [
-  { href: '/canvas/study-lab', label: 'Study Lab', icon: BookOpen },
+  { href: '/canvas/study-lab', label: 'Study Lab', icon: FlaskConical },
+  { href: '/canvas/grade-predictor', label: 'Grade Predictor', icon: ChartLine },
 ];
 
 const settingsLinks = [

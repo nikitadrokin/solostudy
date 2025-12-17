@@ -77,3 +77,34 @@ export interface CanvasAnnouncement {
   user_name: string;
   read_state: string;
 }
+
+export interface CanvasAssignmentGroup {
+  id: number;
+  name: string;
+  position: number;
+  group_weight: number;
+  rules?: {
+    drop_lowest?: number;
+    drop_highest?: number;
+    never_drop?: number[];
+  };
+}
+
+export interface CanvasSubmission {
+  id: number;
+  assignment_id: number;
+  user_id: number;
+  score: number | null;
+  grade: string | null;
+  submitted_at: string | null;
+  workflow_state: string;
+  late: boolean;
+  missing: boolean;
+  excused: boolean;
+}
+
+export interface CanvasAssignmentWithSubmission extends CanvasAssignment {
+  submission?: CanvasSubmission;
+  assignment_group_id: number;
+}
+

@@ -8,6 +8,8 @@ import { todo } from '../db/schema/focus';
 import {
   fetchAllAssignments,
   fetchAnnouncements,
+  fetchAssignmentGroups,
+  fetchAssignmentsWithSubmissions,
   fetchCalendarEvents,
   fetchCanvasCourses,
   fetchCanvasUser,
@@ -428,4 +430,150 @@ export const canvasRouter = router({
       });
     }
   }),
+
+  /**
+   * Get grade analysis for a course (assignment groups, weights, submissions)
+   */
+  getGradeAnalysis: canvasProcedure
+    .input(
+      z.object({
+        courseId: z.number(),
+      })
+    )
+    .query(async ({ ctx: { canvas }, input }) => {
+      try {
+        const [assignmentGroups, assignments] = await Promise.all([
+          fetchAssignmentGroups(canvas.apiUrl, canvas.token, input.courseId),
+          fetchAssignmentsWithSubmissions(
+            canvas.apiUrl,
+            canvas.token,
+            input.courseId
+          ),
+        ]);
+
+        // Calculate grade breakdown per assignment group
+        const groupAnalysis = assignmentGroups
+          .sort((a, b) => a.position - b.position)
+          .map((group) => {
+            const groupAssignments = assignments.filter(
+              (a) => a.assignment_group_id === group.id
+            );
+
+            // Separate graded vs ungraded assignments
+            const gradedAssignments = groupAssignments.filter(
+              (a) =>
+                a.submission?.score !== null &&
+                a.submission?.score !== undefined &&
+                !a.submission?.excused
+            );
+
+            const ungradedAssignments = groupAssignments.filter(
+              (a) =>
+                (a.submission?.score === null ||
+                  a.submission?.score === undefined) &&
+                !a.submission?.excused &&
+                a.points_possible !== null &&
+                a.points_possible > 0
+            );
+
+            const earnedPoints = gradedAssignments.reduce(
+              (sum, a) => sum + (a.submission?.score ?? 0),
+              0
+            );
+            const possiblePoints = gradedAssignments.reduce(
+              (sum, a) => sum + (a.points_possible ?? 0),
+              0
+            );
+            const ungradedPoints = ungradedAssignments.reduce(
+              (sum, a) => sum + (a.points_possible ?? 0),
+              0
+            );
+
+            const currentPercentage =
+              possiblePoints > 0 ? (earnedPoints / possiblePoints) * 100 : null;
+
+            return {
+              id: group.id,
+              name: group.name,
+              weight: group.group_weight,
+              earnedPoints,
+              possiblePoints,
+              ungradedPoints,
+              currentPercentage,
+              assignmentCount: groupAssignments.length,
+              gradedCount: gradedAssignments.length,
+              assignments: groupAssignments.map((a) => ({
+                id: a.id,
+                name: a.name,
+                pointsPossible: a.points_possible,
+                score: a.submission?.score ?? null,
+                graded:
+                  a.submission?.score !== null &&
+                  a.submission?.score !== undefined,
+                excused: a.submission?.excused ?? false,
+                dueAt: a.due_at,
+              })),
+            };
+          });
+
+        // Calculate overall weighted grade
+        let totalWeightedScore = 0;
+        let totalWeight = 0;
+
+        for (const group of groupAnalysis) {
+          if (
+            group.currentPercentage !== null &&
+            group.weight > 0 &&
+            group.possiblePoints > 0
+          ) {
+            totalWeightedScore +=
+              (group.currentPercentage / 100) * group.weight;
+            totalWeight += group.weight;
+          }
+        }
+
+        const currentOverallGrade =
+          totalWeight > 0 ? (totalWeightedScore / totalWeight) * 100 : null;
+
+        // Calculate what's needed for target grades
+        const targetGrades = [90, 80, 70, 60]; // A, B, C, D
+        const remainingWeight = 100 - totalWeight;
+        const projections = targetGrades.map((target) => {
+          if (remainingWeight <= 0 || totalWeight === 0) {
+            return {
+              targetGrade: target,
+              needed: null,
+              achievable: currentOverallGrade !== null && currentOverallGrade >= target,
+            };
+          }
+
+          // Calculate needed percentage on remaining work
+          // target = (currentWeighted + neededPct * remainingWeight) / 100
+          // neededPct = (target * 100 - currentWeighted * 100) / remainingWeight
+          const neededPct =
+            (target - (totalWeightedScore / 100) * 100) /
+            (remainingWeight / 100);
+
+          return {
+            targetGrade: target,
+            needed: Math.max(0, Math.min(100, neededPct)),
+            achievable: neededPct >= 0 && neededPct <= 100,
+          };
+        });
+
+        return {
+          groups: groupAnalysis,
+          currentOverallGrade,
+          totalWeight,
+          remainingWeight,
+          projections,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to fetch grade analysis: ${error instanceof Error ? error.message : String(error)}`,
+          cause: error,
+        });
+      }
+    }),
 });
