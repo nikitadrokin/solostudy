@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/useBlockStatements: compact if-statements look nicer here */
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
@@ -32,9 +33,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
+import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import { api, apiClient } from '@/utils/trpc';
+import { api } from '@/utils/trpc';
 
 function getGradeLetter(score: number): string {
   if (score >= 90) return 'A';
@@ -127,7 +129,9 @@ function AssignmentGroupCard({ group }: { group: GroupAnalysis }) {
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-4">
             <span className="text-muted-foreground">
-              <span className="font-medium text-foreground">{group.weight}%</span>{' '}
+              <span className="font-medium text-foreground">
+                {group.weight}%
+              </span>{' '}
               of total
             </span>
             <span className="text-muted-foreground">
@@ -159,10 +163,10 @@ function AssignmentGroupCard({ group }: { group: GroupAnalysis }) {
         {group.assignments.length > 0 && (
           <div>
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setExpanded(!expanded)}
               className="w-full justify-between px-0 hover:bg-transparent"
+              onClick={() => setExpanded(!expanded)}
+              size="sm"
+              variant="ghost"
             >
               <span className="text-muted-foreground text-xs">
                 View assignments
@@ -176,14 +180,14 @@ function AssignmentGroupCard({ group }: { group: GroupAnalysis }) {
             </Button>
             {expanded && (
               <motion.div
-                initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 className="mt-2 space-y-2"
+                initial={{ height: 0, opacity: 0 }}
               >
                 {group.assignments.map((assignment) => (
                   <div
-                    key={assignment.id}
                     className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2 text-sm"
+                    key={assignment.id}
                   >
                     <div className="flex items-center gap-2">
                       {assignment.graded ? (
@@ -195,7 +199,7 @@ function AssignmentGroupCard({ group }: { group: GroupAnalysis }) {
                     </div>
                     <div className="shrink-0 text-right">
                       {assignment.excused ? (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge className="text-xs" variant="outline">
                           Excused
                         </Badge>
                       ) : assignment.graded ? (
@@ -252,13 +256,13 @@ function ProjectionCard({ projections }: { projections: Projection[] }) {
         <div className="grid gap-3 sm:grid-cols-2">
           {projections.map((proj) => (
             <div
-              key={proj.targetGrade}
               className={cn(
                 'flex items-center justify-between rounded-lg border p-3',
                 proj.achievable
                   ? 'border-border bg-card'
                   : 'border-destructive/20 bg-destructive/5'
               )}
+              key={proj.targetGrade}
             >
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg">
@@ -278,7 +282,9 @@ function ProjectionCard({ projections }: { projections: Projection[] }) {
                       </span>
                     </span>
                   ) : (
-                    <span className="text-destructive text-sm">Not possible</span>
+                    <span className="text-destructive text-sm">
+                      Not possible
+                    </span>
                   )}
                 </div>
               ) : (
@@ -286,7 +292,9 @@ function ProjectionCard({ projections }: { projections: Projection[] }) {
                   {proj.achievable ? (
                     <span className="text-emerald-500 text-sm">✓ Secured</span>
                   ) : (
-                    <span className="text-destructive text-sm">Not possible</span>
+                    <span className="text-destructive text-sm">
+                      Not possible
+                    </span>
                   )}
                 </div>
               )}
@@ -320,14 +328,14 @@ export default function GradePredictorPage() {
     data: gradeAnalysis,
     isLoading: isLoadingAnalysis,
     error,
-  } = useQuery({
-    queryKey: [['canvas', 'getGradeAnalysis'], { courseId: selectedCourseId }],
-    queryFn: () =>
-      apiClient.canvas.getGradeAnalysis.query({
-        courseId: selectedCourseId!,
-      }),
-    enabled: status?.connected === true && selectedCourseId !== undefined,
-  });
+  } = useQuery(
+    api.canvas.getGradeAnalysis.queryOptions(
+      { courseId: selectedCourseId ?? 0 },
+      {
+        enabled: status?.connected === true && selectedCourseId !== undefined,
+      }
+    )
+  );
 
   if (!status?.connected) {
     return (
@@ -368,9 +376,9 @@ export default function GradePredictorPage() {
     <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
       {/* Header */}
       <motion.div
+        animate={{ opacity: 1, y: 0 }}
         className="space-y-4"
         initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
       >
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
@@ -390,7 +398,7 @@ export default function GradePredictorPage() {
           {/* Course selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-[250px] justify-between">
+              <Button className="w-[250px] justify-between" variant="outline">
                 {selectedCourse?.name ?? 'Select a course'}
                 <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -412,18 +420,39 @@ export default function GradePredictorPage() {
       {/* No course selected state */}
       {!selectedCourseId && (
         <Card>
-          <CardContent className="py-12">
-            <Empty>
+          <CardContent>
+            <Empty className="!p-4">
               <EmptyHeader>
                 <EmptyMedia variant="icon">
                   <TrendingUp className="h-6 w-6" />
                 </EmptyMedia>
                 <EmptyTitle>Select a Course</EmptyTitle>
                 <EmptyDescription>
-                  Choose a course from the dropdown above to see your grade
-                  analysis and predictions.
+                  Choose a course to see your grade analysis and predictions.
                 </EmptyDescription>
               </EmptyHeader>
+              <EmptyContent className="max-w-3xl">
+                <div className="grid min-w-full grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+                  {courses.map((course) => (
+                    <Item
+                      className="cursor-pointer flex-nowrap rounded-xl p-3 transition-colors hover:bg-accent"
+                      key={course.id}
+                      onClick={() => setSelectedCourseId(course.canvasId)}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <ItemMedia variant="icon">
+                        <BookOpen className="size-4" />
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle className="line-clamp-2 text-left">
+                          {course.name.slice(0, 40)}
+                        </ItemTitle>
+                      </ItemContent>
+                    </Item>
+                  ))}
+                </div>
+              </EmptyContent>
             </Empty>
           </CardContent>
         </Card>
@@ -450,9 +479,9 @@ export default function GradePredictorPage() {
       {/* Grade analysis content */}
       {gradeAnalysis && (
         <motion.div
+          animate={{ opacity: 1 }}
           className="space-y-6"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
         >
           {/* Overall grade card */}
           <Card className="overflow-hidden">
@@ -508,10 +537,12 @@ export default function GradePredictorPage() {
 
           {/* Assignment groups breakdown */}
           <div className="space-y-4">
-            <h2 className="font-semibold text-xl">Grade Breakdown by Category</h2>
+            <h2 className="font-semibold text-xl">
+              Grade Breakdown by Category
+            </h2>
             <div className="grid gap-4 lg:grid-cols-2">
               {gradeAnalysis.groups.map((group) => (
-                <AssignmentGroupCard key={group.id} group={group} />
+                <AssignmentGroupCard group={group} key={group.id} />
               ))}
             </div>
           </div>
