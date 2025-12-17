@@ -48,11 +48,13 @@ import { ModeToggle } from './theme-toggle/dropdown';
 import { ThemeToggle } from './theme-toggle/inline';
 import UserMenu from './user-menu';
 
+// biome-ignore format: because
 const mainLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/focus', label: 'Focus Room', icon: Focus },
 ];
 
+// biome-ignore format: because
 const canvasLinks = [
   { href: '/canvas/assignments', label: 'Assignments', icon: FileText },
   { href: '/canvas/courses', label: 'Courses', icon: BookOpen },
@@ -61,11 +63,14 @@ const canvasLinks = [
   { href: '/canvas/announcements', label: 'Announcements', icon: Bell },
 ];
 
+// biome-ignore format: because
 const experimentalCanvasLinks = [
   { href: '/canvas/study-lab', label: 'Study Lab', icon: FlaskConical },
   { href: '/canvas/grade-predictor', label: 'Grade Predictor', icon: ChartLine },
+  { href: '/canvas/study-planner', label: 'Study Planner', icon: Calendar },
 ];
 
+// biome-ignore format: because
 const settingsLinks = [
   { href: '/settings#profile', label: 'Profile', icon: User },
   { href: '/settings#appearance', label: 'Appearance', icon: Laptop },
