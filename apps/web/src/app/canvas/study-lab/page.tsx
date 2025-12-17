@@ -84,7 +84,7 @@ const features: StudyFeature[] = [
     description: 'Strategic study schedules based on your data',
     longDescription:
       'Analyzes due dates, assignment weights, and your past performance to create an optimized study schedule. Knows what deserves more attention.',
-    status: 'coming-soon',
+    status: 'available',
     gradient: 'from-blue-500 to-cyan-600',
     benefits: [
       'Priority-weighted schedules',

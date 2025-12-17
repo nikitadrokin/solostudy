@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/style/useBlockStatements: compact if-statements look nicer here */
 'use client';
 
 import { useQuery } from '@tanstack/react-query';

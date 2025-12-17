@@ -576,4 +576,166 @@ export const canvasRouter = router({
         });
       }
     }),
+
+  /**
+   * Get study plan with prioritized assignments
+   */
+  getStudyPlan: canvasProcedure.query(async ({ ctx: { canvas } }) => {
+    try {
+      const courses = await fetchCanvasCourses(canvas.apiUrl, canvas.token);
+      const now = new Date();
+
+      // Fetch assignments and groups for all courses
+      const courseDataPromises = courses.map(async (course) => {
+        try {
+          const [assignments, groups] = await Promise.all([
+            fetchAssignmentsWithSubmissions(
+              canvas.apiUrl,
+              canvas.token,
+              course.id
+            ),
+            fetchAssignmentGroups(canvas.apiUrl, canvas.token, course.id),
+          ]);
+          return { course, assignments, groups };
+        } catch {
+          return { course, assignments: [], groups: [] };
+        }
+      });
+
+      const courseData = await Promise.all(courseDataPromises);
+
+      // Process all assignments across courses
+      const prioritizedAssignments: Array<{
+        id: number;
+        name: string;
+        courseId: number;
+        courseName: string;
+        dueAt: string | null;
+        pointsPossible: number | null;
+        priorityScore: number;
+        urgencyScore: number;
+        impactScore: number;
+        daysUntilDue: number | null;
+        status: 'overdue' | 'urgent' | 'upcoming' | 'later' | 'no-due-date';
+        htmlUrl: string;
+      }> = [];
+
+      for (const { course, assignments, groups } of courseData) {
+        // Calculate total points per group for impact calculation
+        const groupTotals = new Map<number, number>();
+        const groupWeights = new Map<number, number>();
+
+        for (const group of groups) {
+          groupWeights.set(group.id, group.group_weight);
+          const total = assignments
+            .filter((a) => a.assignment_group_id === group.id)
+            .reduce((sum, a) => sum + (a.points_possible ?? 0), 0);
+          groupTotals.set(group.id, total);
+        }
+
+        for (const assignment of assignments) {
+          // Skip if already submitted or graded
+          const isSubmitted =
+            assignment.submission?.workflow_state === 'submitted' ||
+            assignment.submission?.workflow_state === 'graded' ||
+            (assignment.submission?.score !== null &&
+              assignment.submission?.score !== undefined);
+
+          if (isSubmitted) continue;
+
+          // Calculate days until due
+          let daysUntilDue: number | null = null;
+          let status: 'overdue' | 'urgent' | 'upcoming' | 'later' | 'no-due-date' =
+            'no-due-date';
+
+          if (assignment.due_at) {
+            const dueDate = new Date(assignment.due_at);
+            daysUntilDue = Math.ceil(
+              (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+            );
+
+            if (daysUntilDue < 0) {
+              status = 'overdue';
+            } else if (daysUntilDue <= 3) {
+              status = 'urgent';
+            } else if (daysUntilDue <= 7) {
+              status = 'upcoming';
+            } else {
+              status = 'later';
+            }
+          }
+
+          // Calculate urgency score (0-100, higher = more urgent)
+          let urgencyScore = 0;
+          if (daysUntilDue !== null) {
+            if (daysUntilDue < 0) {
+              urgencyScore = 100; // Overdue gets max urgency
+            } else {
+              urgencyScore = Math.max(0, 100 - daysUntilDue * 10);
+            }
+          }
+
+          // Calculate impact score (0-100)
+          const groupTotal = groupTotals.get(assignment.assignment_group_id) ?? 1;
+          const groupWeight =
+            groupWeights.get(assignment.assignment_group_id) ?? 0;
+          const pointsRatio =
+            groupTotal > 0
+              ? ((assignment.points_possible ?? 0) / groupTotal) * 100
+              : 0;
+          const impactScore = (pointsRatio * groupWeight) / 100;
+
+          // Combined priority score (60% urgency, 40% impact)
+          const priorityScore = urgencyScore * 0.6 + impactScore * 0.4;
+
+          prioritizedAssignments.push({
+            id: assignment.id,
+            name: assignment.name,
+            courseId: course.id,
+            courseName: course.name,
+            dueAt: assignment.due_at,
+            pointsPossible: assignment.points_possible,
+            priorityScore,
+            urgencyScore,
+            impactScore,
+            daysUntilDue,
+            status,
+            htmlUrl: `${canvas.storedUrl}/courses/${course.id}/assignments/${assignment.id}`,
+          });
+        }
+      }
+
+      // Sort by priority (highest first), then by due date
+      prioritizedAssignments.sort((a, b) => {
+        // Overdue first
+        if (a.status === 'overdue' && b.status !== 'overdue') return -1;
+        if (b.status === 'overdue' && a.status !== 'overdue') return 1;
+        // Then by priority score
+        return b.priorityScore - a.priorityScore;
+      });
+
+      // Calculate summary
+      const summary = {
+        totalAssignments: prioritizedAssignments.length,
+        overdueCount: prioritizedAssignments.filter((a) => a.status === 'overdue')
+          .length,
+        urgentCount: prioritizedAssignments.filter((a) => a.status === 'urgent')
+          .length,
+        upcomingCount: prioritizedAssignments.filter(
+          (a) => a.status === 'upcoming'
+        ).length,
+      };
+
+      return {
+        assignments: prioritizedAssignments,
+        summary,
+      };
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to generate study plan: ${error instanceof Error ? error.message : String(error)}`,
+        cause: error,
+      });
+    }
+  }),
 });
