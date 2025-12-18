@@ -13,6 +13,7 @@ import {
   Laptop,
   LayoutDashboard,
   Link as LinkIcon,
+  MessagesSquare,
   Settings,
   Shield,
   User,
@@ -65,9 +66,10 @@ const canvasLinks = [
 
 // biome-ignore format: because
 const experimentalCanvasLinks = [
-  { href: '/canvas/study-lab', label: 'Study Lab', icon: FlaskConical },
-  { href: '/canvas/grade-predictor', label: 'Grade Predictor', icon: ChartLine },
-  { href: '/canvas/study-planner', label: 'Study Planner', icon: Calendar },
+  { href: '/canvas/experimental/overview', label: 'Overview', icon: LayoutDashboard },
+  { href: '/canvas/experimental/grade-predictor', label: 'Grade Predictor', icon: ChartLine },
+  { href: '/canvas/experimental/study-planner', label: 'Study Planner', icon: Calendar },
+  { href: '/canvas/experimental/discussion-insights', label: 'Discussion Insights', icon: MessagesSquare },
 ];
 
 // biome-ignore format: because
@@ -82,7 +84,9 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const { open } = useSidebar();
   const [settingsOpen, setSettingsOpen] = useState(pathname === '/settings');
-  const [experimentalOpen, setExperimentalOpen] = useState(false);
+  const [experimentalOpen, setExperimentalOpen] = useState(
+    pathname.startsWith('/canvas/experimental')
+  );
   const [currentHash, setCurrentHash] = useState('');
 
   useEffect(() => {

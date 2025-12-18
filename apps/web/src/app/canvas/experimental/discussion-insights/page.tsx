@@ -244,7 +244,7 @@ const DiscussionInsightsPage: React.FC = () => {
       <div className="space-y-4">
         <div className="flex select-none items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 text-white shadow-lg">
-            <MessageCircle className="h-6 w-6" />
+            <MessagesSquare className="h-6 w-6" />
           </div>
           <div>
             <h1 className="font-bold text-3xl tracking-tight">
@@ -283,7 +283,7 @@ const DiscussionInsightsPage: React.FC = () => {
             <SummaryCard
               color="bg-muted"
               count={insights.summary.totalDiscussions}
-              icon={<MessagesSquare className="h-6 w-6 text-foreground" />}
+              icon={<MessageCircle className="h-6 w-6 text-foreground" />}
               title="Total Discussions"
             />
             <SummaryCard

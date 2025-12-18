@@ -68,7 +68,7 @@ const features: StudyFeature[] = [
     title: 'AI Quiz Practice Mode',
     description: 'Practice with past quiz questions anytime',
     longDescription:
-      'Canvas locks quizzes after submission — we unlock unlimited practice. Review past quiz questions and generate similar practice questions to master the material.',
+      'Canvas locks quizzes after submission, while we unlock unlimited practice. Review past quiz questions and generate similar practice questions to master the material.',
     status: 'coming-soon',
     gradient: 'from-orange-500 to-red-600',
     benefits: [
