@@ -14,6 +14,8 @@ import {
   fetchCanvasCourses,
   fetchCanvasUser,
   fetchCourseAssignments,
+  fetchCourseDiscussionTopics,
+  fetchDiscussionEntries,
   fetchUserEnrollment,
   normalizeCanvasUrl,
   validateCanvasToken,
@@ -734,6 +736,150 @@ export const canvasRouter = router({
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: `Failed to generate study plan: ${error instanceof Error ? error.message : String(error)}`,
+        cause: error,
+      });
+    }
+  }),
+
+  /**
+   * Get discussion insights with unanswered discussions
+   */
+  getDiscussionInsights: canvasProcedure.query(async ({ ctx: { canvas } }) => {
+    try {
+      const courses = await fetchCanvasCourses(canvas.apiUrl, canvas.token);
+      const canvasUser = await fetchCanvasUser(canvas.apiUrl, canvas.token);
+      const now = new Date();
+
+      // Data structure for unanswered discussions
+      const unansweredDiscussions: Array<{
+        id: number;
+        title: string;
+        courseId: number;
+        courseName: string;
+        dueAt: string | null;
+        postedAt: string | null;
+        daysUntilDue: number | null;
+        status: 'overdue' | 'urgent' | 'upcoming' | 'later' | 'no-due-date';
+        htmlUrl: string;
+      }> = [];
+
+      let totalDiscussions = 0;
+      let userPostCount = 0;
+
+      // Fetch discussion data for all courses
+      const courseDataPromises = courses.map(async (course) => {
+        try {
+          const topics = await fetchCourseDiscussionTopics(
+            canvas.apiUrl,
+            canvas.token,
+            course.id
+          );
+          return { course, topics };
+        } catch {
+          return { course, topics: [] };
+        }
+      });
+
+      const courseData = await Promise.all(courseDataPromises);
+
+      // Process each course's discussions
+      for (const { course, topics } of courseData) {
+        // Filter to published topics only
+        const publishedTopics = topics.filter((t) => t.published);
+        totalDiscussions += publishedTopics.length;
+
+        // Check each topic for user participation
+        for (const topic of publishedTopics) {
+          // Fetch entries to check if user has posted
+          const entries = await fetchDiscussionEntries(
+            canvas.apiUrl,
+            canvas.token,
+            course.id,
+            topic.id
+          );
+
+          // Check if user has posted in this topic
+          const userEntries = entries.filter(
+            (e) => e.user_id === canvasUser.id && !e.deleted
+          );
+          userPostCount += userEntries.length;
+
+          // If user hasn't posted, add to unanswered list
+          if (userEntries.length === 0) {
+            // Calculate days until due
+            let daysUntilDue: number | null = null;
+            let status:
+              | 'overdue'
+              | 'urgent'
+              | 'upcoming'
+              | 'later'
+              | 'no-due-date' = 'no-due-date';
+
+            if (topic.due_at) {
+              const dueDate = new Date(topic.due_at);
+              daysUntilDue = Math.ceil(
+                (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+              );
+
+              if (daysUntilDue < 0) {
+                status = 'overdue';
+              } else if (daysUntilDue <= 3) {
+                status = 'urgent';
+              } else if (daysUntilDue <= 7) {
+                status = 'upcoming';
+              } else {
+                status = 'later';
+              }
+            }
+
+            unansweredDiscussions.push({
+              id: topic.id,
+              title: topic.title,
+              courseId: course.id,
+              courseName: course.name,
+              dueAt: topic.due_at,
+              postedAt: topic.posted_at,
+              daysUntilDue,
+              status,
+              htmlUrl: topic.html_url,
+            });
+          }
+        }
+      }
+
+      // Sort unanswered discussions by urgency (overdue first, then by due date)
+      unansweredDiscussions.sort((a, b) => {
+        // Overdue first
+        if (a.status === 'overdue' && b.status !== 'overdue') return -1;
+        if (b.status === 'overdue' && a.status !== 'overdue') return 1;
+        // Then by due date (soonest first, null dates last)
+        if (a.daysUntilDue === null && b.daysUntilDue === null) return 0;
+        if (a.daysUntilDue === null) return 1;
+        if (b.daysUntilDue === null) return -1;
+        return a.daysUntilDue - b.daysUntilDue;
+      });
+
+      // Calculate summary
+      const summary = {
+        totalDiscussions,
+        unansweredCount: unansweredDiscussions.length,
+        upcomingDueCount: unansweredDiscussions.filter(
+          (d) => d.status === 'urgent' || d.status === 'upcoming'
+        ).length,
+        overdueCount: unansweredDiscussions.filter(
+          (d) => d.status === 'overdue'
+        ).length,
+        userPostCount,
+      };
+
+      return {
+        summary,
+        unansweredDiscussions,
+      };
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to fetch discussion insights: ${error instanceof Error ? error.message : String(error)}`,
         cause: error,
       });
     }

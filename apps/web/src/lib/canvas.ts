@@ -5,6 +5,8 @@ import type {
   CanvasAssignmentWithSubmission,
   CanvasCalendarEvent,
   CanvasCourse,
+  CanvasDiscussionEntry,
+  CanvasDiscussionTopic,
   CanvasEnrollment,
   CanvasUser,
 } from '../types/canvas';
@@ -297,9 +299,6 @@ export async function fetchAssignmentGroups(
   );
 }
 
-/**
- * Fetches assignments with submission data for grade calculation
- */
 export async function fetchAssignmentsWithSubmissions(
   canvasUrl: string,
   accessToken: string,
@@ -313,3 +312,40 @@ export async function fetchAssignmentsWithSubmissions(
   );
 }
 
+/**
+ * Fetches discussion topics for a specific course
+ */
+export async function fetchCourseDiscussionTopics(
+  canvasUrl: string,
+  accessToken: string,
+  courseId: number
+): Promise<CanvasDiscussionTopic[]> {
+  const initialUrl = `${canvasUrl}/courses/${courseId}/discussion_topics?per_page=100`;
+  return await fetchPaginatedData<CanvasDiscussionTopic>(
+    initialUrl,
+    accessToken,
+    []
+  );
+}
+
+/**
+ * Fetches entries for a specific discussion topic
+ */
+export async function fetchDiscussionEntries(
+  canvasUrl: string,
+  accessToken: string,
+  courseId: number,
+  topicId: number
+): Promise<CanvasDiscussionEntry[]> {
+  const initialUrl = `${canvasUrl}/courses/${courseId}/discussion_topics/${topicId}/entries?per_page=100`;
+  try {
+    return await fetchPaginatedData<CanvasDiscussionEntry>(
+      initialUrl,
+      accessToken,
+      []
+    );
+  } catch {
+    // Some topics may not allow viewing entries (require_initial_post)
+    return [];
+  }
+}

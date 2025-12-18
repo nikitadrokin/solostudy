@@ -108,3 +108,34 @@ export interface CanvasAssignmentWithSubmission extends CanvasAssignment {
   assignment_group_id: number;
 }
 
+export interface CanvasDiscussionTopic {
+  id: number;
+  title: string;
+  message: string | null;
+  html_url: string;
+  posted_at: string | null;
+  last_reply_at: string | null;
+  require_initial_post: boolean;
+  discussion_subentry_count: number;
+  read_state: 'read' | 'unread';
+  unread_count: number;
+  assignment_id: number | null;
+  due_at: string | null;
+  lock_at: string | null;
+  user_can_see_posts: boolean;
+  published: boolean;
+}
+
+export interface CanvasDiscussionEntry {
+  id: number;
+  user_id: number;
+  user_name: string;
+  message: string;
+  read_state: 'read' | 'unread';
+  created_at: string;
+  updated_at: string;
+  deleted: boolean;
+  recent_replies?: CanvasDiscussionEntry[];
+  has_more_replies?: boolean;
+}
+

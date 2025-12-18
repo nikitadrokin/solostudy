@@ -96,15 +96,15 @@ const features: StudyFeature[] = [
     id: 'discussion-insights',
     icon: <MessageCircle className="h-6 w-6" />,
     title: 'Discussion Insights',
-    description: 'Extract key concepts from discussion threads',
+    description: 'Track your participation in discussion threads',
     longDescription:
-      'Long discussion threads are hard to follow. We summarize them, extract key concepts, highlight common questions, and show your participation gaps.',
-    status: 'coming-soon',
+      'Long discussion threads are hard to follow. We show you which discussions need your reply, track your participation, and highlight overdue discussions.',
+    status: 'available',
     gradient: 'from-pink-500 to-rose-600',
     benefits: [
-      'Thread summaries',
-      'Key concept extraction',
-      'Participation tracking',
+      'See unanswered discussions',
+      'Track your post count',
+      'Urgency-based sorting',
     ],
   },
 ];
