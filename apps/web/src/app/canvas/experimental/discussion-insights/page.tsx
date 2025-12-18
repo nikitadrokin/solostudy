@@ -3,17 +3,13 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   AlertTriangle,
-  BookOpen,
   CheckCircle2,
   Clock,
-  ExternalLink,
   Loader2,
   MessageCircle,
   MessagesSquare,
-  Zap,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -27,69 +23,8 @@ import {
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
-
-type DiscussionStatus =
-  | 'overdue'
-  | 'urgent'
-  | 'upcoming'
-  | 'later'
-  | 'no-due-date';
-
-const statusConfig: Record<
-  DiscussionStatus,
-  { label: string; color: string; bgColor: string; icon: React.ReactNode }
-> = {
-  overdue: {
-    label: 'Overdue',
-    color: 'text-red-500',
-    bgColor: 'bg-red-500/10',
-    icon: <AlertTriangle className="h-4 w-4" />,
-  },
-  urgent: {
-    label: 'Urgent',
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-500/10',
-    icon: <Zap className="h-4 w-4" />,
-  },
-  upcoming: {
-    label: 'Soon',
-    color: 'text-yellow-500',
-    bgColor: 'bg-yellow-500/10',
-    icon: <Clock className="h-4 w-4" />,
-  },
-  later: {
-    label: 'Later',
-    color: 'text-emerald-500',
-    bgColor: 'bg-emerald-500/10',
-    icon: <CheckCircle2 className="h-4 w-4" />,
-  },
-  'no-due-date': {
-    label: 'No Date',
-    color: 'text-muted-foreground',
-    bgColor: 'bg-muted',
-    icon: <MessageCircle className="h-4 w-4" />,
-  },
-};
-
-function formatDueDate(
-  dueAt: string | null,
-  daysUntilDue: number | null
-): string {
-  if (!dueAt || daysUntilDue === null) return 'No due date';
-
-  if (daysUntilDue < 0) {
-    const daysOverdue = Math.abs(daysUntilDue);
-    return daysOverdue === 1 ? '1 day overdue' : `${daysOverdue} days overdue`;
-  }
-  if (daysUntilDue === 0) return 'Due today';
-  if (daysUntilDue === 1) return 'Due tomorrow';
-  if (daysUntilDue <= 7) return `Due in ${daysUntilDue} days`;
-
-  return new Date(dueAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
-}
+import { columns } from './columns';
+import { DataTable } from './data-table';
 
 function SummaryCard({
   title,
@@ -119,68 +54,6 @@ function SummaryCard({
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-type Discussion = {
-  id: number;
-  title: string;
-  courseId: number;
-  courseName: string;
-  dueAt: string | null;
-  postedAt: string | null;
-  daysUntilDue: number | null;
-  status: DiscussionStatus;
-  htmlUrl: string;
-};
-
-function DiscussionRow({ discussion }: { discussion: Discussion }) {
-  const status = statusConfig[discussion.status];
-
-  return (
-    <div className="group relative flex items-center justify-between gap-4 rounded-2xl border border-border/50 bg-card/50 p-4 hover:bg-accent/50">
-      <div className="flex max-w-[80%] flex-grow-0 items-center gap-4">
-        <div
-          className={cn(
-            'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
-            status.bgColor,
-            status.color
-          )}
-        >
-          {status.icon}
-        </div>
-        <div className="min-w-0">
-          <a
-            className={buttonVariants({
-              variant: 'link',
-              className: 'line-clamp-1 truncate group-hover:text-primary',
-            })}
-            href={discussion.htmlUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            {discussion.title}
-            <ExternalLink className="size-3" />
-            <span className="absolute inset-0" />
-          </a>
-          <div className="line-clamp-1 flex grow-0 items-center gap-2 truncate text-muted-foreground text-sm">
-            <BookOpen className="size-3" />
-            <span className="truncate">{discussion.courseName}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-3">
-        <div className="text-right">
-          <Badge className={cn('text-xs', status.color)} variant="outline">
-            {status.label}
-          </Badge>
-          <p className="mt-1 text-muted-foreground text-xs">
-            {formatDueDate(discussion.dueAt, discussion.daysUntilDue)}
-          </p>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -306,7 +179,7 @@ const DiscussionInsightsPage: React.FC = () => {
             />
           </div>
 
-          {/* Unanswered discussions list */}
+          {/* Discussions data table */}
           <Card className="rounded-3xl">
             <CardHeader>
               <div className="flex select-none items-center gap-3">
@@ -323,7 +196,7 @@ const DiscussionInsightsPage: React.FC = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent>
               {insights.unansweredDiscussions.length === 0 ? (
                 <Empty className="!p-8">
                   <EmptyHeader>
@@ -337,9 +210,7 @@ const DiscussionInsightsPage: React.FC = () => {
                   </EmptyHeader>
                 </Empty>
               ) : (
-                insights.unansweredDiscussions.map((discussion) => (
-                  <DiscussionRow discussion={discussion} key={discussion.id} />
-                ))
+                <DataTable columns={columns} data={insights.unansweredDiscussions} />
               )}
             </CardContent>
           </Card>
