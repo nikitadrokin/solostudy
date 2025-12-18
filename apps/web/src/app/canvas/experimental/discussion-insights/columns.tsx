@@ -1,6 +1,6 @@
 'use client';
 
-import { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import {
   AlertTriangle,
   ArrowUpDown,
@@ -29,7 +29,13 @@ export type Discussion = {
 
 const statusConfig: Record<
   Discussion['status'],
-  { label: string; color: string; bgColor: string; icon: React.ReactNode; priority: number }
+  {
+    label: string;
+    color: string;
+    bgColor: string;
+    icon: React.ReactNode;
+    priority: number;
+  }
 > = {
   overdue: {
     label: 'Overdue',
@@ -93,9 +99,10 @@ export const columns: ColumnDef<Discussion>[] = [
     accessorKey: 'status',
     header: ({ column }) => (
       <Button
-        variant="ghost"
+        className="-ml-1"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        className="-ml-4"
+        size="sm"
+        variant="ghost"
       >
         Status
         <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -149,7 +156,9 @@ export const columns: ColumnDef<Discussion>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2 text-muted-foreground">
         <BookOpen className="h-4 w-4 shrink-0" />
-        <span className="line-clamp-1 max-w-[200px]">{row.original.courseName}</span>
+        <span className="line-clamp-1 max-w-[200px]">
+          {row.original.courseName}
+        </span>
       </div>
     ),
   },
@@ -157,9 +166,10 @@ export const columns: ColumnDef<Discussion>[] = [
     accessorKey: 'dueAt',
     header: ({ column }) => (
       <Button
-        variant="ghost"
+        className="-ml-1"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        className="-ml-4"
+        size="sm"
+        variant="ghost"
       >
         Due Date
         <ArrowUpDown className="ml-2 h-4 w-4" />
