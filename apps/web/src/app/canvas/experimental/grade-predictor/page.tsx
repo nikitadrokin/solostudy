@@ -238,7 +238,7 @@ function ProjectionCard({ projections }: { projections: Projection[] }) {
   };
 
   return (
-    <Card>
+    <Card className="select-none">
       <CardHeader>
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600">
@@ -341,7 +341,7 @@ const GradePredictorPage: React.FC = () => {
 
   if (!(status?.connected || notFetchedYet)) {
     return (
-      <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
+      <div className="container mx-auto max-w-7xl select-none space-y-8 p-6 md:p-8">
         <Card>
           <CardHeader>
             <CardTitle>Grade Predictor</CardTitle>
@@ -377,8 +377,8 @@ const GradePredictorPage: React.FC = () => {
   return (
     <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
       {/* Header */}
-      <div className="space-y-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="select-none space-y-4">
+        <div className="flex flex-col gap-4 md:flex-row md:justify-between">
           <div className="flex items-start gap-4">
             <div className="mt-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg">
               <Calculator className="size-6 shrink-0" />
@@ -415,8 +415,8 @@ const GradePredictorPage: React.FC = () => {
         </div>
       </div>
 
-      {/* No course selected state */}
-      {!selectedCourseId && (
+      {/* No course selected state or loading */}
+      {(!selectedCourseId || isLoadingAnalysis) && (
         <Card>
           <CardContent>
             <Empty className="!p-0">
@@ -434,20 +434,28 @@ const GradePredictorPage: React.FC = () => {
                   {courses.length > 0
                     ? courses.map((course) => (
                         <Item
+                          asChild
                           className="cursor-pointer flex-nowrap overflow-hidden rounded-xl p-3 transition-colors hover:bg-accent"
                           key={course.id}
                           onClick={() => setSelectedCourseId(course.canvasId)}
                           size="sm"
                           variant="outline"
                         >
-                          <ItemMedia variant="icon">
-                            <BookOpen className="size-4" />
-                          </ItemMedia>
-                          <ItemContent>
-                            <ItemTitle className="line-clamp-2 text-left">
-                              {course.name}
-                            </ItemTitle>
-                          </ItemContent>
+                          <button disabled={!!selectedCourseId} type="button">
+                            <ItemMedia variant="icon">
+                              {isLoadingAnalysis &&
+                              selectedCourseId === course.canvasId ? (
+                                <Loader2 className="size-4 animate-spin" />
+                              ) : (
+                                <BookOpen className="size-4" />
+                              )}
+                            </ItemMedia>
+                            <ItemContent>
+                              <ItemTitle className="line-clamp-2 text-left">
+                                {course.name}
+                              </ItemTitle>
+                            </ItemContent>
+                          </button>
                         </Item>
                       ))
                     : Array.from({ length: 10 }).map((_, index) => (
@@ -461,13 +469,6 @@ const GradePredictorPage: React.FC = () => {
             </Empty>
           </CardContent>
         </Card>
-      )}
-
-      {/* Loading state */}
-      {selectedCourseId && isLoadingAnalysis && (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
       )}
 
       {/* Error state */}
@@ -542,7 +543,7 @@ const GradePredictorPage: React.FC = () => {
 
           {/* Assignment groups breakdown */}
           <div className="space-y-4">
-            <h2 className="font-semibold text-xl">
+            <h2 className="select-none font-semibold text-xl">
               Grade Breakdown by Category
             </h2>
             <div className="grid gap-4 lg:grid-cols-2">
