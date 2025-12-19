@@ -131,6 +131,7 @@ export default function QuizPracticePage() {
 
   const { data: files = [], isLoading: isLoadingFiles } = useQuery(
     api.canvas.getCourseFiles.queryOptions(
+      // biome-ignore lint/style/noNonNullAssertion: selectedCourseId is guaranteed to be set
       { courseId: selectedCourseId! },
       {
         enabled: !!selectedCourseId,
@@ -562,12 +563,12 @@ export default function QuizPracticePage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <Button
+                className="h-fit"
                 onClick={() => {
                   setSelectedCourseId(undefined);
                   setSelectedFileIds(new Set());
                 }}
                 type="button"
-                className='h-fit'
                 variant="ghost"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -608,7 +609,7 @@ export default function QuizPracticePage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-3">
                   {files.map((file) => (
-                    <div
+                    <button
                       className={cn(
                         'flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors',
                         selectedFileIds.has(file.id)
@@ -617,6 +618,7 @@ export default function QuizPracticePage() {
                       )}
                       key={file.id}
                       onClick={() => toggleFileSelection(file.id)}
+                      type="button"
                     >
                       <Checkbox
                         checked={selectedFileIds.has(file.id)}
@@ -631,7 +633,7 @@ export default function QuizPracticePage() {
                           {formatFileSize(file.size)}
                         </p>
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
 
