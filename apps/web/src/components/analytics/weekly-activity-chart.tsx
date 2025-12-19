@@ -13,15 +13,15 @@ import { apiClient } from '@/utils/trpc';
 const chartConfig = {
   tasks: {
     label: 'Tasks Created',
-    color: 'hsl(var(--chart-1))',
+    color: 'var(--chart-1)',
   },
   completed: {
     label: 'Tasks Completed',
-    color: 'hsl(var(--chart-2))',
+    color: 'var(--chart-2)',
   },
   focus: {
     label: 'Focus Sessions',
-    color: 'hsl(var(--chart-3))',
+    color: 'var(--chart-3)',
   },
 } satisfies ChartConfig;
 

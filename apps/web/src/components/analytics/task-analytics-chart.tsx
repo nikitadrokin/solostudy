@@ -13,15 +13,15 @@ import { apiClient } from '@/utils/trpc';
 const chartConfig = {
   created: {
     label: 'Created',
-    color: 'hsl(var(--chart-1))',
+    color: 'var(--chart-1)',
   },
   completed: {
     label: 'Completed',
-    color: 'hsl(var(--chart-2))',
+    color: 'var(--chart-2)',
   },
   deleted: {
     label: 'Deleted',
-    color: 'hsl(var(--chart-4))',
+    color: 'var(--chart-4)',
   },
 } satisfies ChartConfig;
 

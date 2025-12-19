@@ -8,23 +8,23 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { apiClient } from '@/utils/trpc';
+import { api, apiClient } from '@/utils/trpc';
 
 const chartConfig = {
   sessions: {
     label: 'Sessions',
-    color: 'hsl(var(--chart-1))',
+    color: 'var(--chart-1)',
   },
   totalMinutes: {
     label: 'Minutes',
-    color: 'hsl(var(--chart-3))',
+    color: 'var(--chart-3)',
   },
 } satisfies ChartConfig;
 
 export function FocusAnalyticsChart() {
   const { data, isLoading } = useQuery({
-    queryKey: [['analytics', 'getFocusAnalytics'], { days: 7 }],
-    queryFn: () => apiClient.analytics.getFocusAnalytics.query({ days: 7 }),
+    queryKey: api.focus.getDailyFocusStats.queryKey({ days: 7 }),
+    queryFn: () => apiClient.focus.getDailyFocusStats.query({ days: 7 }),
   });
 
   if (isLoading) {
@@ -81,3 +81,4 @@ export function FocusAnalyticsChart() {
     </ChartContainer>
   );
 }
+

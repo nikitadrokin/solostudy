@@ -84,6 +84,7 @@ export const focusRouter = router({
         .select({
           date: sql<string>`DATE(${focusSession.startedAt})`.as('date'),
           totalSeconds: sum(focusSession.durationSeconds),
+          sessionCount: sql<number>`COUNT(*)`.as('session_count'),
         })
         .from(focusSession)
         .where(
@@ -95,9 +96,33 @@ export const focusRouter = router({
         .groupBy(sql`DATE(${focusSession.startedAt})`)
         .orderBy(sql`DATE(${focusSession.startedAt})`);
 
-      return result.map((row) => ({
-        date: row.date,
-        totalSeconds: Number(row.totalSeconds ?? 0),
-      }));
+      // Create a map of existing data
+      const dataMap = new Map(
+        result.map((row) => [
+          row.date,
+          {
+            totalSeconds: Number(row.totalSeconds ?? 0),
+            sessions: Number(row.sessionCount ?? 0),
+          },
+        ])
+      );
+
+      // Generate array for all days in range
+      const chartData = Array.from({ length: input.days }, (_, i) => {
+        const date = new Date(
+          Date.now() - (input.days - 1 - i) * 24 * 60 * 60 * 1000
+        )
+          .toISOString()
+          .split('T')[0];
+
+        const dayData = dataMap.get(date);
+        return {
+          date,
+          sessions: dayData?.sessions ?? 0,
+          totalMinutes: Math.round((dayData?.totalSeconds ?? 0) / 60),
+        };
+      });
+
+      return { chartData };
     }),
 });
