@@ -109,11 +109,13 @@ export default function CanvasGradesPage() {
                   'text-red-600': 'from-red-500/20 to-red-500/5',
                   'text-muted-foreground': 'from-muted/50 to-muted/20',
                 };
-                const gradient = gradientMap[gradeColor] || gradientMap['text-muted-foreground'];
+                const gradient =
+                  gradientMap[gradeColor] ||
+                  gradientMap['text-muted-foreground'];
 
                 return (
                   <div
-                    className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border bg-gradient-to-br ${gradient} p-5 transition-all hover:shadow-lg hover:shadow-black/5`}
+                    className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border bg-gradient-to-br ${gradient} p-5 transition-all hover:shadow-black/5 hover:shadow-lg`}
                     key={grade.courseId}
                   >
                     <div className="space-y-3">
@@ -134,7 +136,8 @@ export default function CanvasGradesPage() {
                             className={buttonVariants({
                               variant: 'ghost',
                               size: 'icon',
-                              className: 'h-8 w-8 shrink-0 opacity-0 transition-opacity group-hover:opacity-100',
+                              className:
+                                'h-8 w-8 shrink-0 opacity-0 transition-opacity group-hover:opacity-100',
                             })}
                             href={`${status.canvasUrl}/courses/${grade.courseId}/grades`}
                             rel="noopener noreferrer"
@@ -187,7 +190,7 @@ export default function CanvasGradesPage() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {gradesWithoutData.map((grade) => (
                 <div
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-xl border bg-muted/30 p-5 transition-all hover:shadow-lg hover:shadow-black/5"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-xl border bg-muted/30 p-5 transition-all hover:shadow-black/5 hover:shadow-lg"
                   key={grade.courseId}
                 >
                   <div className="space-y-3">
@@ -198,7 +201,7 @@ export default function CanvasGradesPage() {
                             {grade.courseCode}
                           </p>
                         )}
-                        <h3 className="line-clamp-2 font-semibold leading-tight text-muted-foreground">
+                        <h3 className="line-clamp-2 font-semibold text-muted-foreground leading-tight">
                           {grade.courseName}
                         </h3>
                       </div>
@@ -208,7 +211,8 @@ export default function CanvasGradesPage() {
                           className={buttonVariants({
                             variant: 'ghost',
                             size: 'icon',
-                            className: 'h-8 w-8 shrink-0 opacity-0 transition-opacity group-hover:opacity-100',
+                            className:
+                              'h-8 w-8 shrink-0 opacity-0 transition-opacity group-hover:opacity-100',
                           })}
                           href={`${status.canvasUrl}/courses/${grade.courseId}/grades`}
                           rel="noopener noreferrer"
