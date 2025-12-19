@@ -429,7 +429,7 @@ const GradePredictorPage: React.FC = () => {
                   Choose a course to see your grade analysis and predictions.
                 </EmptyDescription>
               </EmptyHeader>
-              <EmptyContent className="max-w-3xl items-start overflow-x-auto">
+              <EmptyContent className="min-w-full items-start overflow-x-auto">
                 <div className="grid w-full min-w-full grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
                   {courses.length > 0
                     ? courses.map((course) => (
