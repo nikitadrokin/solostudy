@@ -7,14 +7,12 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
-  ExternalLink,
   Loader2,
   TrendingUp,
   Zap,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -28,75 +26,8 @@ import {
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
-
-type AssignmentStatus =
-  | 'overdue'
-  | 'urgent'
-  | 'upcoming'
-  | 'later'
-  | 'no-due-date';
-
-const statusConfig: Record<
-  AssignmentStatus,
-  { label: string; color: string; bgColor: string; icon: React.ReactNode }
-> = {
-  overdue: {
-    label: 'Overdue',
-    color: 'text-red-500',
-    bgColor: 'bg-red-500/10',
-    icon: <AlertTriangle className="h-4 w-4" />,
-  },
-  urgent: {
-    label: 'Urgent',
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-500/10',
-    icon: <Zap className="h-4 w-4" />,
-  },
-  upcoming: {
-    label: 'Soon',
-    color: 'text-yellow-500',
-    bgColor: 'bg-yellow-500/10',
-    icon: <Clock className="h-4 w-4" />,
-  },
-  later: {
-    label: 'Later',
-    color: 'text-emerald-500',
-    bgColor: 'bg-emerald-500/10',
-    icon: <CheckCircle2 className="h-4 w-4" />,
-  },
-  'no-due-date': {
-    label: 'No Date',
-    color: 'text-muted-foreground',
-    bgColor: 'bg-muted',
-    icon: <Calendar className="h-4 w-4" />,
-  },
-};
-
-function getImpactLabel(score: number): { label: string; color: string } {
-  if (score >= 10) return { label: 'High', color: 'text-red-500' };
-  if (score >= 5) return { label: 'Medium', color: 'text-yellow-500' };
-  return { label: 'Low', color: 'text-emerald-500' };
-}
-
-function formatDueDate(
-  dueAt: string | null,
-  daysUntilDue: number | null
-): string {
-  if (!dueAt || daysUntilDue === null) return 'No due date';
-
-  if (daysUntilDue < 0) {
-    const daysOverdue = Math.abs(daysUntilDue);
-    return daysOverdue === 1 ? '1 day overdue' : `${daysOverdue} days overdue`;
-  }
-  if (daysUntilDue === 0) return 'Due today';
-  if (daysUntilDue === 1) return 'Due tomorrow';
-  if (daysUntilDue <= 7) return `Due in ${daysUntilDue} days`;
-
-  return new Date(dueAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
-}
+import { columns } from './columns';
+import { DataTable } from './data-table';
 
 function SummaryCard({
   title,
@@ -133,91 +64,6 @@ function SummaryCard({
           </div>
         </CardContent>
       </Card>
-    </motion.div>
-  );
-}
-
-type Assignment = {
-  id: number;
-  name: string;
-  courseId: number;
-  courseName: string;
-  dueAt: string | null;
-  pointsPossible: number | null;
-  priorityScore: number;
-  urgencyScore: number;
-  impactScore: number;
-  daysUntilDue: number | null;
-  status: AssignmentStatus;
-  htmlUrl: string;
-};
-
-function AssignmentRow({
-  assignment,
-  index,
-}: {
-  assignment: Assignment;
-  index: number;
-}) {
-  const status = statusConfig[assignment.status];
-  const impact = getImpactLabel(assignment.impactScore);
-
-  return (
-    <motion.div
-      animate={{ opacity: 1, x: 0 }}
-      className="group relative flex items-center justify-between gap-4 rounded-2xl border border-border/50 bg-card/50 p-4 hover:bg-accent/50"
-      initial={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-    >
-      <div className="flex items-center gap-4">
-        <div
-          className={cn(
-            'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
-            status.bgColor,
-            status.color
-          )}
-        >
-          {status.icon}
-        </div>
-        <div className="min-w-0">
-          <a
-            className={buttonVariants({
-              variant: 'link',
-              className: 'group-hover:text-primary',
-            })}
-            href={assignment.htmlUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            {assignment.name}
-            <ExternalLink className="size-3" />
-            <span className="absolute inset-0" />
-          </a>
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <BookOpen className="h-3 w-3" />
-            <span className="truncate">{assignment.courseName}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-3">
-        {assignment.pointsPossible && (
-          <div className="hidden text-right sm:block">
-            <p className="font-medium text-sm">
-              {assignment.pointsPossible} pts
-            </p>
-            <p className={cn('text-xs', impact.color)}>{impact.label} impact</p>
-          </div>
-        )}
-        <div className="text-right">
-          <Badge className={cn('text-xs', status.color)} variant="outline">
-            {status.label}
-          </Badge>
-          <p className="mt-1 text-muted-foreground text-xs">
-            {formatDueDate(assignment.dueAt, assignment.daysUntilDue)}
-          </p>
-        </div>
-      </div>
     </motion.div>
   );
 }
@@ -354,7 +200,7 @@ export default function StudyPlannerPage() {
             />
           </div>
 
-          {/* Assignment list */}
+          {/* Priority list data table */}
           <Card className="rounded-3xl">
             <CardHeader>
               <div className="flex select-none items-center gap-3">
@@ -369,7 +215,7 @@ export default function StudyPlannerPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent>
               {studyPlan.assignments.length === 0 ? (
                 <Empty className="!p-8">
                   <EmptyHeader>
@@ -383,13 +229,7 @@ export default function StudyPlannerPage() {
                   </EmptyHeader>
                 </Empty>
               ) : (
-                studyPlan.assignments.map((assignment, index) => (
-                  <AssignmentRow
-                    assignment={assignment}
-                    index={index}
-                    key={assignment.id}
-                  />
-                ))
+                <DataTable columns={columns} data={studyPlan.assignments} />
               )}
             </CardContent>
           </Card>
