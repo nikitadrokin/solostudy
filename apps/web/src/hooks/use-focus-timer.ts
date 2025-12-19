@@ -1,12 +1,36 @@
 'use client';
 
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { authClient } from '@/lib/auth-client';
+import { api, apiClient } from '@/utils/trpc';
+
+const MIN_SESSION_DURATION_SECONDS = 30;
 
 export function useFocusTimer() {
+  const queryClient = useQueryClient();
+  const { data: session } = authClient.useSession();
+
   const [focusTime, setFocusTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const tabId = useRef(`tab-${Math.random().toString(36).slice(2)}`);
+  const sessionStartRef = useRef<Date | null>(null);
+  const accumulatedTimeRef = useRef(0);
+
+  const { mutate: saveFocusSession } = useMutation({
+    mutationFn: (input: {
+      durationSeconds: number;
+      startedAt: Date;
+      endedAt: Date;
+    }) => apiClient.focus.saveFocusSession.mutate(input),
+    onSuccess: () => {
+      // Invalidate the today focus time query to refresh dashboard
+      queryClient.invalidateQueries({
+        queryKey: api.focus.getTodayFocusTime.queryKey(),
+      });
+    },
+  });
 
   const isOwner = useCallback(() => {
     return localStorage.getItem('FOCUS_OWNER') === tabId.current;
@@ -17,14 +41,40 @@ export function useFocusTimer() {
     setIsActive(true);
   }, []);
 
+  const syncSession = useCallback(() => {
+    // Only sync if user is logged in and session duration meets threshold
+    if (
+      session &&
+      sessionStartRef.current &&
+      accumulatedTimeRef.current >= MIN_SESSION_DURATION_SECONDS
+    ) {
+      const endedAt = new Date();
+      saveFocusSession({
+        durationSeconds: accumulatedTimeRef.current,
+        startedAt: sessionStartRef.current,
+        endedAt,
+      });
+    }
+    // Reset session tracking
+    sessionStartRef.current = null;
+    accumulatedTimeRef.current = 0;
+  }, [session, saveFocusSession]);
+
   const startTimer = useCallback(() => {
     if (intervalRef.current) {
       return;
     }
 
+    // Start a new session if we don't have one
+    if (!sessionStartRef.current) {
+      sessionStartRef.current = new Date();
+      accumulatedTimeRef.current = 0;
+    }
+
     intervalRef.current = setInterval(() => {
       if (document.visibilityState === 'visible' && isOwner()) {
         setFocusTime((prev) => prev + 1);
+        accumulatedTimeRef.current += 1;
       }
     }, 1000);
   }, [isOwner]);
@@ -35,7 +85,9 @@ export function useFocusTimer() {
       intervalRef.current = null;
     }
     setIsActive(false);
-  }, []);
+    // Sync the session when stopping
+    syncSession();
+  }, [syncSession]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -62,6 +114,10 @@ export function useFocusTimer() {
       }
     };
 
+    const handleBeforeUnload = () => {
+      syncSession();
+    };
+
     // Initial setup
     claimOwnership();
     startTimer();
@@ -71,6 +127,7 @@ export function useFocusTimer() {
     window.addEventListener('focus', handleFocus);
     window.addEventListener('blur', handleBlur);
     window.addEventListener('storage', handleStorage);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       stopTimer();
@@ -78,8 +135,9 @@ export function useFocusTimer() {
       window.removeEventListener('focus', handleFocus);
       window.removeEventListener('blur', handleBlur);
       window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [claimOwnership, startTimer, stopTimer, isOwner]);
+  }, [claimOwnership, startTimer, stopTimer, isOwner, syncSession]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);

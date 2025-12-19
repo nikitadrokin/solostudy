@@ -1,4 +1,4 @@
-import { ArrowRight, Calendar, Clock } from 'lucide-react';
+import { ArrowRight, Calendar } from 'lucide-react';
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { AnalyticsTabs } from '@/components/analytics/analytics-tabs';
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card';
 import { auth } from '@/lib/auth';
 import CompletedTasksCard from './completed-tasks';
+import FocusTimeCard from './focus-time-card';
 import StreakCard from './streak-card';
 import DashboardTaskList from './task-list';
 export default async function Dashboard() {
@@ -94,18 +95,7 @@ export default async function Dashboard() {
 
             {/* Stats Grid */}
             <div className="grid gap-4 sm:grid-cols-3">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="font-medium text-sm">
-                    Focus Time
-                  </CardTitle>
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="font-bold text-2xl">0h 0m</div>
-                  <p className="text-muted-foreground text-xs">Today's total</p>
-                </CardContent>
-              </Card>
+              <FocusTimeCard />
               <CompletedTasksCard completedTasks={0} />
               <StreakCard />
             </div>

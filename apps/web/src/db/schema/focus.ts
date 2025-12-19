@@ -1,4 +1,10 @@
-import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core';
 import { user } from './auth';
 
 export const todo = pgTable('todo', {
@@ -19,4 +25,15 @@ export const focusRoomVideo = pgTable('focus_room_video', {
   title: text('title').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const focusSession = pgTable('focus_session', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  durationSeconds: integer('duration_seconds').notNull(),
+  startedAt: timestamp('started_at').notNull(),
+  endedAt: timestamp('ended_at').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
