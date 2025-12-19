@@ -47,7 +47,9 @@ function getGradeColor(grade: string | null): string {
 }
 
 export default function CanvasGradesPage() {
-  const { data: status } = useQuery(api.canvas.getStatus.queryOptions(undefined));
+  const { data: status } = useQuery(
+    api.canvas.getStatus.queryOptions(undefined)
+  );
 
   const { data: grades = [], isLoading: isLoadingGrades } = useQuery(
     api.canvas.getGrades.queryOptions(undefined)
@@ -96,56 +98,78 @@ export default function CanvasGradesPage() {
               </EmptyHeader>
             </Empty>
           ) : (
-            <div className="divide-y">
-              {gradesWithData.map((grade) => (
-                <div
-                  className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0"
-                  key={grade.courseId}
-                >
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate font-medium">{grade.courseName}</h3>
-                    {grade.courseCode && (
-                      <p className="truncate text-muted-foreground text-sm">
-                        {grade.courseCode}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex shrink-0 items-center gap-4">
-                    <div className="text-right">
-                      {grade.currentGrade && (
-                        <span
-                          className={`font-semibold text-lg ${getGradeColor(grade.currentGrade)}`}
-                        >
-                          {grade.currentGrade}
-                        </span>
-                      )}
-                      {grade.currentScore !== null && (
-                        <span className="ml-2 text-muted-foreground text-sm">
-                          ({grade.currentScore.toFixed(1)}%)
-                        </span>
-                      )}
-                      {!grade.currentGrade && grade.currentScore !== null && (
-                        <span className="font-semibold text-lg">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {gradesWithData.map((grade) => {
+                const gradeColor = getGradeColor(grade.currentGrade);
+                const gradientMap: Record<string, string> = {
+                  'text-green-600': 'from-green-500/20 to-green-500/5',
+                  'text-blue-600': 'from-blue-500/20 to-blue-500/5',
+                  'text-yellow-600': 'from-yellow-500/20 to-yellow-500/5',
+                  'text-orange-600': 'from-orange-500/20 to-orange-500/5',
+                  'text-red-600': 'from-red-500/20 to-red-500/5',
+                  'text-muted-foreground': 'from-muted/50 to-muted/20',
+                };
+                const gradient = gradientMap[gradeColor] || gradientMap['text-muted-foreground'];
+
+                return (
+                  <div
+                    className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border bg-gradient-to-br ${gradient} p-5 transition-all hover:shadow-lg hover:shadow-black/5`}
+                    key={grade.courseId}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          {grade.courseCode && (
+                            <p className="mb-1 truncate font-medium text-muted-foreground text-xs uppercase tracking-wider">
+                              {grade.courseCode}
+                            </p>
+                          )}
+                          <h3 className="line-clamp-2 font-semibold leading-tight">
+                            {grade.courseName}
+                          </h3>
+                        </div>
+                        {status?.canvasUrl && (
+                          <a
+                            aria-label={`View ${grade.courseName} grades on Canvas`}
+                            className={buttonVariants({
+                              variant: 'ghost',
+                              size: 'icon',
+                              className: 'h-8 w-8 shrink-0 opacity-0 transition-opacity group-hover:opacity-100',
+                            })}
+                            href={`${status.canvasUrl}/courses/${grade.courseId}/grades`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mt-4 flex items-end justify-between">
+                      <div>
+                        {grade.currentGrade ? (
+                          <div className="flex items-baseline gap-2">
+                            <span
+                              className={`font-bold text-3xl ${gradeColor}`}
+                            >
+                              {grade.currentGrade}
+                            </span>
+                          </div>
+                        ) : grade.currentScore !== null ? (
+                          <span className="font-bold text-3xl">
+                            {grade.currentScore.toFixed(1)}%
+                          </span>
+                        ) : null}
+                      </div>
+                      {grade.currentScore !== null && grade.currentGrade && (
+                        <span className="font-medium text-muted-foreground text-sm">
                           {grade.currentScore.toFixed(1)}%
                         </span>
                       )}
                     </div>
-                    {status?.canvasUrl && (
-                      <a
-                        className={buttonVariants({
-                          variant: 'ghost',
-                          size: 'sm',
-                        })}
-                        href={`${status.canvasUrl}/courses/${grade.courseId}/grades`}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
@@ -160,39 +184,45 @@ export default function CanvasGradesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="divide-y">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {gradesWithoutData.map((grade) => (
                 <div
-                  className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-xl border bg-muted/30 p-5 transition-all hover:shadow-lg hover:shadow-black/5"
                   key={grade.courseId}
                 >
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate font-medium text-muted-foreground">
-                      {grade.courseName}
-                    </h3>
-                    {grade.courseCode && (
-                      <p className="truncate text-muted-foreground text-sm">
-                        {grade.courseCode}
-                      </p>
-                    )}
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        {grade.courseCode && (
+                          <p className="mb-1 truncate font-medium text-muted-foreground text-xs uppercase tracking-wider">
+                            {grade.courseCode}
+                          </p>
+                        )}
+                        <h3 className="line-clamp-2 font-semibold leading-tight text-muted-foreground">
+                          {grade.courseName}
+                        </h3>
+                      </div>
+                      {status?.canvasUrl && (
+                        <a
+                          aria-label={`View ${grade.courseName} on Canvas`}
+                          className={buttonVariants({
+                            variant: 'ghost',
+                            size: 'icon',
+                            className: 'h-8 w-8 shrink-0 opacity-0 transition-opacity group-hover:opacity-100',
+                          })}
+                          href={`${status.canvasUrl}/courses/${grade.courseId}/grades`}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex shrink-0 items-center gap-4">
-                    <span className="text-muted-foreground text-sm">
-                      No grade
+                  <div className="mt-4">
+                    <span className="font-medium text-muted-foreground text-sm">
+                      No grade yet
                     </span>
-                    {status?.canvasUrl && (
-                      <a
-                        className={buttonVariants({
-                          variant: 'ghost',
-                          size: 'sm',
-                        })}
-                        href={`${status.canvasUrl}/courses/${grade.courseId}/grades`}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    )}
                   </div>
                 </div>
               ))}

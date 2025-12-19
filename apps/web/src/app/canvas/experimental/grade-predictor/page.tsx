@@ -51,6 +51,31 @@ function getGradeColor(score: number): string {
   return 'text-red-500';
 }
 
+// Get color based on letter grade (for API-provided grades)
+function getGradeColorFromLetter(grade: string): string {
+  const letter = grade.charAt(0).toUpperCase();
+  switch (letter) {
+    case 'A': return 'text-emerald-500';
+    case 'B': return 'text-blue-500';
+    case 'C': return 'text-yellow-500';
+    case 'D': return 'text-orange-500';
+    case 'F': return 'text-red-500';
+    default: return 'text-muted-foreground';
+  }
+}
+
+function getGradeBgColorFromLetter(grade: string): string {
+  const letter = grade.charAt(0).toUpperCase();
+  switch (letter) {
+    case 'A': return 'bg-emerald-500/10';
+    case 'B': return 'bg-blue-500/10';
+    case 'C': return 'bg-yellow-500/10';
+    case 'D': return 'bg-orange-500/10';
+    case 'F': return 'bg-red-500/10';
+    default: return 'bg-muted';
+  }
+}
+
 function getGradeBgColor(score: number): string {
   if (score >= 90) return 'bg-emerald-500/10';
   if (score >= 80) return 'bg-blue-500/10';
@@ -312,6 +337,11 @@ const GradePredictorPage: React.FC = () => {
     api.canvas.getCourses.queryOptions(undefined)
   );
 
+  // Also fetch grades to get Canvas-provided letter grades
+  const { data: grades = [] } = useQuery(
+    api.canvas.getGrades.queryOptions(undefined)
+  );
+
   const {
     data: gradeAnalysis,
     isLoading: isLoadingAnalysis,
@@ -326,6 +356,9 @@ const GradePredictorPage: React.FC = () => {
   );
 
   const selectedCourse = courses.find((c) => c.canvasId === selectedCourseId);
+  
+  // Get the Canvas-provided letter grade for the selected course
+  const selectedCourseGrade = grades.find((g) => g.courseId === selectedCourseId);
 
   return (
     <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
@@ -444,30 +477,50 @@ const GradePredictorPage: React.FC = () => {
         >
           {/* Overall grade card */}
           <Card className="overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-600" />
             <CardContent className="pt-8">
               <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
-                <div
-                  className={cn(
-                    'flex h-24 w-24 items-center justify-center rounded-2xl',
-                    gradeAnalysis.currentOverallGrade !== null
-                      ? getGradeBgColor(gradeAnalysis.currentOverallGrade)
-                      : 'bg-muted'
-                  )}
-                >
-                  <span
+                {/* Use API letter grade if available, otherwise calculate from score */}
+                {selectedCourseGrade?.currentGrade ? (
+                  // Canvas provides letter grade
+                  <div
                     className={cn(
-                      'font-bold text-4xl',
-                      gradeAnalysis.currentOverallGrade !== null
-                        ? getGradeColor(gradeAnalysis.currentOverallGrade)
-                        : 'text-muted-foreground'
+                      'flex h-24 w-24 items-center justify-center rounded-2xl',
+                      getGradeBgColorFromLetter(selectedCourseGrade.currentGrade)
                     )}
                   >
-                    {gradeAnalysis.currentOverallGrade !== null
-                      ? getGradeLetter(gradeAnalysis.currentOverallGrade)
-                      : '—'}
-                  </span>
-                </div>
+                    <span
+                      className={cn(
+                        'font-bold text-4xl',
+                        getGradeColorFromLetter(selectedCourseGrade.currentGrade)
+                      )}
+                    >
+                      {selectedCourseGrade.currentGrade}
+                    </span>
+                  </div>
+                ) : (
+                  // Fall back to calculated letter grade from score
+                  <div
+                    className={cn(
+                      'flex h-24 w-24 items-center justify-center rounded-2xl',
+                      gradeAnalysis.currentOverallGrade !== null
+                        ? getGradeBgColor(gradeAnalysis.currentOverallGrade)
+                        : 'bg-muted'
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'font-bold text-4xl',
+                        gradeAnalysis.currentOverallGrade !== null
+                          ? getGradeColor(gradeAnalysis.currentOverallGrade)
+                          : 'text-muted-foreground'
+                      )}
+                    >
+                      {gradeAnalysis.currentOverallGrade !== null
+                        ? getGradeLetter(gradeAnalysis.currentOverallGrade)
+                        : '—'}
+                    </span>
+                  </div>
+                )}
                 <div className="flex-1">
                   <h2 className="font-semibold text-2xl">
                     {gradeAnalysis.currentOverallGrade !== null
