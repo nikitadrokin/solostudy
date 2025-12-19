@@ -9,11 +9,13 @@ import {
   CheckCircle2,
   Clock,
   ExternalLink,
+  Info,
   Zap,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export type Assignment = {
   id: number;
@@ -144,7 +146,19 @@ export const columns: ColumnDef<Assignment>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Assignment',
+    header: () => (
+        <Tooltip>
+          <TooltipTrigger className="flex items-center gap-1">
+            Assignment
+            <Info className="size-4" />
+          </TooltipTrigger>
+          <TooltipContent side="top" align='start'>
+            Click the assignment name
+            <br />
+            to open it in Canvas
+          </TooltipContent>
+        </Tooltip>
+    ),
     cell: ({ row }) => (
       <div className="max-w-[300px]">
         <a
