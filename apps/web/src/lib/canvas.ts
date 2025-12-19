@@ -8,6 +8,7 @@ import type {
   CanvasDiscussionEntry,
   CanvasDiscussionTopic,
   CanvasEnrollment,
+  CanvasFile,
   CanvasUser,
 } from '../types/canvas';
 
@@ -346,6 +347,23 @@ export async function fetchDiscussionEntries(
     );
   } catch {
     // Some topics may not allow viewing entries (require_initial_post)
+    return [];
+  }
+}
+
+/**
+ * Fetches files for a specific course
+ */
+export async function fetchCourseFiles(
+  canvasUrl: string,
+  accessToken: string,
+  courseId: number
+): Promise<CanvasFile[]> {
+  const initialUrl = `${canvasUrl}/courses/${courseId}/files?per_page=100`;
+  try {
+    return await fetchPaginatedData<CanvasFile>(initialUrl, accessToken, []);
+  } catch {
+    // Some courses may not allow viewing files
     return [];
   }
 }

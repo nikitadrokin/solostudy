@@ -15,6 +15,7 @@ import {
   fetchCanvasUser,
   fetchCourseAssignments,
   fetchCourseDiscussionTopics,
+  fetchCourseFiles,
   fetchDiscussionEntries,
   fetchUserEnrollment,
   normalizeCanvasUrl,
@@ -884,4 +885,43 @@ export const canvasRouter = router({
       });
     }
   }),
+
+  /**
+   * Get files for a course
+   */
+  getCourseFiles: canvasProcedure
+    .input(
+      z.object({
+        courseId: z.number(),
+      })
+    )
+    .query(async ({ ctx: { canvas }, input }) => {
+      try {
+        const files = await fetchCourseFiles(
+          canvas.apiUrl,
+          canvas.token,
+          input.courseId
+        );
+
+        // Filter out hidden/locked files and return formatted data
+        return files
+          .filter((file) => !file.hidden && !file.locked)
+          .map((file) => ({
+            id: file.id,
+            displayName: file.display_name,
+            filename: file.filename,
+            url: file.url,
+            size: file.size,
+            mimeClass: file.mime_class,
+            contentType: file['content-type'],
+            createdAt: file.created_at,
+          }));
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to fetch course files: ${error instanceof Error ? error.message : String(error)}`,
+          cause: error,
+        });
+      }
+    }),
 });

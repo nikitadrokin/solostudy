@@ -139,3 +139,17 @@ export interface CanvasDiscussionEntry {
   has_more_replies?: boolean;
 }
 
+export interface CanvasFile {
+  id: number;
+  folder_id: number;
+  display_name: string;
+  filename: string;
+  'content-type': string;
+  url: string;
+  size: number;
+  created_at: string;
+  updated_at: string;
+  mime_class: string;
+  locked: boolean;
+  hidden: boolean;
+}

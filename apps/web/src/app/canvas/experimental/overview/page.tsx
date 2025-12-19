@@ -69,7 +69,7 @@ const features: StudyFeature[] = [
     description: 'Practice with past quiz questions anytime',
     longDescription:
       'Canvas locks quizzes after submission, while we unlock unlimited practice. Review past quiz questions and generate similar practice questions to master the material.',
-    status: 'coming-soon',
+    status: 'in-development',
     gradient: 'from-orange-500 to-red-600',
     benefits: [
       'Practice past quiz questions',
@@ -228,7 +228,7 @@ export default function StudyLabPage() {
         </p>
 
         {/* Key differentiator callout */}
-        <div className="mx-auto mt-6 flex max-w-xl items-center justify-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
+        <div className="mx-auto mt-6 flex w-fit items-center justify-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
           <Zap className="h-5 w-5 text-primary" />
           <span>
             <span className="font-medium text-foreground">
