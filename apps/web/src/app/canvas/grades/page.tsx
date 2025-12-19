@@ -2,7 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Award, ExternalLink, Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import {
   Card,
@@ -13,13 +12,11 @@ import {
 } from '@/components/ui/card';
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { authClient } from '@/lib/auth-client';
 import { api } from '@/utils/trpc';
 
 function getGradeColor(grade: string | null): string {
@@ -50,56 +47,11 @@ function getGradeColor(grade: string | null): string {
 }
 
 export default function CanvasGradesPage() {
-  const { data: session } = authClient.useSession();
-
-  const { data: status } = useQuery(
-    api.canvas.getStatus.queryOptions(undefined, {
-      enabled: !!session,
-    })
-  );
+  const { data: status } = useQuery(api.canvas.getStatus.queryOptions(undefined));
 
   const { data: grades = [], isLoading: isLoadingGrades } = useQuery(
-    api.canvas.getGrades.queryOptions(undefined, {
-      enabled: status?.connected === true,
-    })
+    api.canvas.getGrades.queryOptions(undefined)
   );
-
-  if (!status?.connected) {
-    return (
-      <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Canvas Grades</CardTitle>
-            <CardDescription>
-              Connect your Canvas account to view grades
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <Award className="h-6 w-6" />
-                </EmptyMedia>
-                <EmptyTitle>Canvas Not Connected</EmptyTitle>
-                <EmptyDescription>
-                  You need to connect your Canvas account in settings to view
-                  grades.
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <Link
-                  className={buttonVariants({ size: 'lg' })}
-                  href="/settings#integrations"
-                >
-                  Go to Settings
-                </Link>
-              </EmptyContent>
-            </Empty>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const gradesWithData = grades.filter(
     (g) => g.currentScore !== null || g.currentGrade !== null

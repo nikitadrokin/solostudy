@@ -2,7 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { BookOpen, ExternalLink, Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import {
   Card,
@@ -13,68 +12,21 @@ import {
 } from '@/components/ui/card';
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { authClient } from '@/lib/auth-client';
 import { api } from '@/utils/trpc';
 
 export default function CanvasCoursesPage() {
-  const { data: session } = authClient.useSession();
-
-  const { data: status } = useQuery(
-    api.canvas.getStatus.queryOptions(undefined, {
-      enabled: !!session,
-    })
-  );
+  const { data: status } = useQuery(api.canvas.getStatus.queryOptions(undefined));
 
   const { data: courses = [], isLoading: isLoadingCourses } = useQuery(
-    api.canvas.getCourses.queryOptions(undefined, {
-      enabled: status?.connected === true,
-    })
+    api.canvas.getCourses.queryOptions(undefined)
   );
 
   const s = courses.length > 0 ? 's' : '';
-
-  if (!status?.connected) {
-    return (
-      <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Canvas Courses</CardTitle>
-            <CardDescription>
-              Connect your Canvas account to view courses
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <BookOpen className="h-6 w-6" />
-                </EmptyMedia>
-                <EmptyTitle>Canvas Not Connected</EmptyTitle>
-                <EmptyDescription>
-                  You need to connect your Canvas account in settings to view
-                  courses.
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <Link
-                  className={buttonVariants({ size: 'lg' })}
-                  href="/settings#integrations"
-                >
-                  Go to Settings
-                </Link>
-              </EmptyContent>
-            </Empty>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">

@@ -12,18 +12,14 @@ import {
   Zap,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
 import { columns } from './columns';
@@ -69,58 +65,11 @@ function SummaryCard({
 }
 
 export default function StudyPlannerPage() {
-  const { data: session } = authClient.useSession();
-
-  const { data: status, status: statusStatus } = useQuery(
-    api.canvas.getStatus.queryOptions(undefined, {
-      enabled: !!session,
-    })
-  );
-
-  const notFetchedYet = statusStatus === 'pending';
-
   const {
     data: studyPlan,
     isLoading,
     error,
-  } = useQuery(
-    api.canvas.getStudyPlan.queryOptions(undefined, {
-      enabled: status?.connected === true,
-    })
-  );
-
-  if (!(status?.connected || notFetchedYet)) {
-    return (
-      <div className="container mx-auto max-w-7xl select-none space-y-8 p-6 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Study Planner</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <Calendar className="h-6 w-6" />
-                </EmptyMedia>
-                <EmptyTitle>Canvas Not Connected</EmptyTitle>
-                <EmptyDescription>
-                  Connect your Canvas account to create your study plan.
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <Link
-                  className={buttonVariants({ size: 'lg' })}
-                  href="/settings#integrations"
-                >
-                  Go to Settings
-                </Link>
-              </EmptyContent>
-            </Empty>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  } = useQuery(api.canvas.getStudyPlan.queryOptions(undefined));
 
   return (
     <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">

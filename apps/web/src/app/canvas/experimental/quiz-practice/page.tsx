@@ -14,10 +14,9 @@ import {
   X,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -29,7 +28,6 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item';
-import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
 
@@ -101,7 +99,6 @@ function formatFileSize(bytes: number) {
 }
 
 export default function QuizPracticePage() {
-  const { data: session } = authClient.useSession();
   const [selectedCourseId, setSelectedCourseId] = useState<number | undefined>(
     undefined
   );
@@ -115,18 +112,8 @@ export default function QuizPracticePage() {
   );
   const [showResults, setShowResults] = useState(false);
 
-  const { data: status, status: statusStatus } = useQuery(
-    api.canvas.getStatus.queryOptions(undefined, {
-      enabled: !!session,
-    })
-  );
-
-  const notFetchedYet = statusStatus === 'pending';
-
   const { data: courses = [] } = useQuery(
-    api.canvas.getCourses.queryOptions(undefined, {
-      enabled: status?.connected === true,
-    })
+    api.canvas.getCourses.queryOptions(undefined)
   );
 
   const { data: files = [], isLoading: isLoadingFiles } = useQuery(
@@ -198,40 +185,6 @@ export default function QuizPracticePage() {
     }
     return correct;
   }, [selectedAnswers]);
-
-  // Canvas not connected state
-  if (!(status?.connected || notFetchedYet)) {
-    return (
-      <div className="container mx-auto max-w-7xl select-none space-y-8 p-6 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>AI Quiz Practice</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <Target className="h-6 w-6" />
-                </EmptyMedia>
-                <EmptyTitle>Canvas Not Connected</EmptyTitle>
-                <EmptyDescription>
-                  Connect your Canvas account to practice with quizzes.
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <Link
-                  className={buttonVariants({ size: 'lg' })}
-                  href="/settings#integrations"
-                >
-                  Go to Settings
-                </Link>
-              </EmptyContent>
-            </Empty>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   // Quiz results view
   if (showResults) {

@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import {
   BookOpen,
   Calculator,
-  ChartLine,
   CheckCircle,
   ChevronDown,
   Clock,
@@ -13,10 +12,9 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import Link from 'next/link';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
@@ -34,7 +32,6 @@ import {
 } from '@/components/ui/empty';
 import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item';
 import { Skeleton } from '@/components/ui/skeleton';
-import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
 
@@ -307,23 +304,12 @@ function ProjectionCard({ projections }: { projections: Projection[] }) {
 }
 
 const GradePredictorPage: React.FC = () => {
-  const { data: session } = authClient.useSession();
   const [selectedCourseId, setSelectedCourseId] = useState<number | undefined>(
     undefined
   );
 
-  const { data: status, status: statusStatus } = useQuery(
-    api.canvas.getStatus.queryOptions(undefined, {
-      enabled: !!session,
-    })
-  );
-
-  const notFetchedYet = statusStatus === 'pending';
-
   const { data: courses = [] } = useQuery(
-    api.canvas.getCourses.queryOptions(undefined, {
-      enabled: status?.connected === true,
-    })
+    api.canvas.getCourses.queryOptions(undefined)
   );
 
   const {
@@ -334,43 +320,10 @@ const GradePredictorPage: React.FC = () => {
     api.canvas.getGradeAnalysis.queryOptions(
       { courseId: selectedCourseId ?? 0 },
       {
-        enabled: status?.connected === true && selectedCourseId !== undefined,
+        enabled: selectedCourseId !== undefined,
       }
     )
   );
-
-  if (!(status?.connected || notFetchedYet)) {
-    return (
-      <div className="container mx-auto max-w-7xl select-none space-y-8 p-6 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Grade Predictor</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <ChartLine className="h-6 w-6" />
-                </EmptyMedia>
-                <EmptyTitle>Canvas Not Connected</EmptyTitle>
-                <EmptyDescription>
-                  Connect your Canvas account to predict your grades.
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <Link
-                  className={buttonVariants({ size: 'lg' })}
-                  href="/settings#integrations"
-                >
-                  Go to Settings
-                </Link>
-              </EmptyContent>
-            </Empty>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const selectedCourse = courses.find((c) => c.canvasId === selectedCourseId);
 
