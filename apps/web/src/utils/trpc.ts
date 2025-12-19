@@ -2,6 +2,7 @@ import { QueryCache, QueryClient } from '@tanstack/react-query';
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query';
 import { toast } from 'sonner';
+import SuperJSON from 'superjson';
 
 // biome-ignore lint/nursery/noTsIgnore: Coolify monorepo deployment thinks this type doesn't exist
 // @ts-ignore
@@ -25,6 +26,7 @@ export const queryClient = new QueryClient({
 export const apiClient = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
+      transformer: SuperJSON,
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/trpc`,
       fetch(url, options) {
         return fetch(url, {

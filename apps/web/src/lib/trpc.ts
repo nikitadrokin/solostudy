@@ -1,10 +1,26 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import { eq } from 'drizzle-orm';
+import superjson from 'superjson';
+import z, { ZodError } from 'zod';
 import { db } from '@/db';
 import { user } from '@/db/schema/auth';
 import type { Context } from '../lib/context';
 
-export const t = initTRPC.context<Context>().create();
+export const t = initTRPC.context<Context>().create({
+  transformer: superjson,
+  errorFormatter({ shape, error }) {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        zodError:
+          error.cause instanceof ZodError ? z.treeifyError(error.cause) : null,
+      },
+    };
+  },
+});
+
+export const createCallerFactory = t.createCallerFactory;
 
 export const router = t.router;
 

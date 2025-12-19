@@ -1,7 +1,17 @@
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
 import type { NextRequest } from 'next/server';
-import { createContext } from '@/lib/context';
 import { appRouter } from '@/routers';
+import { auth } from '@/lib/auth';
+
+async function createContext(req: NextRequest) {
+  const session = await auth.api.getSession({
+    headers: req.headers,
+  });
+  return {
+    session,
+    headers: req.headers,
+  };
+}
 
 function handler(req: NextRequest) {
   return fetchRequestHandler({

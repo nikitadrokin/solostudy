@@ -79,7 +79,7 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
   };
 
   const handleToggleTask = async (taskId: string) => {
-    const task = tasks.find((t: Task) => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId);
     if (!task) {
       return;
     }
@@ -101,7 +101,7 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
   };
 
   const handleRemoveTask = async (taskId: string) => {
-    const task = tasks.find((t: Task) => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId);
     if (!task) {
       return;
     }
@@ -145,22 +145,20 @@ const TaskList: React.FC<TaskListProps> = ({ className }) => {
       >
         {!isMounted || isLoadingTasks ? (
           Array.from({ length: 10 }).map((_, index) => (
-            <TaskItemSkeleton
-              // biome-ignore lint/suspicious/noArrayIndexKey: skeleton
-              key={`task-item-skeleton-${index}`}
-            />
+            <TaskItemSkeleton key={`task-item-skeleton-${index}`} />
           ))
         ) : tasks.length === 0 ? (
           <p className="py-4 text-center text-muted-foreground text-sm">
             No tasks yet. Add one above!
           </p>
         ) : (
-          tasks.map((task: Task) => (
+          tasks.map((task) => (
             <TaskItem
               handleRemoveTask={handleRemoveTask}
               handleToggleTask={handleToggleTask}
               key={task.id}
-              task={task}
+              // TODO: Fix this type error
+              task={task as unknown as Task}
             />
           ))
         )}

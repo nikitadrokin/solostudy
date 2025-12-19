@@ -3,7 +3,6 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   // biome-ignore lint: Next.js headers function should be async
   typedRoutes: true,
-  cacheComponents: true,
 
   // experimental: {
   //   authInterrupts: true,

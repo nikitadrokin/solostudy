@@ -2,7 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import TaskList from '@/components/task-list';
-import type { Task } from '@/components/task-list/types';
 import {
   Card,
   CardContent,
@@ -25,7 +24,7 @@ const DashboardTaskList: React.FC<TaskListProps> = ({ className }) => {
     })
   );
 
-  const completedCount = tasks.filter((task: Task) => task.completed).length;
+  const completedCount = tasks.filter((task) => task.completed).length;
   const totalCount = tasks.length;
 
   return (

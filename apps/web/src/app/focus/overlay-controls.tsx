@@ -7,7 +7,6 @@ import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
 import { FocusTimer } from '@/components/focus-timer';
 import TaskList from '@/components/task-list';
-import type { Task } from '@/components/task-list/types';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { CardDescription, CardTitle } from '@/components/ui/card';
@@ -35,7 +34,7 @@ const OverlayControls: React.FC = () => {
     })
   );
 
-  const completedCount = tasks.filter((task: Task) => task.completed).length;
+  const completedCount = tasks.filter((task) => task.completed).length;
   const totalCount = tasks.length;
 
   const Title = isMobile ? DrawerTitle : CardTitle;

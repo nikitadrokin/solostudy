@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { TRPCError } from '@trpc/server';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNotNull } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
 import { user } from '../db/schema/auth';
@@ -76,6 +76,29 @@ export const canvasRouter = router({
       .where(eq(user.id, ctx.session.user.id));
 
     return { success: true };
+  }),
+
+  checkForExistingToken: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const connectedAccount = await db
+        .select({ id: user.id })
+        .from(user)
+        .where(
+          and(
+            eq(user.id, ctx.session.user.id),
+            isNotNull(user.canvasIntegrationToken),
+            isNotNull(user.canvasUrl)
+          )
+        )
+        .limit(1);
+      return connectedAccount.length > 0;
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to check Canvas connection: ${error instanceof Error ? error.message : String(error)}`,
+        cause: error,
+      });
+    }
   }),
 
   /**
@@ -546,7 +569,8 @@ export const canvasRouter = router({
             return {
               targetGrade: target,
               needed: null,
-              achievable: currentOverallGrade !== null && currentOverallGrade >= target,
+              achievable:
+                currentOverallGrade !== null && currentOverallGrade >= target,
             };
           }
 
@@ -648,8 +672,12 @@ export const canvasRouter = router({
 
           // Calculate days until due
           let daysUntilDue: number | null = null;
-          let status: 'overdue' | 'urgent' | 'upcoming' | 'later' | 'no-due-date' =
-            'no-due-date';
+          let status:
+            | 'overdue'
+            | 'urgent'
+            | 'upcoming'
+            | 'later'
+            | 'no-due-date' = 'no-due-date';
 
           if (assignment.due_at) {
             const dueDate = new Date(assignment.due_at);
@@ -679,7 +707,8 @@ export const canvasRouter = router({
           }
 
           // Calculate impact score (0-100)
-          const groupTotal = groupTotals.get(assignment.assignment_group_id) ?? 1;
+          const groupTotal =
+            groupTotals.get(assignment.assignment_group_id) ?? 1;
           const groupWeight =
             groupWeights.get(assignment.assignment_group_id) ?? 0;
           const pointsRatio =
@@ -720,8 +749,9 @@ export const canvasRouter = router({
       // Calculate summary
       const summary = {
         totalAssignments: prioritizedAssignments.length,
-        overdueCount: prioritizedAssignments.filter((a) => a.status === 'overdue')
-          .length,
+        overdueCount: prioritizedAssignments.filter(
+          (a) => a.status === 'overdue'
+        ).length,
         urgentCount: prioritizedAssignments.filter((a) => a.status === 'urgent')
           .length,
         upcomingCount: prioritizedAssignments.filter(
@@ -905,7 +935,7 @@ export const canvasRouter = router({
 
         // Filter out hidden/locked files and return formatted data
         return files
-          .filter((file) => !file.hidden && !file.locked)
+          .filter((file) => !(file.hidden || file.locked))
           .map((file) => ({
             id: file.id,
             displayName: file.display_name,
