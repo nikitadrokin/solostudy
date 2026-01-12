@@ -7,6 +7,8 @@ const config: XmcpConfig = {
   },
   paths: {
     tools: "src/mcp/tools",
+    prompts: "src/mcp/prompts",
+    resources: false,
   },
   typescript: {
     skipTypeCheck: true,
