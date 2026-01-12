@@ -161,8 +161,11 @@ importers:
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      xmcp:
+        specifier: 0.5.7
+        version: 0.5.7(@swc/helpers@0.5.15)(hono@4.11.3)(postcss@8.5.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(zod@4.0.17)
       zod:
-        specifier: ^4.0.2
+        specifier: ^4.0.17
         version: 4.0.17
       zustand:
         specifier: ^5.0.7
@@ -5064,6 +5067,28 @@ snapshots:
 
   '@medv/finder@4.0.2': {}
 
+  '@modelcontextprotocol/sdk@1.25.2(hono@4.11.3)(zod@4.0.17)':
+    dependencies:
+      '@hono/node-server': 1.19.8(hono@4.11.3)
+      ajv: 8.17.1
+      ajv-formats: 3.0.1(ajv@8.17.1)
+      content-type: 1.0.5
+      cors: 2.8.5
+      cross-spawn: 7.0.6
+      eventsource: 3.0.7
+      eventsource-parser: 3.0.6
+      express: 5.2.1
+      express-rate-limit: 7.5.1(express@5.2.1)
+      jose: 6.1.2
+      json-schema-typed: 8.0.2
+      pkce-challenge: 5.0.1
+      raw-body: 3.0.2
+      zod: 4.0.17
+      zod-to-json-schema: 3.25.1(zod@4.0.17)
+    transitivePeerDependencies:
+      - hono
+      - supports-color
+
   '@modelcontextprotocol/sdk@1.25.2(hono@4.11.3)(zod@4.1.12)':
     dependencies:
       '@hono/node-server': 1.19.8(hono@4.11.3)
@@ -8158,6 +8183,25 @@ snapshots:
 
   wrappy@1.0.2: {}
 
+  xmcp@0.5.7(@swc/helpers@0.5.15)(hono@4.11.3)(postcss@8.5.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(zod@4.0.17):
+    dependencies:
+      '@modelcontextprotocol/sdk': 1.25.2(hono@4.11.3)(zod@4.0.17)
+      '@rspack/core': 1.7.1(@swc/helpers@0.5.15)
+      postcss-loader: 8.2.0(@rspack/core@1.7.1(@swc/helpers@0.5.15))(postcss@8.5.6)(typescript@5.9.3)
+      ts-checker-rspack-plugin: 1.2.3(@rspack/core@1.7.1(@swc/helpers@0.5.15))(typescript@5.9.3)
+      typescript: 5.9.3
+      zod: 4.0.17
+    optionalDependencies:
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+    transitivePeerDependencies:
+      - '@cfworker/json-schema'
+      - '@swc/helpers'
+      - hono
+      - postcss
+      - supports-color
+      - webpack
+
   xmcp@0.5.7(@swc/helpers@0.5.15)(hono@4.11.3)(postcss@8.5.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(zod@4.1.12):
     dependencies:
       '@modelcontextprotocol/sdk': 1.25.2(hono@4.11.3)(zod@4.1.12)
@@ -8192,6 +8236,10 @@ snapshots:
   zod-to-json-schema@3.24.6(zod@3.25.76):
     dependencies:
       zod: 3.25.76
+
+  zod-to-json-schema@3.25.1(zod@4.0.17):
+    dependencies:
+      zod: 4.0.17
 
   zod-to-json-schema@3.25.1(zod@4.1.12):
     dependencies:
