@@ -1,7 +1,8 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { Check, Copy, Eye, Key, Plus, Trash2 } from 'lucide-react';
+import { AlertTriangle, Check, Copy, Eye, Key, Plus, Trash2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -348,6 +349,12 @@ const ApiKeys: React.FC = () => {
                 </FieldDescription>
               </Field>
             </FieldGroup>
+            <Alert variant="destructive" className="mt-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Keep this secret!</strong> This key provides direct access to your Canvas URL and token. Never share it publicly. If you believe your key has been compromised, delete it immediately and create a new one.
+              </AlertDescription>
+            </Alert>
             <div className="mt-6 flex justify-end">
               <Button onClick={() => setKeyDialogOpen(false)}>Done</Button>
             </div>
@@ -393,6 +400,12 @@ const ApiKeys: React.FC = () => {
                 </FieldDescription>
               </Field>
             </FieldGroup>
+            <Alert variant="destructive" className="mt-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Keep this secret!</strong> This key provides direct access to your Canvas URL and token. Never share it publicly. If you believe your key has been compromised, delete it immediately and create a new one.
+              </AlertDescription>
+            </Alert>
             <div className="mt-6 flex justify-end">
               <Button onClick={() => setViewKeyDialogOpen(false)}>Done</Button>
             </div>
