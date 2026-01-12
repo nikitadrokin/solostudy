@@ -1,5 +1,5 @@
 import { type ToolMetadata } from "xmcp";
-import { headers } from "xmcp/headers";
+import { headers } from "next/headers";
 import { fetchCanvasCourses, normalizeCanvasUrl } from "../../lib/canvas";
 import { validateApiKeyAndGetContext } from "../../lib/mcp-auth";
 
@@ -17,9 +17,8 @@ export const metadata: ToolMetadata = {
 };
 
 export default async function getUserCourses() {
-  const requestHeaders = headers();
-  const apiKeyHeader = requestHeaders["x-api-key"];
-  const apiKey = Array.isArray(apiKeyHeader) ? apiKeyHeader[0] : apiKeyHeader;
+  const requestHeaders = await headers();
+  const apiKey = requestHeaders.get("x-api-key");
   
   if (!apiKey) {
     throw new Error("API key required. Please provide x-api-key header.");
