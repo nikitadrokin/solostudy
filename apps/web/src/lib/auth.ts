@@ -13,7 +13,7 @@ import {
   verification,
 } from '../db/schema/auth';
 
-export const auth: ReturnType<typeof betterAuth> = betterAuth({
+export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema: {
