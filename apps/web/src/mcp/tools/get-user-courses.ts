@@ -1,7 +1,7 @@
 import { type ToolMetadata } from "xmcp";
 import { headers } from "xmcp/headers";
-import { fetchCanvasCourses, normalizeCanvasUrl } from "../lib/canvas";
-import { validateApiKeyAndGetContext } from "../lib/mcp-auth";
+import { fetchCanvasCourses, normalizeCanvasUrl } from "../../lib/canvas";
+import { validateApiKeyAndGetContext } from "../../lib/mcp-auth";
 
 export const schema = {};
 

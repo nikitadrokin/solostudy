@@ -6,9 +6,7 @@ const config: XmcpConfig = {
     adapter: "nextjs",
   },
   paths: {
-    tools: "src/tools",
-    prompts: "src/prompts",
-    resources: "src/resources",
+    tools: "src/mcp/tools",
   },
   typescript: {
     skipTypeCheck: true,
