@@ -2,39 +2,33 @@ import { xmcpHandler, withAuth, type VerifyToken } from '@xmcp/adapter';
 import { validateApiKeyAndGetContext } from '../../lib/mcp-auth';
 
 /**
- * Extract API key from request headers.
- * Supports both x-api-key header and Authorization: Bearer token
- */
-function extractApiKey(req: Request): string | null {
-  // Check x-api-key header first
-  const xApiKey = req.headers.get('x-api-key');
-  if (xApiKey) {
-    return xApiKey;
-  }
-  
-  // Check Authorization header (Bearer token)
-  const authHeader = req.headers.get('authorization');
-  if (authHeader?.startsWith('Bearer ')) {
-    return authHeader.slice(7); // Remove "Bearer " prefix
-  }
-  
-  return null;
-}
-
-/**
  * Verify the API key and return auth information with user's Canvas credentials
+ * 
+ * The xmcp adapter provides:
+ * - `req`: The Request object (may have headers reconstructed by adapter)
+ * - `bearerToken`: Extracted from Authorization: Bearer header by the adapter
+ * 
+ * We support both Authorization: Bearer and x-api-key headers
  */
-const verifyToken: VerifyToken = async (req: Request) => {
-  const apiKey = extractApiKey(req);
+const verifyToken: VerifyToken = async (req: Request, bearerToken?: string) => {
+  // Log all headers for debugging
+  const allHeaders = Object.fromEntries(req.headers.entries());
+  console.log('[MCP] Request headers:', allHeaders);
+  
+  // Priority: bearerToken (from Authorization header, extracted by xmcp) > x-api-key header
+  const xApiKey = req.headers.get('x-api-key');
+  const apiKey = bearerToken || xApiKey;
   
   console.log('[MCP] Incoming request:', {
     method: req.method,
     url: req.url,
-    hasApiKey: !!apiKey,
+    hasBearerToken: !!bearerToken,
+    hasXApiKey: !!xApiKey,
+    resolvedApiKey: apiKey ? `${apiKey.substring(0, 8)}...` : null,
   });
   
   if (!apiKey) {
-    console.log('[MCP] No API key provided (checked x-api-key and Authorization headers)');
+    console.log('[MCP] No API key provided (checked Authorization: Bearer and x-api-key headers)');
     return undefined;
   }
 
