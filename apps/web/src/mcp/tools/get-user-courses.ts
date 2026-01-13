@@ -1,13 +1,12 @@
 import { type ToolMetadata } from "xmcp";
-import { headers } from "next/headers";
 import { fetchCanvasCourses, normalizeCanvasUrl } from "../../lib/canvas";
-import { validateApiKeyAndGetContext } from "../../lib/mcp-auth";
+import { getMcpUserContext } from "../../lib/mcp-auth";
 
 export const schema = {};
 
 export const metadata: ToolMetadata = {
   name: "get-user-courses",
-  description: "Get all enrolled courses for the authenticated user. Requires API key authentication via x-api-key header.",
+  description: "Get all enrolled courses for the authenticated user.",
   annotations: {
     title: "Get My Canvas Courses",
     readOnlyHint: true,
@@ -17,17 +16,10 @@ export const metadata: ToolMetadata = {
 };
 
 export default async function getUserCourses() {
-  const requestHeaders = await headers();
-  const apiKey = requestHeaders.get("x-api-key");
-  
-  if (!apiKey) {
-    throw new Error("API key required. Please provide x-api-key header.");
-  }
-  
-  const ctx = await validateApiKeyAndGetContext(apiKey);
+  const ctx = await getMcpUserContext();
   
   if (!ctx) {
-    throw new Error("Invalid or expired API key.");
+    throw new Error("Not authenticated. Please provide a valid API key or OAuth token.");
   }
   
   if (!ctx.canvasUrl || !ctx.canvasIntegrationToken) {

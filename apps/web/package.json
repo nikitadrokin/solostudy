@@ -37,6 +37,7 @@
     "@trpc/tanstack-react-query": "^11.4.2",
     "@types/react-youtube": "^7.10.0",
     "@types/youtube": "^0.1.2",
+    "@xmcp-dev/better-auth": "^0.0.11",
     "better-auth": "^1.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

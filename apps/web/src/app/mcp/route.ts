@@ -1,15 +1,13 @@
 import { xmcpHandler, withAuth, type VerifyToken } from '@xmcp/adapter';
-import { validateApiKeyAndGetContext, getUserContext } from '../../lib/mcp-auth';
+import { validateApiKeyAndGetContext, getUserContext, setMcpUserContext } from '../../lib/mcp-auth';
 import { auth } from '../../lib/auth';
 
 /**
- * Verify the API key and return auth information with user's Canvas credentials
+ * Verify the token and return auth information with user's Canvas credentials
  * 
- * The xmcp adapter provides:
- * - `req`: The Request object (may have headers reconstructed by adapter)
- * - `bearerToken`: Extracted from Authorization: Bearer header by the adapter
- * 
- * We support both Authorization: Bearer (OAuth/Access Token) and x-api-key headers
+ * Supports:
+ * - OAuth tokens via better-auth MCP plugin (getMcpSession)
+ * - API keys via Authorization: Bearer header
  */
 const verifyToken: VerifyToken = async (req: Request, bearerToken?: string) => {
   // 1. Try to get session via better-auth MCP plugin (handles OAuth tokens)
@@ -22,6 +20,9 @@ const verifyToken: VerifyToken = async (req: Request, bearerToken?: string) => {
     const userContext = await getUserContext(session.userId);
     
     if (userContext) {
+      // Store context for tools to access
+      setMcpUserContext(userContext);
+      
       return {
         token: session.accessToken,
         scopes: ['canvas:read'],
@@ -35,25 +36,25 @@ const verifyToken: VerifyToken = async (req: Request, bearerToken?: string) => {
     }
   }
 
-  // 2. Fallback to API Key manual extraction (for non-OAuth clients)
-  // Priority: bearerToken (extracted by xmcp) > x-api-key header
-  const xApiKey = req.headers.get('x-api-key');
-  const potentialKey = bearerToken || xApiKey;
-
-  if (potentialKey) {
-    const validKeyCtx = await validateApiKeyAndGetContext(potentialKey);
+  // 2. API Key via Authorization: Bearer header only
+  if (bearerToken) {
+    const validKeyCtx = await validateApiKeyAndGetContext(bearerToken);
     if (validKeyCtx) {
-       console.log('[MCP] API Key auth successful for user:', validKeyCtx.userId);
-       return {
-         token: potentialKey,
-         scopes: ['canvas:read'],
-         clientId: validKeyCtx.userId,
-         extra: {
-           userId: validKeyCtx.userId,
-           canvasUrl: validKeyCtx.canvasUrl,
-           canvasIntegrationToken: validKeyCtx.canvasIntegrationToken,
-         },
-       };
+      console.log('[MCP] API Key auth successful for user:', validKeyCtx.userId);
+      
+      // Store context for tools to access
+      setMcpUserContext(validKeyCtx);
+      
+      return {
+        token: bearerToken,
+        scopes: ['canvas:read'],
+        clientId: validKeyCtx.userId,
+        extra: {
+          userId: validKeyCtx.userId,
+          canvasUrl: validKeyCtx.canvasUrl,
+          canvasIntegrationToken: validKeyCtx.canvasIntegrationToken,
+        },
+      };
     }
   }
 

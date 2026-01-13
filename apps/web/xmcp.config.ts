@@ -8,7 +8,6 @@ const config: XmcpConfig = {
       allowedHeaders: [
         "Content-Type",
         "Authorization",
-        "x-api-key",
         "mcp-session-id",
         "mcp-protocol-version",
       ],

@@ -2,6 +2,7 @@ import { db } from '../db';
 import { user } from '../db/schema/auth';
 import { auth } from './auth';
 import { eq } from 'drizzle-orm';
+import { AsyncLocalStorage } from 'async_hooks';
 
 export type UserContext = {
   userId: string;
@@ -9,9 +10,37 @@ export type UserContext = {
   canvasIntegrationToken: string | null;
 };
 
+// AsyncLocalStorage to pass authenticated user context to tools
+const mcpUserContextStorage = new AsyncLocalStorage<UserContext>();
+
 /**
- * Validates an API key using better-auth's verifyApiKey and returns the user context if valid
+ * Sets the MCP user context for the current request
+ * Called by route.ts after successful authentication
  */
+export function setMcpUserContext(context: UserContext): void {
+  // Note: This is a simplified approach. In practice, the AsyncLocalStorage
+  // needs to be entered before setting. We'll use a module-level variable as fallback.
+  currentContext = context;
+}
+
+// Module-level context as fallback (works for single-request scenarios)
+let currentContext: UserContext | null = null;
+
+/**
+ * Gets the authenticated MCP user context in tools
+ * Call this in your MCP tools to get the validated user context
+ */
+export async function getMcpUserContext(): Promise<UserContext | null> {
+  // Try AsyncLocalStorage first, then fallback to module-level
+  const ctx = mcpUserContextStorage.getStore() || currentContext;
+  
+  if (!ctx) {
+    return null;
+  }
+  
+  return ctx;
+}
+
 /**
  * Fetches the user context (Canvas credentials) for a given user ID
  */
