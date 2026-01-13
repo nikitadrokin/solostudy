@@ -7,26 +7,42 @@ import { validateApiKeyAndGetContext } from '../../lib/mcp-auth';
 const verifyToken: VerifyToken = async (req: Request) => {
   const apiKey = req.headers.get('x-api-key');
   
-  if (!apiKey) {
-    return undefined;
-  }
-
-  const userContext = await validateApiKeyAndGetContext(apiKey);
+  console.log('[MCP] Incoming request:', {
+    method: req.method,
+    url: req.url,
+    hasApiKey: !!apiKey,
+    headers: Object.fromEntries(req.headers.entries()),
+  });
   
-  if (!userContext) {
+  if (!apiKey) {
+    console.log('[MCP] No API key provided');
     return undefined;
   }
 
-  return {
-    token: apiKey,
-    scopes: ['canvas:read'],
-    clientId: userContext.userId,
-    extra: {
-      userId: userContext.userId,
-      canvasUrl: userContext.canvasUrl,
-      canvasIntegrationToken: userContext.canvasIntegrationToken,
-    },
-  };
+  try {
+    const userContext = await validateApiKeyAndGetContext(apiKey);
+    
+    if (!userContext) {
+      console.log('[MCP] Invalid API key or user not found');
+      return undefined;
+    }
+
+    console.log('[MCP] Auth successful for user:', userContext.userId);
+    
+    return {
+      token: apiKey,
+      scopes: ['canvas:read'],
+      clientId: userContext.userId,
+      extra: {
+        userId: userContext.userId,
+        canvasUrl: userContext.canvasUrl,
+        canvasIntegrationToken: userContext.canvasIntegrationToken,
+      },
+    };
+  } catch (error) {
+    console.error('[MCP] Auth error:', error);
+    return undefined;
+  }
 };
 
 const options = {
