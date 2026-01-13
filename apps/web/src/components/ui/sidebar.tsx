@@ -187,7 +187,7 @@ function Sidebar({
   if (isMobile) {
     return (
       <>
-        {/* Safari iOS 26 viewport bug workaround for mobile */}
+        {/* Safari iOS 26 viewport bug workaround for mobile
         {openMobile && (
           <div
             className="fixed top-0 z-[100]"
@@ -206,7 +206,7 @@ function Sidebar({
               }}
             />
           </div>
-        )}
+        )} */}
         <Sheet onOpenChange={setOpenMobile} open={openMobile} {...props}>
           <SheetContent
             className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
