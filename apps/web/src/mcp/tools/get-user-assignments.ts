@@ -18,39 +18,45 @@ export const metadata: ToolMetadata = {
 export default async function getUserAssignments() {
   console.log('[MCP Tool] get-user-assignments: Starting execution');
   
-  const ctx = await getMcpUserContext();
-  
-  if (!ctx) {
-    console.log('[MCP Tool] get-user-assignments: ERROR - No user context found');
-    throw new Error("Not authenticated. Please provide a valid API key or OAuth token.");
-  }
-  
-  console.log('[MCP Tool] get-user-assignments: User context retrieved', {
-    userId: ctx.userId,
-    hasCanvasUrl: !!ctx.canvasUrl,
-    canvasUrl: ctx.canvasUrl || '(not set)',
-    hasCanvasToken: !!ctx.canvasIntegrationToken,
-    canvasTokenPreview: ctx.canvasIntegrationToken 
-      ? `${ctx.canvasIntegrationToken.substring(0, 8)}...` 
-      : '(not set)',
-  });
-  
-  if (!ctx.canvasUrl || !ctx.canvasIntegrationToken) {
-    console.log('[MCP Tool] get-user-assignments: ERROR - Missing Canvas credentials', {
-      userId: ctx.userId,
-      missingCanvasUrl: !ctx.canvasUrl,
-      missingCanvasToken: !ctx.canvasIntegrationToken,
-    });
-    throw new Error("Canvas credentials not configured. Please set up your Canvas integration in settings.");
-  }
-  
-  const canvasApiUrl = `${normalizeCanvasUrl(ctx.canvasUrl)}/api/v1`;
-  console.log('[MCP Tool] get-user-assignments: Calling Canvas API', {
-    userId: ctx.userId,
-    canvasApiUrl,
-  });
-  
   try {
+    const ctx = await getMcpUserContext();
+    
+    if (!ctx) {
+      console.log('[MCP Tool] get-user-assignments: ERROR - No user context found');
+      return {
+        content: [{ type: "text", text: "Not authenticated. Please provide a valid API key or OAuth token." }],
+        isError: true,
+      };
+    }
+    
+    console.log('[MCP Tool] get-user-assignments: User context retrieved', {
+      userId: ctx.userId,
+      hasCanvasUrl: !!ctx.canvasUrl,
+      canvasUrl: ctx.canvasUrl || '(not set)',
+      hasCanvasToken: !!ctx.canvasIntegrationToken,
+      canvasTokenPreview: ctx.canvasIntegrationToken 
+        ? `${ctx.canvasIntegrationToken.substring(0, 8)}...` 
+        : '(not set)',
+    });
+    
+    if (!ctx.canvasUrl || !ctx.canvasIntegrationToken) {
+      console.log('[MCP Tool] get-user-assignments: ERROR - Missing Canvas credentials', {
+        userId: ctx.userId,
+        missingCanvasUrl: !ctx.canvasUrl,
+        missingCanvasToken: !ctx.canvasIntegrationToken,
+      });
+      return {
+        content: [{ type: "text", text: "Canvas credentials not configured. Please set up your Canvas integration in settings." }],
+        isError: true,
+      };
+    }
+    
+    const canvasApiUrl = `${normalizeCanvasUrl(ctx.canvasUrl)}/api/v1`;
+    console.log('[MCP Tool] get-user-assignments: Calling Canvas API', {
+      userId: ctx.userId,
+      canvasApiUrl,
+    });
+    
     const assignments = await fetchAllAssignments(canvasApiUrl, ctx.canvasIntegrationToken);
     
     // Filter for incomplete assignments with due dates
@@ -91,12 +97,20 @@ export default async function getUserAssignments() {
       upcomingAssignments: upcomingAssignments.length,
     });
     
-    return upcomingAssignments;
+    return {
+      structuredContent: {
+        status: "success",
+        result: {
+          assignments: upcomingAssignments,
+        },
+      },
+    };
   } catch (error) {
-    console.log('[MCP Tool] get-user-assignments: ERROR from Canvas API', {
-      userId: ctx.userId,
-      error: error instanceof Error ? error.message : String(error),
-    });
-    throw error;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.log('[MCP Tool] get-user-assignments: ERROR from Canvas API', { error: errorMessage });
+    return {
+      content: [{ type: "text", text: errorMessage }],
+      isError: true,
+    };
   }
 }

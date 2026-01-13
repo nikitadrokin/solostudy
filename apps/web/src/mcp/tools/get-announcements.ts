@@ -18,28 +18,34 @@ export const metadata: ToolMetadata = {
 export default async function getAnnouncements() {
   console.log('[MCP Tool] get-announcements: Starting execution');
   
-  const ctx = await getMcpUserContext();
-  
-  if (!ctx) {
-    console.log('[MCP Tool] get-announcements: ERROR - No user context found');
-    throw new Error("Not authenticated. Please provide a valid API key or OAuth token.");
-  }
-  
-  console.log('[MCP Tool] get-announcements: User context retrieved', {
-    userId: ctx.userId,
-    hasCanvasUrl: !!ctx.canvasUrl,
-    hasCanvasToken: !!ctx.canvasIntegrationToken,
-  });
-  
-  if (!ctx.canvasUrl || !ctx.canvasIntegrationToken) {
-    console.log('[MCP Tool] get-announcements: ERROR - Missing Canvas credentials');
-    throw new Error("Canvas credentials not configured. Please set up your Canvas integration in settings.");
-  }
-  
-  const canvasApiUrl = `${normalizeCanvasUrl(ctx.canvasUrl)}/api/v1`;
-  console.log('[MCP Tool] get-announcements: Calling Canvas API', { userId: ctx.userId, canvasApiUrl });
-  
   try {
+    const ctx = await getMcpUserContext();
+    
+    if (!ctx) {
+      console.log('[MCP Tool] get-announcements: ERROR - No user context found');
+      return {
+        content: [{ type: "text", text: "Not authenticated. Please provide a valid API key or OAuth token." }],
+        isError: true,
+      };
+    }
+    
+    console.log('[MCP Tool] get-announcements: User context retrieved', {
+      userId: ctx.userId,
+      hasCanvasUrl: !!ctx.canvasUrl,
+      hasCanvasToken: !!ctx.canvasIntegrationToken,
+    });
+    
+    if (!ctx.canvasUrl || !ctx.canvasIntegrationToken) {
+      console.log('[MCP Tool] get-announcements: ERROR - Missing Canvas credentials');
+      return {
+        content: [{ type: "text", text: "Canvas credentials not configured. Please set up your Canvas integration in settings." }],
+        isError: true,
+      };
+    }
+    
+    const canvasApiUrl = `${normalizeCanvasUrl(ctx.canvasUrl)}/api/v1`;
+    console.log('[MCP Tool] get-announcements: Calling Canvas API', { userId: ctx.userId, canvasApiUrl });
+    
     // First get courses to build context codes
     const courses = await fetchCanvasCourses(canvasApiUrl, ctx.canvasIntegrationToken);
     
@@ -48,7 +54,14 @@ export default async function getAnnouncements() {
     
     if (contextCodes.length === 0) {
       console.log('[MCP Tool] get-announcements: No courses found');
-      return [];
+      return {
+        structuredContent: {
+          status: "success",
+          result: {
+            announcements: [],
+          },
+        },
+      };
     }
     
     // Fetch announcements
@@ -88,12 +101,20 @@ export default async function getAnnouncements() {
       announcementCount: formattedAnnouncements.length,
     });
     
-    return formattedAnnouncements;
+    return {
+      structuredContent: {
+        status: "success",
+        result: {
+          announcements: formattedAnnouncements,
+        },
+      },
+    };
   } catch (error) {
-    console.log('[MCP Tool] get-announcements: ERROR from Canvas API', {
-      userId: ctx.userId,
-      error: error instanceof Error ? error.message : String(error),
-    });
-    throw error;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.log('[MCP Tool] get-announcements: ERROR from Canvas API', { error: errorMessage });
+    return {
+      content: [{ type: "text", text: errorMessage }],
+      isError: true,
+    };
   }
 }

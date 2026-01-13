@@ -18,28 +18,34 @@ export const metadata: ToolMetadata = {
 export default async function getUserGrades() {
   console.log('[MCP Tool] get-user-grades: Starting execution');
   
-  const ctx = await getMcpUserContext();
-  
-  if (!ctx) {
-    console.log('[MCP Tool] get-user-grades: ERROR - No user context found');
-    throw new Error("Not authenticated. Please provide a valid API key or OAuth token.");
-  }
-  
-  console.log('[MCP Tool] get-user-grades: User context retrieved', {
-    userId: ctx.userId,
-    hasCanvasUrl: !!ctx.canvasUrl,
-    hasCanvasToken: !!ctx.canvasIntegrationToken,
-  });
-  
-  if (!ctx.canvasUrl || !ctx.canvasIntegrationToken) {
-    console.log('[MCP Tool] get-user-grades: ERROR - Missing Canvas credentials');
-    throw new Error("Canvas credentials not configured. Please set up your Canvas integration in settings.");
-  }
-  
-  const canvasApiUrl = `${normalizeCanvasUrl(ctx.canvasUrl)}/api/v1`;
-  console.log('[MCP Tool] get-user-grades: Calling Canvas API', { userId: ctx.userId, canvasApiUrl });
-  
   try {
+    const ctx = await getMcpUserContext();
+    
+    if (!ctx) {
+      console.log('[MCP Tool] get-user-grades: ERROR - No user context found');
+      return {
+        content: [{ type: "text", text: "Not authenticated. Please provide a valid API key or OAuth token." }],
+        isError: true,
+      };
+    }
+    
+    console.log('[MCP Tool] get-user-grades: User context retrieved', {
+      userId: ctx.userId,
+      hasCanvasUrl: !!ctx.canvasUrl,
+      hasCanvasToken: !!ctx.canvasIntegrationToken,
+    });
+    
+    if (!ctx.canvasUrl || !ctx.canvasIntegrationToken) {
+      console.log('[MCP Tool] get-user-grades: ERROR - Missing Canvas credentials');
+      return {
+        content: [{ type: "text", text: "Canvas credentials not configured. Please set up your Canvas integration in settings." }],
+        isError: true,
+      };
+    }
+    
+    const canvasApiUrl = `${normalizeCanvasUrl(ctx.canvasUrl)}/api/v1`;
+    console.log('[MCP Tool] get-user-grades: Calling Canvas API', { userId: ctx.userId, canvasApiUrl });
+    
     const courses = await fetchCanvasCourses(canvasApiUrl, ctx.canvasIntegrationToken);
     
     // Fetch assignments with submissions for each course
@@ -88,12 +94,20 @@ export default async function getUserGrades() {
       coursesWithGrades: courseGrades.length,
     });
     
-    return courseGrades;
+    return {
+      structuredContent: {
+        status: "success",
+        result: {
+          grades: courseGrades,
+        },
+      },
+    };
   } catch (error) {
-    console.log('[MCP Tool] get-user-grades: ERROR from Canvas API', {
-      userId: ctx.userId,
-      error: error instanceof Error ? error.message : String(error),
-    });
-    throw error;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.log('[MCP Tool] get-user-grades: ERROR from Canvas API', { error: errorMessage });
+    return {
+      content: [{ type: "text", text: errorMessage }],
+      isError: true,
+    };
   }
 }
