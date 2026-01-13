@@ -1,12 +1,15 @@
 import { passkey } from '@better-auth/passkey';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { apiKey } from 'better-auth/plugins';
+import { apiKey, mcp } from 'better-auth/plugins';
 // import { github } from 'better-auth/social-providers';
 import { db } from '../db';
 import {
   account,
   apikey as apikeyTable,
+  oauthAccessToken,
+  oauthApplication,
+  oauthConsent,
   passkey as passkeyTable,
   session,
   user,
@@ -23,6 +26,9 @@ export const auth = betterAuth({
       verification,
       passkey: passkeyTable,
       apikey: apikeyTable,
+      oauthApplication,
+      oauthAccessToken,
+      oauthConsent,
     },
   }),
   emailAndPassword: {
@@ -54,6 +60,9 @@ export const auth = betterAuth({
         residentKey: 'preferred',
         userVerification: 'preferred',
       },
+    }),
+    mcp({
+      loginPage: '/sign-in',
     }),
   ],
 });

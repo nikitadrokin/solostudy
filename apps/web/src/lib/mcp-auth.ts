@@ -12,21 +12,10 @@ export type UserContext = {
 /**
  * Validates an API key using better-auth's verifyApiKey and returns the user context if valid
  */
-export async function validateApiKeyAndGetContext(apiKey: string): Promise<UserContext | null> {
-  // Use better-auth's built-in verifyApiKey - handles hashing, rate limiting, expiration
-  const result = await auth.api.verifyApiKey({
-    body: {
-      key: apiKey,
-    },
-  });
-
-  if (!result.valid || !result.key) {
-    return null;
-  }
-
-  const userId = result.key.userId;
-
-  // Fetch the user's Canvas credentials
+/**
+ * Fetches the user context (Canvas credentials) for a given user ID
+ */
+export async function getUserContext(userId: string): Promise<UserContext | null> {
   const userRecord = await db
     .select({
       id: user.id,
@@ -46,4 +35,22 @@ export async function validateApiKeyAndGetContext(apiKey: string): Promise<UserC
     canvasUrl: userRecord[0].canvasUrl,
     canvasIntegrationToken: userRecord[0].canvasIntegrationToken,
   };
+}
+
+/**
+ * Validates an API key using better-auth's verifyApiKey and returns the user context if valid
+ */
+export async function validateApiKeyAndGetContext(apiKey: string): Promise<UserContext | null> {
+  // Use better-auth's built-in verifyApiKey - handles hashing, rate limiting, expiration
+  const result = await auth.api.verifyApiKey({
+    body: {
+      key: apiKey,
+    },
+  });
+
+  if (!result.valid || !result.key) {
+    return null;
+  }
+
+  return getUserContext(result.key.userId);
 }
