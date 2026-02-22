@@ -1,7 +1,7 @@
 import { passkey } from '@better-auth/passkey';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { apiKey, mcp } from 'better-auth/plugins';
+import { admin, apiKey, mcp } from 'better-auth/plugins';
 // import { github } from 'better-auth/social-providers';
 import { db } from '../db';
 import {
@@ -45,6 +45,7 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    admin(),
     // github({
     //   clientId: process.env.GITHUB_CLIENT_ID,
     //   clientSecret: process.env.GITHUB_CLIENT_SECRET,
