@@ -1,13 +1,14 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: Skeletons need unique keys */
-import { useQuery } from '@tanstack/react-query';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { authClient } from '@/lib/auth-client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { YOUTUBE_VALIDATION_PATTERNS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
-import { api } from '@/utils/trpc';
+import { api, apiClient } from '@/utils/trpc';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -18,6 +19,9 @@ const VideoPicker: React.FC = () => {
   const { handleVideoIdChange, handleLoadVideo } = useVideoStore();
   const { videoId } = useFocusStore();
   const isMobile = useIsMobile();
+  const { data: session } = authClient.useSession();
+  const isAdmin = session?.user?.role === 'admin';
+  const queryClient = useQueryClient();
   const { data: videos = [], isLoading } = useQuery(
     api.focus.listVideos.queryOptions()
   );
@@ -51,6 +55,32 @@ const VideoPicker: React.FC = () => {
       setUrlInput(`https://www.youtube.com/watch?v=${videoId}`);
     }
   }, [videoId]);
+
+  // Derive the current video ID from the URL input
+  const currentInputVideoId = useMemo(() => {
+    if (!urlInput || !isValidYouTubeUrl(urlInput)) return null;
+    return extractVideoId(urlInput) || urlInput;
+  }, [urlInput, isValidYouTubeUrl]);
+
+  // Check if the current input video already exists in the focus room
+  const videoExistsInFocusRoom = useMemo(() => {
+    if (!currentInputVideoId) return false;
+    return videos.some((v) => v.id === currentInputVideoId);
+  }, [currentInputVideoId, videos]);
+
+  const { mutate: addVideo, isPending: isAddingVideo } = useMutation({
+    mutationFn: (videoId: string) =>
+      apiClient.focus.addVideo.mutate({ videoId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: api.focus.listVideos.queryKey() });
+    },
+  });
+
+  const handleAddToFocusRoom = useCallback(() => {
+    if (currentInputVideoId && !videoExistsInFocusRoom) {
+      addVideo(currentInputVideoId);
+    }
+  }, [currentInputVideoId, videoExistsInFocusRoom, addVideo]);
 
   const handleVideoSelect = (id: string) => {
     handleVideoIdChange(id);
@@ -126,6 +156,20 @@ const VideoPicker: React.FC = () => {
           >
             Load
           </Button>
+          {isAdmin && (
+            <Button
+              disabled={
+                !(urlInput && isValidYouTubeUrl(urlInput)) ||
+                videoExistsInFocusRoom ||
+                isAddingVideo
+              }
+              onClick={handleAddToFocusRoom}
+              size="default"
+              variant="secondary"
+            >
+              {isAddingVideo ? 'Adding...' : videoExistsInFocusRoom ? 'Added' : 'Add'}
+            </Button>
+          )}
         </div>
       </div>
 

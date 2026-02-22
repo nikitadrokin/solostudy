@@ -46,6 +46,7 @@ export default function SettingsPage() {
         <Profile
           userEmail={session?.user.email}
           userName={session?.user.name}
+          userRole={(session?.user as { role?: string })?.role}
         />
 
         <Separator />

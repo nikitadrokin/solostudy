@@ -3,7 +3,12 @@ import { and, desc, eq, gte, sql, sum } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
 import { focusRoomVideo, focusSession } from '../db/schema/focus';
-import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
+import {
+  adminProcedure,
+  protectedProcedure,
+  publicProcedure,
+  router,
+} from '../lib/trpc';
 
 export const focusRouter = router({
   listVideos: publicProcedure.query(async () => {
@@ -25,6 +30,51 @@ export const focusRouter = router({
       });
     }
   }),
+
+  addVideo: adminProcedure
+    .input(
+      z.object({
+        videoId: z.string().min(1),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Check if video already exists
+      const existing = await db
+        .select({ id: focusRoomVideo.id })
+        .from(focusRoomVideo)
+        .where(eq(focusRoomVideo.id, input.videoId))
+        .limit(1);
+
+      if (existing.length > 0) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'Video already exists in Focus Room',
+        });
+      }
+
+      // Fetch video title from noembed
+      let title = input.videoId;
+      try {
+        const res = await fetch(
+          `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${input.videoId}`
+        );
+        if (res.ok) {
+          const data = (await res.json()) as { title?: string };
+          if (data.title) {
+            title = data.title;
+          }
+        }
+      } catch {
+        // Fall back to using videoId as title
+      }
+
+      await db.insert(focusRoomVideo).values({
+        id: input.videoId,
+        title,
+      });
+
+      return { id: input.videoId, title };
+    }),
 
   saveFocusSession: protectedProcedure
     .input(
