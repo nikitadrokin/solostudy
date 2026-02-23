@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { type InferSchema, type ToolMetadata } from "xmcp";
-import { canvasClient } from "../lib/canvas-client.js";
+import { canvasClient } from "../lib/canvas-client";
 
 export const schema = {
   enrollment_state: z

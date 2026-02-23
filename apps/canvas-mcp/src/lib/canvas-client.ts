@@ -1,4 +1,4 @@
-import { CanvasClient } from "../canvas/client.js";
+import { CanvasClient } from "../canvas/client";
 
 const CANVAS_BASE_URL = process.env.CANVAS_BASE_URL || "";
 const CANVAS_ACCESS_TOKEN = process.env.CANVAS_ACCESS_TOKEN || "";

@@ -1,5 +1,5 @@
 import { type ToolMetadata } from "xmcp";
-import { canvasClient } from "../lib/canvas-client.js";
+import { canvasClient } from "../lib/canvas-client";
 
 export const metadata: ToolMetadata = {
   name: "get-current-user",

@@ -1,6 +1,12 @@
-import { defineConfig } from "xmcp";
+import type { XmcpConfig } from "xmcp";
 
-export default defineConfig({
-  name: "canvas-mcp-server",
-  version: "1.0.0",
-});
+const config = {
+  http: true,
+  paths: {
+    tools: "src/tools",
+    prompts: false,
+    resources: false,
+  },
+} satisfies XmcpConfig;
+
+export default config;
