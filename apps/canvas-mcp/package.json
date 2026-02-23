@@ -1,23 +1,30 @@
 {
-	"name": "hello-server",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"module": "./src/index.ts",
-	"type": "module",
-	"scripts": {
-		"dev": "smithery dev",
-		"build": "smithery build"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"dependencies": {
-		"@modelcontextprotocol/sdk": "^1.25.1",
-		"@smithery/sdk": "^3.0.1",
-		"zod": "^4"
-	},
-	"devDependencies": {
-		"@smithery/cli": "^2.2.1"
-	}
+  "name": "canvas-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Canvas LMS student features",
+  "type": "module",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "bun build src/index.ts --outdir build --target node",
+    "dev": "bun run src/index.ts",
+    "format": "prettier --write 'src/**/*.ts'",
+    "lint": "eslint src/**/*.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
 }
