@@ -3,20 +3,21 @@
   "version": "1.0.0",
   "description": "MCP server for Canvas LMS student features",
   "type": "module",
-  "main": "build/index.js",
   "scripts": {
-    "build": "bun build src/index.ts --outdir build --target node",
-    "dev": "bun run src/index.ts",
+    "dev": "xmcp dev",
+    "build": "xmcp build",
     "format": "prettier --write 'src/**/*.ts'",
     "lint": "eslint src/**/*.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "axios": "^1.6.0"
+    "xmcp": "latest",
+    "axios": "^1.6.0",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@xmcp-dev/cli": "latest",
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",

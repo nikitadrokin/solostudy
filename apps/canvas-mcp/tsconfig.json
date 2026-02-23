@@ -14,9 +14,11 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@xmcp/*": ["./.xmcp/*"]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "xmcp-env.d.ts", ".xmcp/**/*"],
   "exclude": ["node_modules", "build"]
 }
-
