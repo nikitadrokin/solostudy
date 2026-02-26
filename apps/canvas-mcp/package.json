@@ -2,7 +2,6 @@
   "name": "canvas-mcp-server",
   "version": "1.0.0",
   "description": "MCP server for Canvas LMS student features",
-  "type": "module",
   "scripts": {
     "dev": "xmcp dev",
     "build": "xmcp build",
