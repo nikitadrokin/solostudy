@@ -1,7 +1,0 @@
-{
-  "mcpServers": {
-    "my-project": {
-      "url": "http://localhost:3001/mcp"
-    }
-  }
-}
