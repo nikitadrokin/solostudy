@@ -1,7 +1,20 @@
 import type { XmcpConfig } from "xmcp";
 
 const config = {
-  http: true,
+  http: {
+    port: 3001,
+    endpoint: "/mcp",
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Content-Type", "Authorization", "mcp-session-id"],
+      credentials: false,
+    },
+    debug: false,
+  },
+  stdio: {
+    debug: false,
+  },
   paths: {
     tools: "src/tools",
     prompts: false,

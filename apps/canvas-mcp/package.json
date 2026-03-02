@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "xmcp dev",
     "build": "xmcp build",
+    "start:http": "node dist/http.js",
+    "start:stdio": "node dist/stdio.js",
     "format": "prettier --write 'src/**/*.ts'",
     "lint": "eslint src/**/*.ts",
     "typecheck": "tsc --noEmit",
