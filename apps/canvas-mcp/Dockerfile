@@ -17,10 +17,15 @@ RUN pnpm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
+# Install supervisor and poke
+RUN apk add --no-cache supervisor
+RUN npm install -g poke
+
 COPY --from=builder /app/apps/canvas-mcp/dist ./dist
 COPY --from=builder /app/apps/canvas-mcp/node_modules ./node_modules
 COPY --from=builder /app/apps/canvas-mcp/package.json ./package.json
+COPY apps/canvas-mcp/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 3001
 
-CMD ["node", "dist/http.js"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
