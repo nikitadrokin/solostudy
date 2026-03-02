@@ -55,7 +55,7 @@ const ApiKeys: React.FC = () => {
   const loadApiKeys = useCallback(async () => {
     const { data } = await authClient.apiKey.list();
     if (data) {
-      setApiKeys(data);
+      setApiKeys(data.apiKeys);
     }
   }, []);
 

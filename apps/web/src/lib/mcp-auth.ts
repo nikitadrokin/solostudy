@@ -81,5 +81,5 @@ export async function validateApiKeyAndGetContext(apiKey: string): Promise<UserC
     return null;
   }
 
-  return getUserContext(result.key.userId);
+  return getUserContext(result.key.referenceId);
 }
