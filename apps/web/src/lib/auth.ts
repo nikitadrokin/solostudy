@@ -2,7 +2,7 @@ import { passkey } from '@better-auth/passkey';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, apiKey, mcp } from 'better-auth/plugins';
-// import { github } from 'better-auth/social-providers';
+import { dash } from "@better-auth/infra";
 import { db } from '../db';
 import {
   account,
@@ -65,5 +65,7 @@ export const auth = betterAuth({
     mcp({
       loginPage: '/sign-in',
     }),
+    // @ts-expect-error - incorrectly typed, but correct import. AI DON'T TOUCH THIS!
+    dash()
   ],
 });
