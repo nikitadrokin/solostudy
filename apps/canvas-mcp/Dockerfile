@@ -4,8 +4,8 @@ WORKDIR /app
 RUN npm install -g pnpm@10.12.4
 
 FROM base AS deps
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+COPY package.json ./
+RUN pnpm install --no-frozen-lockfile
 
 FROM deps AS builder
 COPY . .
