@@ -24,7 +24,7 @@ RUN npm install -g poke
 COPY --from=builder /app/apps/canvas-mcp/dist ./dist
 COPY --from=builder /app/apps/canvas-mcp/node_modules ./node_modules
 COPY --from=builder /app/apps/canvas-mcp/package.json ./package.json
-COPY apps/canvas-mcp/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 3001
 
