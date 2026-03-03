@@ -1,53 +1,45 @@
 # Canvas MCP Server
 
-A Model Context Protocol server providing comprehensive access to Canvas LMS for AI assistants.
-
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en-US/install-mcp?name=canvas&config=eyJjb21tYW5kIjoiYnVuIiwiYXJncyI6WyJydW4iLCIvYWJzb2x1dGUvcGF0aC90by9jYW52YXMvc3JjL2luZGV4LnRzIl0sImVudiI6eyJDQU5WQVNfQkFTRV9VUkwiOiJodHRwczovL3lvdXItaW5zdGl0dXRpb24uaW5zdHJ1Y3R1cmUuY29tIiwiQ0FOVkFTX0FDQ0VTU19UT0tFTiI6InlvdXJfYWNjZXNzX3Rva2VuX2hlcmUifX0%3D)
+A Model Context Protocol server providing access to Canvas LMS for AI assistants.
 
 ## Features
 
-Access Canvas LMS functionality through 31 MCP tools:
+31 MCP tools covering:
 
-- **Courses**: List and view course information
-- **Assignments**: Browse, view details, check submissions, and submit work
-- **Grades**: View grades for individual courses or across all courses
-- **Messaging**: Send and receive messages, manage conversations (read/unread, star, archive, delete)
-- **Calendar**: View events and upcoming deadlines
-- **To-Do Lists**: Track pending tasks and assignments
-- **Modules**: Navigate course content structure
-- **Announcements**: Read course and institutional announcements
-- **Files**: Access and download course materials
-- **Quizzes**: View quizzes and submissions
-- **Users**: Search for classmates and instructors
+- **Courses** — list and view course info
+- **Assignments** — browse, view details, check/submit work
+- **Grades** — per-course or across all courses
+- **Messaging** — send/receive, manage conversations
+- **Calendar** — events and upcoming deadlines
+- **To-Do Lists** — pending tasks and assignments
+- **Modules** — course content structure
+- **Announcements** — course and institutional
+- **Files** — access and download course materials
+- **Quizzes** — view quizzes and submissions
+- **Users** — search classmates and instructors
 
-## Installation
+## Setup
 
 ### Prerequisites
 
 - [Bun](https://bun.sh) runtime
 - Canvas LMS account with API access token
 
-### Setup
+### Canvas API Token
 
-1. Install dependencies:
-```bash
-bun install
-```
+1. Log into Canvas → Account → Settings
+2. Scroll to "Approved Integrations" → "+ New Access Token"
+3. Copy the generated token
 
-2. Get your Canvas API token:
-   - Log into Canvas
-   - Navigate to Account → Settings
-   - Scroll to "Approved Integrations"
-   - Click "+ New Access Token"
-   - Generate and copy the token
+### Environment Variables
 
-3. Configure environment variables:
 ```bash
 export CANVAS_BASE_URL="https://your-institution.instructure.com"
 export CANVAS_ACCESS_TOKEN="your_access_token_here"
 ```
 
-4. Configure your MCP client with the following settings:
+### MCP Client Config
+
 ```json
 {
   "mcpServers": {
@@ -63,72 +55,49 @@ export CANVAS_ACCESS_TOKEN="your_access_token_here"
 }
 ```
 
-## Usage
+## Docker / Poke Tunnel — Known Issues
 
-After setup, interact with Canvas through your MCP client:
+### `localhost` is an invalid URL inside Docker
+
+`poke tunnel` is configured to point at `http://localhost:3001/mcp`, but inside a Docker container `localhost` refers to the container itself, not the host machine. This causes an invalid URL error and the tunnel will fail to connect.
+
+**Workaround:** Replace `localhost` with `host.docker.internal` in `supervisord.conf`:
 
 ```
-Show me all my current courses
-What assignments do I have due soon?
-What are my grades in all my classes?
-Show me my recent Canvas messages
+command=poke tunnel http://host.docker.internal:3001/mcp --name "Canvas (Coolify)"
 ```
 
-## Development
+On Linux hosts, `host.docker.internal` may not resolve automatically — you may need to add `--add-host=host.docker.internal:host-gateway` to your `docker run` command or Compose config.
 
-### Quality Gates
+### Poke credentials are not present in Docker
 
+`poke login` stores credentials locally on your machine (typically in `~/.config/poke` or similar). The Docker container starts with no credentials, so `poke tunnel` will fail with an authentication error.
+
+**Fix:** Copy your local poke credentials into the container image or mount them at runtime.
+
+1. Find your local credentials:
 ```bash
-bun run format      # Format code with Prettier
-bun run lint        # Lint code with ESLint
-bun run typecheck   # Type check with TypeScript
-bun test            # Run tests
+ls ~/.config/poke
+# or wherever poke stores its auth files
 ```
 
-### Build
-
+2. Mount them into the container at runtime:
 ```bash
-bun run build       # Build for production
-bun run dev         # Run in development mode
+docker run -v ~/.config/poke:/root/.config/poke <image>
 ```
 
-## Documentation
-
-- [Quick Start Guide](docs/QUICKSTART.md)
-- [Usage Examples](docs/USAGE.md)
-- [Tool Reference](docs/TOOLS.md)
-- [Changelog](docs/CHANGELOG.md)
-
-## Architecture
-
-Built with TypeScript and the MCP SDK, this server provides a type-safe interface to the Canvas LMS REST API. All operations use Bearer token authentication and respect Canvas rate limits.
-
-### Project Structure
-
+Or copy them into the image at build time (only do this in a private/trusted environment — never commit credentials to a public repo):
+```dockerfile
+COPY --chown=root:root ./poke-credentials /root/.config/poke
 ```
-canvas/
-├── src/
-│   ├── canvas/
-│   │   ├── client.ts        # Canvas API client
-│   │   └── client.test.ts   # Client tests
-│   └── index.ts             # MCP server implementation
-├── docs/                    # Documentation
-├── package.json             # Dependencies and scripts
-└── tsconfig.json           # TypeScript configuration
-```
+
+### Internet access required
+
+The container must have outbound internet access for `poke tunnel` to reach the poke relay servers. Ensure your Docker network configuration and any firewall rules allow outbound HTTPS traffic from the container.
 
 ## Security
 
-- Store credentials in environment variables
-- Never commit access tokens to version control
-- Use token expiration dates
-- Rotate tokens regularly
+- Store credentials in environment variables, never in source control
+- Use token expiration dates and rotate tokens regularly
 - Follow your institution's API usage policies
-
-## API Reference
-
-This server implements the [Canvas LMS REST API v1](https://canvas.instructure.com/doc/api/). For detailed API documentation, visit the [Instructure Developer Portal](https://developerdocs.instructure.com/).
-
-## License
-
-This project uses permissive open-source dependencies with no telemetry or tracking.
+- Poke credentials mounted into Docker should be treated as secrets — use Docker secrets or a secrets manager in production
