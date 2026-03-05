@@ -57,17 +57,9 @@ export CANVAS_ACCESS_TOKEN="your_access_token_here"
 
 ## Docker / Poke Tunnel — Known Issues
 
-### `localhost` is an invalid URL inside Docker
+### `localhost` inside the same container
 
-`poke tunnel` is configured to point at `http://localhost:3001/mcp`, but inside a Docker container `localhost` refers to the container itself, not the host machine. This causes an invalid URL error and the tunnel will fail to connect.
-
-**Workaround:** Replace `localhost` with `host.docker.internal` in `supervisord.conf`:
-
-```
-command=poke tunnel http://host.docker.internal:3001/mcp --name "Canvas (Coolify)"
-```
-
-On Linux hosts, `host.docker.internal` may not resolve automatically — you may need to add `--add-host=host.docker.internal:host-gateway` to your `docker run` command or Compose config.
+Both `node dist/http.js` (the HTTP server on port 3001) and `poke tunnel` run inside the same container via supervisord. Because they share the same network namespace, `localhost` is valid and correct — `poke tunnel http://localhost:3001/mcp` will reach the server as expected. No change needed here.
 
 ### Poke credentials are not present in Docker
 
