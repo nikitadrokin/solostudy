@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { type InferSchema, type ToolMetadata } from "xmcp";
-import { getCanvasClient } from "../lib/canvas-client";
+import { canvasClient } from "../lib/canvas-client";
 
 export const schema = {
   scope: z
@@ -24,7 +24,6 @@ export const metadata: ToolMetadata = {
 export default async function handler({
   scope,
 }: InferSchema<typeof schema>) {
-  const canvasClient = getCanvasClient();
   const conversations = await canvasClient.getConversations(scope);
   return JSON.stringify(conversations, null, 2);
 }

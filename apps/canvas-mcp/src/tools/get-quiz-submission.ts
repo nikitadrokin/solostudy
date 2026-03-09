@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { type InferSchema, type ToolMetadata } from "xmcp";
-import { getCanvasClient } from "../lib/canvas-client";
+import { canvasClient } from "../lib/canvas-client";
 
 export const schema = {
   course_id: z.number().describe("The ID of the course"),
@@ -21,7 +21,6 @@ export default async function handler({
   course_id,
   quiz_id,
 }: InferSchema<typeof schema>) {
-  const canvasClient = getCanvasClient();
   const submission = await canvasClient.getQuizSubmission(course_id, quiz_id);
   return JSON.stringify(submission, null, 2);
 }

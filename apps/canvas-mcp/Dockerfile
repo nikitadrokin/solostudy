@@ -14,10 +14,16 @@ RUN pnpm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
+# Install supervisor and poke
+RUN apk add --no-cache supervisor
+RUN npm install -g poke
+
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY credentials.json /root/.config/poke/credentials.json
 
-EXPOSE 80
+EXPOSE 3001
 
-CMD ["node", "dist/http.js"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
