@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { type InferSchema, type ToolMetadata } from "xmcp";
-import { canvasClient } from "../lib/canvas-client";
+import { getCanvasClient } from "../lib/canvas-client";
 
 export const schema = {
   course_id: z
@@ -22,6 +22,7 @@ export const metadata: ToolMetadata = {
 export default async function handler({
   course_id,
 }: InferSchema<typeof schema>) {
+  const canvasClient = getCanvasClient();
   const files = await canvasClient.getFiles(course_id);
   return JSON.stringify(files, null, 2);
 }

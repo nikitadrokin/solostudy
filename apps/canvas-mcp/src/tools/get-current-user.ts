@@ -1,5 +1,5 @@
 import { type ToolMetadata } from "xmcp";
-import { canvasClient } from "../lib/canvas-client";
+import { getCanvasClient } from "../lib/canvas-client";
 
 export const metadata: ToolMetadata = {
   name: "get-current-user",
@@ -12,6 +12,7 @@ export const metadata: ToolMetadata = {
 };
 
 export default async function handler() {
+  const canvasClient = getCanvasClient();
   const user = await canvasClient.getCurrentUser();
   return JSON.stringify(user, null, 2);
 }

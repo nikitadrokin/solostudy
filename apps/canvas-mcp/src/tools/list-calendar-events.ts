@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { type InferSchema, type ToolMetadata } from "xmcp";
-import { canvasClient } from "../lib/canvas-client";
+import { getCanvasClient } from "../lib/canvas-client";
 
 export const schema = {
   start_date: z
@@ -27,6 +27,7 @@ export default async function handler({
   start_date,
   end_date,
 }: InferSchema<typeof schema>) {
+  const canvasClient = getCanvasClient();
   const events = await canvasClient.getCalendarEvents(start_date, end_date);
   return JSON.stringify(events, null, 2);
 }

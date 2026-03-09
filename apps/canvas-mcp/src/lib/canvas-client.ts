@@ -1,16 +1,32 @@
 import { CanvasClient } from "../canvas/client";
+import { headers } from "xmcp/headers";
 
-const CANVAS_BASE_URL = process.env.CANVAS_BASE_URL || "";
-const CANVAS_ACCESS_TOKEN = process.env.CANVAS_ACCESS_TOKEN || "";
+export function getCanvasClient(): CanvasClient {
+  let baseUrl: string;
+  let accessToken: string;
 
-if (!CANVAS_BASE_URL || !CANVAS_ACCESS_TOKEN) {
-  console.error(
-    "Error: CANVAS_BASE_URL and CANVAS_ACCESS_TOKEN environment variables are required"
-  );
-  process.exit(1);
+  try {
+    // HTTP mode: read from request headers (set by middleware + MCP client)
+    const h = headers();
+    baseUrl = (h["x-canvas-url"] as string) || "";
+    accessToken =
+      (h["authorization"] as string | undefined)?.replace(
+        /^Bearer\s+/i,
+        ""
+      ) || "";
+  } catch {
+    // STDIO mode: headers() throws outside HTTP request context
+    baseUrl = process.env.CANVAS_BASE_URL || "";
+    accessToken = process.env.CANVAS_ACCESS_TOKEN || "";
+  }
+
+  if (!baseUrl || !accessToken) {
+    throw new Error(
+      "Canvas base URL and access token are required. " +
+        "For HTTP: pass canvas_url as a query param and the token via Authorization header. " +
+        "For STDIO: set CANVAS_BASE_URL and CANVAS_ACCESS_TOKEN env vars."
+    );
+  }
+
+  return new CanvasClient({ baseUrl, accessToken });
 }
-
-export const canvasClient = new CanvasClient({
-  baseUrl: CANVAS_BASE_URL,
-  accessToken: CANVAS_ACCESS_TOKEN,
-});
