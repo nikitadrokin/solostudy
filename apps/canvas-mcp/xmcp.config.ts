@@ -2,7 +2,7 @@ import type { XmcpConfig } from "xmcp";
 
 const config = {
   http: {
-    port: 3847,
+    port: 80,
     endpoint: "/mcp",
     cors: {
       origin: "*",
