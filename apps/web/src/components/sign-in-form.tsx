@@ -49,7 +49,7 @@ export default function SignInForm() {
             toast.success('Sign in successful');
             router.push('/dashboard');
           },
-          onError: (error) => {
+          onError: (error: any) => {
             posthog.capture('sign_in_failed', {
               method: 'email',
               error: error.error.message || error.error.statusText,
@@ -120,7 +120,7 @@ export default function SignInForm() {
           toast.success('Signed in with passkey');
           router.push('/dashboard');
         },
-        onError: (error) => {
+        onError: (error: any) => {
           toast.error(error.error.message || error.error.statusText);
         },
       });

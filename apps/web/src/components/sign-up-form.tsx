@@ -46,7 +46,7 @@ export default function SignUpForm() {
             toast.success('Sign up successful');
             router.push('/dashboard');
           },
-          onError: (error) => {
+          onError: (error: any) => {
             posthog.capture('sign_up_failed', {
               method: 'email',
               error: error.error.message || error.error.statusText,
