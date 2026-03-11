@@ -72,7 +72,7 @@ export function useFocusTimer() {
     }
 
     intervalRef.current = setInterval(() => {
-      if (document.visibilityState === 'visible' && isOwner()) {
+      if (isOwner()) {
         setFocusTime((prev) => prev + 1);
         accumulatedTimeRef.current += 1;
       }
@@ -90,24 +90,6 @@ export function useFocusTimer() {
   }, [syncSession]);
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        claimOwnership();
-        startTimer();
-      } else {
-        stopTimer();
-      }
-    };
-
-    const handleFocus = () => {
-      claimOwnership();
-      startTimer();
-    };
-
-    const handleBlur = () => {
-      stopTimer();
-    };
-
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'FOCUS_OWNER' && !isOwner()) {
         stopTimer();
@@ -123,17 +105,11 @@ export function useFocusTimer() {
     startTimer();
 
     // Event listeners
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
     window.addEventListener('storage', handleStorage);
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       stopTimer();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
