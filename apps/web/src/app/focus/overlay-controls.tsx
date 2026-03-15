@@ -45,12 +45,10 @@ const OverlayControls: React.FC = () => {
       <div className="flex items-start justify-between">
         {/* Leading */}
         <div className="flex items-center gap-2">
-          {isMobile && (
-            <SidebarTrigger
-              className="bg-background/80 backdrop-blur-sm"
-              variant="outline"
-            />
-          )}
+          <SidebarTrigger
+            className="bg-background/80 backdrop-blur-sm md:hidden"
+            variant="outline"
+          />
 
           <DynamicPopover
             align="start"
