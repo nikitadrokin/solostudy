@@ -1,9 +1,9 @@
+import { apiKey } from '@better-auth/api-key';
+import { dash } from '@better-auth/infra';
 import { passkey } from '@better-auth/passkey';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, mcp } from 'better-auth/plugins';
-import { apiKey } from '@better-auth/api-key';
-import { dash } from "@better-auth/infra";
 import { db } from '../db';
 import {
   account,
@@ -66,6 +66,12 @@ export const auth = betterAuth({
     mcp({
       loginPage: '/sign-in',
     }),
-    dash()
+    dash({
+      apiKey: process.env.BETTER_AUTH_API_KEY,
+      activityTracking: {
+        enabled: true,
+        updateInterval: 300_000, // 5 minutes
+      },
+    }),
   ],
 });

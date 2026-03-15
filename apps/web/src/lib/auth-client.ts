@@ -2,11 +2,11 @@ import { passkeyClient } from '@better-auth/passkey/client';
 import { adminClient, } from 'better-auth/client/plugins';
 import { apiKeyClient } from '@better-auth/api-key/client';
 import { createAuthClient } from 'better-auth/react';
-import { sentinelClient } from "@better-auth/infra/client";
+import { dashClient } from "@better-auth/infra/client";
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
-  plugins: [adminClient(), apiKeyClient(), passkeyClient(), sentinelClient()],
+  plugins: [adminClient(), apiKeyClient(), passkeyClient(), dashClient()],
 });
 
 export const { signIn, signOut, signUp, useSession } = authClient;
