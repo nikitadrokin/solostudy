@@ -36,6 +36,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import OpenInCoolify from './admin-server-side/open-in-coolify';
 import { ModeToggle } from './theme-toggle/dropdown';
@@ -80,6 +81,8 @@ export default function AppSidebar() {
   const { open } = useSidebar();
   const [settingsOpen, setSettingsOpen] = useState(pathname === '/settings');
   const [currentHash, setCurrentHash] = useState('');
+  const { data: session } = authClient.useSession();
+  const isAdmin = session?.user.role === 'admin';
 
   useEffect(() => {
     setCurrentHash(window.location.hash);
@@ -252,9 +255,11 @@ export default function AppSidebar() {
           <SidebarMenuItem>
             {open ? <ThemeToggle /> : <ModeToggle />}
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            <OpenInCoolify />
-          </SidebarMenuItem>
+          {isAdmin && (
+            <SidebarMenuItem>
+              <OpenInCoolify />
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <UserMenu />
           </SidebarMenuItem>
