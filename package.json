@@ -5,9 +5,6 @@
     "apps/*",
     "packages/*"
   ],
-  "engines": {
-    "node": "25"
-  },
   "scripts": {
     "check": "biome check --write .",
     "dev": "turbo dev",
