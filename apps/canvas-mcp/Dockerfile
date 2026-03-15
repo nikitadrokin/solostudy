@@ -24,6 +24,6 @@ COPY --from=builder /app/package.json ./package.json
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY credentials.json /root/.config/poke/credentials.json
 
-EXPOSE 3001
+EXPOSE 3847
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

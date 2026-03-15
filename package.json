@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": "22"
+    "node": "25"
   },
   "scripts": {
     "check": "biome check --write .",
