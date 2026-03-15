@@ -46,7 +46,7 @@ const OverlayControls: React.FC = () => {
         {/* Leading */}
         <div className="flex items-center gap-2">
           <SidebarTrigger
-            className="bg-background/80 backdrop-blur-sm md:hidden"
+            className="bg-background/80 backdrop-blur-sm"
             variant="outline"
           />
 
