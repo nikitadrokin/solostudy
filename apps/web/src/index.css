@@ -154,3 +154,7 @@ video {
   display: block;
   vertical-align: middle;
 }
+
+@view-transition {
+  navigation: auto;
+}
