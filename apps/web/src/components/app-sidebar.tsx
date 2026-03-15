@@ -190,6 +190,7 @@ export default function AppSidebar() {
             </Collapsible>
           </SidebarMenu>
         </SidebarGroup>
+        {/*
         <SidebarGroup>
           <SidebarGroupLabel>Canvas</SidebarGroupLabel>
           <SidebarMenu>
@@ -251,6 +252,7 @@ export default function AppSidebar() {
             ))}
           </SidebarMenu>
         </SidebarGroup>
+        */}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
