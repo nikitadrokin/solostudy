@@ -1,19 +1,11 @@
 'use client';
 
 import {
-  Award,
-  Bell,
-  BookOpen,
-  Calendar,
-  ChartLine,
   ChevronRight,
-  FileText,
-  FlaskConical,
   Focus,
   Laptop,
   LayoutDashboard,
   Link as LinkIcon,
-  MessagesSquare,
   Settings,
   Shield,
   User,
@@ -45,6 +37,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
+import OpenInCoolify from './admin-server-side/open-in-coolify';
 import { ModeToggle } from './theme-toggle/dropdown';
 import { ThemeToggle } from './theme-toggle/inline';
 import UserMenu from './user-menu';
@@ -55,6 +48,7 @@ const mainLinks = [
   { href: '/focus', label: 'Focus Room', icon: Focus },
 ];
 
+/*
 // biome-ignore format: because
 const canvasLinks = [
   { href: '/canvas/assignments', label: 'Assignments', icon: FileText },
@@ -71,6 +65,7 @@ const experimentalCanvasLinks = [
   { href: '/canvas/experimental/study-planner', label: 'Study Planner', icon: Calendar },
   { href: '/canvas/experimental/discussion-insights', label: 'Discussion Insights', icon: MessagesSquare },
 ];
+*/
 
 // biome-ignore format: because
 const settingsLinks = [
@@ -84,9 +79,6 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const { open } = useSidebar();
   const [settingsOpen, setSettingsOpen] = useState(pathname === '/settings');
-  const [experimentalOpen, setExperimentalOpen] = useState(
-    pathname.startsWith('/canvas/experimental')
-  );
   const [currentHash, setCurrentHash] = useState('');
 
   useEffect(() => {
@@ -259,6 +251,9 @@ export default function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             {open ? <ThemeToggle /> : <ModeToggle />}
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <OpenInCoolify />
           </SidebarMenuItem>
           <SidebarMenuItem>
             <UserMenu />

@@ -35,7 +35,7 @@ export default function UserMenu() {
     return (
       <SidebarMenuButton asChild className="px-3" tooltip="Sign In">
         <Link href="/login">
-          <LogIn className="!size-5" />
+          <LogIn className={cn(open ? '!size-5 ml-0.5' : '!size-5')} />
           <span>Sign In</span>
         </Link>
       </SidebarMenuButton>
