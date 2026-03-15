@@ -154,7 +154,6 @@ function SidebarProvider({
   );
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: complex
 function Sidebar({
   side = 'left',
   variant = 'sidebar',
