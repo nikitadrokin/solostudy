@@ -108,9 +108,10 @@ export default function AppSidebar() {
   }, [pathname]);
 
   const isSettingsPath = pathname === '/settings';
+  const isFocusPath = pathname === '/focus';
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible={isFocusPath ? 'offcanvas' : 'icon'}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
