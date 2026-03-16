@@ -11,6 +11,10 @@ import type { AppRouter } from '../routers';
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error) => {
+      if (process.env.NODE_ENV === 'production') {
+        return;
+      }
+
       toast.error(error.message, {
         action: {
           label: 'retry',
