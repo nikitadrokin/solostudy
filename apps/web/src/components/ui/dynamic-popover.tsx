@@ -92,7 +92,8 @@ const DynamicPopover: React.FC<DynamicPopoverProps> = ({
       <PopoverContent
         align={align}
         className={cn(
-          'flex flex-col overflow-hidden rounded-2xl bg-background/80 backdrop-blur-sm',
+          'flex flex-col overflow-hidden rounded-2xl',
+          'border border-white/10 bg-background/75 shadow-xl backdrop-blur-md',
           className
         )}
         showScrollFade={showScrollFadeOnPopover}

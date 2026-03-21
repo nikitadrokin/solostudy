@@ -2,18 +2,33 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { authClient } from '@/lib/auth-client';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { authClient } from '@/lib/auth-client';
 import { YOUTUBE_VALIDATION_PATTERNS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
 import { api, apiClient } from '@/utils/trpc';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Skeleton } from '../ui/skeleton';
 import { extractVideoId } from './youtube-player';
+
+const VIDEO_TAGS = [
+  'All',
+  'Lofi',
+  'Nature',
+  'City',
+  'Cozy',
+  'Anime',
+  'Study',
+] as const;
+type VideoTag = (typeof VIDEO_TAGS)[number];
+
+// Temporary client-side tag mapping until tags column is added to DB
+const VIDEO_TAG_MAP: Record<string, VideoTag[]> = {};
 
 const VideoPicker: React.FC = () => {
   const { handleVideoIdChange, handleLoadVideo } = useVideoStore();
@@ -29,6 +44,7 @@ const VideoPicker: React.FC = () => {
   const [urlInput, setUrlInput] = useState(
     `https://www.youtube.com/watch?v=${videoId}`
   );
+  const [activeTag, setActiveTag] = useState<VideoTag>('All');
 
   const handleUrlSubmit = useCallback(() => {
     // Extract video ID from URL if needed, otherwise use as-is (already an ID)
@@ -84,6 +100,14 @@ const VideoPicker: React.FC = () => {
     }
   }, [currentInputVideoId, videoExistsInFocusRoom, addVideo]);
 
+  const filteredVideos = useMemo(() => {
+    if (activeTag === 'All') return videos;
+    return videos.filter((v) => {
+      const tags = VIDEO_TAG_MAP[v.id];
+      return tags?.includes(activeTag);
+    });
+  }, [videos, activeTag]);
+
   const handleVideoSelect = (id: string) => {
     handleVideoIdChange(id);
     handleLoadVideo();
@@ -122,11 +146,11 @@ const VideoPicker: React.FC = () => {
     <div
       className={cn(
         'grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4 overflow-y-auto',
-        'before:pointer-events-none before:absolute before:inset-x-0 before:top-[73.5px] before:z-10 before:h-5 before:bg-gradient-to-b before:from-background/80 before:to-transparent before:content-[""]',
+        'before:pointer-events-none before:absolute before:inset-x-0 before:z-10 before:h-5 before:bg-gradient-to-b before:from-background/80 before:to-transparent before:content-[""]',
         'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-5 after:bg-gradient-to-t after:from-background/80 after:to-transparent after:content-[""]',
         isMobile
-          ? '!pt-28 !px-0 h-full min-w-full flex-1 gap-0 before:top-[106px]'
-          : 'h-full pt-24 pr-4 pb-2 pl-2'
+          ? '!pt-36 !px-0 h-full min-w-full flex-1 gap-0 before:top-[138px]'
+          : 'h-full pt-28 pr-4 pb-2 pl-2 before:top-[106px]'
       )}
     >
       <div
@@ -135,6 +159,23 @@ const VideoPicker: React.FC = () => {
           isMobile ? 'px-2 pt-12' : 'pt-4 pr-6 pl-4'
         )}
       >
+        <div className="flex gap-1 overflow-x-auto [scrollbar-width:none]">
+          {VIDEO_TAGS.map((tag) => (
+            <Badge
+              className={cn(
+                'shrink-0 cursor-pointer select-none rounded-full px-2.5 py-0.5 text-xs transition-colors',
+                activeTag === tag
+                  ? 'bg-foreground text-background hover:bg-foreground/90'
+                  : 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+              key={tag}
+              onClick={() => setActiveTag(tag)}
+              variant="outline"
+            >
+              {tag}
+            </Badge>
+          ))}
+        </div>
         <Label htmlFor="video-picker-url">Custom Video URL</Label>
         <div className="flex gap-2">
           <Input
@@ -169,13 +210,16 @@ const VideoPicker: React.FC = () => {
               size="default"
               variant="secondary"
             >
-              {isAddingVideo ? 'Adding...' : videoExistsInFocusRoom ? 'Added' : 'Add'}
+              {isAddingVideo
+                ? 'Adding...'
+                : videoExistsInFocusRoom
+                  ? 'Added'
+                  : 'Add'}
             </Button>
           )}
         </div>
       </div>
-
-      {videos.map((video) => (
+      {filteredVideos.map((video) => (
         <button
           className="cursor-pointer rounded-lg p-2 text-left hover:bg-muted/50"
           key={video.id}
