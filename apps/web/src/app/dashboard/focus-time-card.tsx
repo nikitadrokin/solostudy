@@ -1,9 +1,17 @@
 import { Clock } from 'lucide-react';
+import { headers } from 'next/headers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
 import { api } from '@/trpc/server';
 
 const FocusTimeCard: React.FC = async () => {
-  const data = await api.focus.getTodayFocusTime();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const data = session
+    ? await api.focus.getTodayFocusTime()
+    : { totalSeconds: 0 };
 
   const formatFocusTime = (totalSeconds: number) => {
     const hours = Math.floor(totalSeconds / 3600);

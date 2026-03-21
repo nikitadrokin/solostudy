@@ -1,9 +1,15 @@
 import { Trophy } from 'lucide-react';
+import { headers } from 'next/headers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/auth';
 import { api } from '@/trpc/server';
 
 const StreakCard: React.FC = async () => {
-  const streakData = await api.account.getStreak();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const streakData = session ? await api.account.getStreak() : { streak: 0 };
 
   const streak = streakData?.streak ?? 0;
 
