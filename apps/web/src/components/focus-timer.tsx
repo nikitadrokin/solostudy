@@ -5,17 +5,20 @@ import { Clock, Info, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DynamicPopover from '@/components/ui/dynamic-popover';
 import { useFocusTimer } from '@/hooks/use-focus-timer';
+import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import { api, apiClient } from '@/utils/trpc';
+import { api } from '@/utils/trpc';
 
 export function FocusTimer() {
+  const { data: session } = authClient.useSession();
   const { formattedTime, isActive, focusTime } = useFocusTimer();
 
-  const { data: todayData } = useQuery({
-    queryKey: api.focus.getTodayFocusTime.queryKey(),
-    queryFn: () => apiClient.focus.getTodayFocusTime.query(),
-    refetchInterval: 60_000, // Refresh every minute
-  });
+  const { data: todayData } = useQuery(
+    api.focus.getTodayFocusTime.queryOptions(undefined, {
+      enabled: !!session,
+      refetchInterval: 60_000,
+    })
+  );
 
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
