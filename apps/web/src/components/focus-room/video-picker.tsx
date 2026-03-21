@@ -21,9 +21,8 @@ const VIDEO_TAGS = [
   'Lofi',
   'Nature',
   'City',
-  'Cozy',
-  'Anime',
-  'Study',
+  'Cafe',
+  'Library',
 ] as const;
 type VideoTag = (typeof VIDEO_TAGS)[number];
 
@@ -146,8 +145,8 @@ const VideoPicker: React.FC = () => {
     <div
       className={cn(
         'grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4 overflow-y-auto',
-        'before:pointer-events-none before:absolute before:inset-x-0 before:z-10 before:h-5 before:bg-gradient-to-b before:from-background/80 before:to-transparent before:content-[""]',
-        'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-5 after:bg-gradient-to-t after:from-background/80 after:to-transparent after:content-[""]',
+        'before:pointer-events-none before:absolute before:inset-x-0 before:h-5 before:bg-gradient-to-b before:from-background/80 before:to-transparent before:content-[""]',
+        'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-5 after:bg-gradient-to-t after:from-background/80 after:to-transparent after:content-[""]',
         isMobile
           ? '!pt-36 !px-0 h-full min-w-full flex-1 gap-0 before:top-[135.5px]'
           : 'h-full pt-28 pr-4 pb-2 pl-2 before:top-[103.5px]'
@@ -155,7 +154,7 @@ const VideoPicker: React.FC = () => {
     >
       <div
         className={cn(
-          'absolute top-0 right-0 left-0 z-10 space-y-2 bg-background/80',
+          'absolute top-0 right-0 left-0 space-y-2 bg-background/80',
           isMobile ? 'px-2 pt-12' : 'pt-4 pr-6 pl-4'
         )}
       >
