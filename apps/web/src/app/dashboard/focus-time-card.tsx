@@ -1,10 +1,5 @@
 import { Clock } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { api } from '@/trpc/server';
 
 const FocusTimeCard: React.FC = async () => {
@@ -30,6 +25,6 @@ const FocusTimeCard: React.FC = async () => {
       </CardContent>
     </Card>
   );
-} 
+};
 
 export default FocusTimeCard;
