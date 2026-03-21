@@ -58,7 +58,7 @@ const VideoPicker: React.FC = () => {
 
   // Derive the current video ID from the URL input
   const currentInputVideoId = useMemo(() => {
-    if (!urlInput || !isValidYouTubeUrl(urlInput)) return null;
+    if (!(urlInput && isValidYouTubeUrl(urlInput))) return null;
     return extractVideoId(urlInput) || urlInput;
   }, [urlInput, isValidYouTubeUrl]);
 
@@ -69,10 +69,12 @@ const VideoPicker: React.FC = () => {
   }, [currentInputVideoId, videos]);
 
   const { mutate: addVideo, isPending: isAddingVideo } = useMutation({
-    mutationFn: (videoId: string) =>
-      apiClient.focus.addVideo.mutate({ videoId }),
+    mutationFn: (targetVideoId: string) =>
+      apiClient.focus.addVideo.mutate({ videoId: targetVideoId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: api.focus.listVideos.queryKey() });
+      queryClient.invalidateQueries({
+        queryKey: api.focus.listVideos.queryKey(),
+      });
     },
   });
 
