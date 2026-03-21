@@ -32,6 +32,9 @@
       "suspicious": {
         "noConsole": "warn",
         "noArrayIndexKey": "off"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "warn"
       }
     }
   }
