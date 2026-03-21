@@ -2,13 +2,18 @@ import { Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { sidebarMenuButtonVariants, useSidebar } from '../ui/sidebar';
 
-const OpenInCoolify: React.FC = () => {
+export type OpenInCoolifyProps = {
+  /** Coolify project URL from server env `COOLIFY_PROJECT_URL` (passed from layout). */
+  projectUrl: string;
+};
+
+const OpenInCoolify: React.FC<OpenInCoolifyProps> = ({ projectUrl }) => {
   const { open } = useSidebar();
 
   return (
     <a
       className={sidebarMenuButtonVariants({ className: 'px-3' })}
-      href={process.env.COOLIFY_PROJECT_URL ?? ''}
+      href={projectUrl}
       rel="noopener noreferrer"
       target="_blank"
     >

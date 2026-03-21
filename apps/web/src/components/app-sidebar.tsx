@@ -76,7 +76,14 @@ const settingsLinks = [
   { href: '/settings#integrations', label: 'Integrations', icon: LinkIcon },
 ];
 
-export default function AppSidebar() {
+type AppSidebarProps = {
+  /** From `COOLIFY_PROJECT_URL` in server layout; not available via `process.env` in client code. */
+  coolifyProjectUrl?: string;
+};
+
+export default function AppSidebar({
+  coolifyProjectUrl = '',
+}: AppSidebarProps) {
   const pathname = usePathname();
   const { open } = useSidebar();
   const [settingsOpen, setSettingsOpen] = useState(pathname === '/settings');
@@ -257,7 +264,7 @@ export default function AppSidebar() {
           </SidebarMenuItem>
           {isAdmin && (
             <SidebarMenuItem>
-              <OpenInCoolify />
+              <OpenInCoolify projectUrl={coolifyProjectUrl} />
             </SidebarMenuItem>
           )}
           <SidebarMenuItem>

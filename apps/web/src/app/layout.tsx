@@ -43,6 +43,7 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
+  const coolifyProjectUrl = process.env.COOLIFY_PROJECT_URL ?? '';
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -69,7 +70,7 @@ export default async function RootLayout({
         <Providers>
           <SidebarProvider defaultOpen={defaultOpen}>
             <div className="flex min-h-svh w-full">
-              <AppSidebar />
+              <AppSidebar coolifyProjectUrl={coolifyProjectUrl} />
               <SidebarInset>
                 <AppHeader />
                 {children}
