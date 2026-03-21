@@ -1,7 +1,6 @@
-import { Slottable } from '@radix-ui/react-slot';
+import { Slot, Slottable } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Loader2 } from 'lucide-react';
-import { Slot as SlotPrimitive } from 'radix-ui';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -58,7 +57,7 @@ function Button({
     ref?: React.RefObject<HTMLButtonElement>;
     icon?: React.ReactNode;
   }) {
-  const Comp = asChild ? SlotPrimitive.Slot : 'button';
+  const Comp = asChild ? Slot : 'button';
 
   return (
     <Comp
