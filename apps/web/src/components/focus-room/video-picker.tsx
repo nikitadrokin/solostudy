@@ -200,7 +200,7 @@ const VideoPicker: React.FC = () => {
                 isAddingVideo
               }
               onClick={handleAddToFocusRoom}
-              size="default"
+              size="sm"
               variant="secondary"
             >
               {isAddingVideo
