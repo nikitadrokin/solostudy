@@ -19,7 +19,7 @@ import { extractVideoId } from './youtube-player';
 const VIDEO_TAGS = [
   'All',
   'Lofi',
-  'Nature',
+  'Christmas',
   'City',
   'Cafe',
   'Library',
