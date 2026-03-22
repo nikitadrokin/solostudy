@@ -23,7 +23,7 @@ export const todo = pgTable('todo', {
 /** Allowed values for `focus_room_video.tag` (matches focus room video picker filters). */
 export type FocusRoomVideoTag =
   | 'Lofi'
-  | 'Nature'
+  | 'Christmas'
   | 'City'
   | 'Cafe'
   | 'Library';
