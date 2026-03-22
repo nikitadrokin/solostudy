@@ -21,6 +21,7 @@ export const focusRouter = router({
       return videos.map((video) => ({
         id: video.id,
         title: video.title,
+        tag: video.tag,
       }));
     } catch (error) {
       throw new TRPCError({
@@ -71,9 +72,10 @@ export const focusRouter = router({
       await db.insert(focusRoomVideo).values({
         id: input.videoId,
         title,
+        tag: 'Lofi',
       });
 
-      return { id: input.videoId, title };
+      return { id: input.videoId, title, tag: 'Lofi' as const };
     }),
 
   saveFocusSession: protectedProcedure

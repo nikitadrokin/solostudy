@@ -26,9 +26,6 @@ const VIDEO_TAGS = [
 ] as const;
 type VideoTag = (typeof VIDEO_TAGS)[number];
 
-// Temporary client-side tag mapping until tags column is added to DB
-const VIDEO_TAG_MAP: Record<string, VideoTag[]> = {};
-
 const VideoPicker: React.FC = () => {
   const { handleVideoIdChange, handleLoadVideo } = useVideoStore();
   const { videoId } = useFocusStore();
@@ -101,10 +98,7 @@ const VideoPicker: React.FC = () => {
 
   const filteredVideos = useMemo(() => {
     if (activeTag === 'All') return videos;
-    return videos.filter((v) => {
-      const tags = VIDEO_TAG_MAP[v.id];
-      return tags?.includes(activeTag);
-    });
+    return videos.filter((v) => v.tag === activeTag);
   }, [videos, activeTag]);
 
   const handleVideoSelect = (id: string) => {

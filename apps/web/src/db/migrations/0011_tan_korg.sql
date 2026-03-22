@@ -1,0 +1,1 @@
+ALTER TABLE "focus_room_video" ADD COLUMN "tag" text DEFAULT 'Lofi' NOT NULL;

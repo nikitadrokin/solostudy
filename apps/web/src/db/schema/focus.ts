@@ -20,9 +20,18 @@ export const todo = pgTable('todo', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
+/** Allowed values for `focus_room_video.tag` (matches focus room video picker filters). */
+export type FocusRoomVideoTag =
+  | 'Lofi'
+  | 'Nature'
+  | 'City'
+  | 'Cafe'
+  | 'Library';
+
 export const focusRoomVideo = pgTable('focus_room_video', {
   id: text('id').primaryKey(),
   title: text('title').notNull(),
+  tag: text('tag').notNull().default('Lofi').$type<FocusRoomVideoTag>(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
