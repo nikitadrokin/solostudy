@@ -70,7 +70,11 @@ export default function FocusRoomVideosAdmin() {
     },
   });
 
-  const { mutate: updateVideo, isPending: isUpdating } = useMutation({
+  const {
+    mutate: updateVideo,
+    isPending: isUpdating,
+    variables: updateVariables,
+  } = useMutation({
     mutationFn: (input: {
       id: string;
       title?: string;
@@ -164,11 +168,12 @@ export default function FocusRoomVideosAdmin() {
             value={addUrl}
           />
           <Button
-            disabled={!currentInputVideoId || isAdding}
+            disabled={!currentInputVideoId}
+            isLoading={isAdding}
             onClick={handleAdd}
             type="button"
           >
-            {isAdding ? 'Adding…' : 'Add video'}
+            Add video
           </Button>
         </div>
       </div>
@@ -276,6 +281,9 @@ export default function FocusRoomVideosAdmin() {
                         <div className="flex justify-end gap-2">
                           <Button
                             disabled={!dirty || isUpdating}
+                            isLoading={
+                              isUpdating && updateVariables?.id === video.id
+                            }
                             onClick={() =>
                               handleSaveRow(
                                 video.id,
@@ -331,7 +339,8 @@ export default function FocusRoomVideosAdmin() {
               Cancel
             </Button>
             <Button
-              disabled={!pendingDeleteId || isDeleting}
+              disabled={!pendingDeleteId}
+              isLoading={isDeleting}
               onClick={() => {
                 if (pendingDeleteId) {
                   deleteVideo(pendingDeleteId);
@@ -340,7 +349,7 @@ export default function FocusRoomVideosAdmin() {
               type="button"
               variant="destructive"
             >
-              {isDeleting ? 'Removing…' : 'Remove'}
+              Remove
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
