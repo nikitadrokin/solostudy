@@ -18,8 +18,10 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export const metadata: Metadata = {
-  title: 'solostudy',
+  title: `SoloStudy ${isDev && ' | dev'}`,
   description: 'solostudy',
   icons: {
     icon: '/pwa-192x192.png',
