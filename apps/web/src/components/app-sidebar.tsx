@@ -151,7 +151,7 @@ export default function AppSidebar({
                 >
                   <Link href={'/admin/focus-room-videos' as Route}>
                     <Clapperboard />
-                    <span>Focus videos (admin)</span>
+                    <span>Focus videos</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
