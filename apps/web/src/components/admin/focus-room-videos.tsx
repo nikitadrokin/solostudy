@@ -3,15 +3,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { extractVideoId } from '@/components/focus-room/youtube-player';
-import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -306,7 +306,7 @@ export default function FocusRoomVideosAdmin() {
         </Table>
       </div>
 
-      <Dialog
+      <AlertDialog
         onOpenChange={(open) => {
           if (!open) {
             setPendingDeleteId(null);
@@ -314,15 +314,15 @@ export default function FocusRoomVideosAdmin() {
         }}
         open={pendingDeleteId !== null}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Remove video</DialogTitle>
-            <DialogDescription>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove video</AlertDialogTitle>
+            <AlertDialogDescription>
               Remove “{deleteTargetTitle}” from the focus room catalog? This
               cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
             <Button
               onClick={() => setPendingDeleteId(null)}
               type="button"
@@ -342,9 +342,9 @@ export default function FocusRoomVideosAdmin() {
             >
               {isDeleting ? 'Removing…' : 'Remove'}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
