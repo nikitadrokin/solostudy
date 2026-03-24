@@ -2,6 +2,7 @@
 
 import {
   ChevronRight,
+  Clapperboard,
   Focus,
   Laptop,
   LayoutDashboard,
@@ -38,7 +39,7 @@ import {
 } from '@/components/ui/sidebar';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import OpenInCoolify from './admin-server-side/open-in-coolify';
+import OpenInCoolify from './admin/open-in-coolify';
 import { ModeToggle } from './theme-toggle/dropdown';
 import { ThemeToggle } from './theme-toggle/inline';
 import UserMenu from './user-menu';
@@ -141,6 +142,20 @@ export default function AppSidebar({
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
+            {isAdmin ? (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/admin/focus-room-videos'}
+                  tooltip="Focus videos"
+                >
+                  <Link href={'/admin/focus-room-videos' as Route}>
+                    <Clapperboard />
+                    <span>Focus videos (admin)</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ) : null}
 
             <Collapsible
               asChild

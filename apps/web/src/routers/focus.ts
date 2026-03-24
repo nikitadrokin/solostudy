@@ -2,13 +2,25 @@ import { TRPCError } from '@trpc/server';
 import { and, desc, eq, gte, sql, sum } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
-import { focusRoomVideo, focusSession } from '../db/schema/focus';
+import {
+  type FocusRoomVideoTag,
+  focusRoomVideo,
+  focusSession,
+} from '../db/schema/focus';
 import {
   adminProcedure,
   protectedProcedure,
   publicProcedure,
   router,
 } from '../lib/trpc';
+
+const focusRoomVideoTagSchema = z.enum([
+  'Lofi',
+  'Christmas',
+  'City',
+  'Cafe',
+  'Library',
+]) satisfies z.ZodType<FocusRoomVideoTag>;
 
 export const focusRouter = router({
   listVideos: publicProcedure.query(async () => {
@@ -76,6 +88,108 @@ export const focusRouter = router({
       });
 
       return { id: input.videoId, title, tag: 'Lofi' as const };
+    }),
+
+  listVideosAdmin: adminProcedure.query(async () => {
+    try {
+      const videos = await db
+        .select()
+        .from(focusRoomVideo)
+        .orderBy(desc(focusRoomVideo.createdAt));
+
+      return videos.map((video) => ({
+        id: video.id,
+        title: video.title,
+        tag: video.tag,
+        createdAt: video.createdAt,
+        updatedAt: video.updatedAt,
+        thumbnailUrl: `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`,
+      }));
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to fetch focus room videos: ${error instanceof Error ? error.message : String(error)}`,
+        cause: error,
+      });
+    }
+  }),
+
+  updateVideo: adminProcedure
+    .input(
+      z
+        .object({
+          id: z.string().min(1),
+          title: z.string().min(1).optional(),
+          tag: focusRoomVideoTagSchema.optional(),
+        })
+        .refine((data) => data.title !== undefined || data.tag !== undefined, {
+          message: 'Provide at least one of title or tag to update',
+        })
+    )
+    .mutation(async ({ input }) => {
+      const { id, title, tag } = input;
+
+      const existing = await db
+        .select({ id: focusRoomVideo.id })
+        .from(focusRoomVideo)
+        .where(eq(focusRoomVideo.id, id))
+        .limit(1);
+
+      if (existing.length === 0) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Focus room video not found',
+        });
+      }
+
+      await db
+        .update(focusRoomVideo)
+        .set({
+          ...(title !== undefined ? { title } : {}),
+          ...(tag !== undefined ? { tag } : {}),
+          updatedAt: new Date(),
+        })
+        .where(eq(focusRoomVideo.id, id));
+
+      const [row] = await db
+        .select()
+        .from(focusRoomVideo)
+        .where(eq(focusRoomVideo.id, id))
+        .limit(1);
+
+      if (!row) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to load updated focus room video',
+        });
+      }
+
+      return {
+        id: row.id,
+        title: row.title,
+        tag: row.tag,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+        thumbnailUrl: `https://i.ytimg.com/vi/${row.id}/hqdefault.jpg`,
+      };
+    }),
+
+  deleteVideo: adminProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      const deleted = await db
+        .delete(focusRoomVideo)
+        .where(eq(focusRoomVideo.id, input.id))
+        .returning({ id: focusRoomVideo.id });
+
+      if (deleted.length === 0) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Focus room video not found',
+        });
+      }
+
+      return { id: input.id };
     }),
 
   saveFocusSession: protectedProcedure

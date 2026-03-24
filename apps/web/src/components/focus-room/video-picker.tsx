@@ -181,7 +181,7 @@ const VideoPicker: React.FC = () => {
             id="video-picker-url"
             onChange={(e) => setUrlInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="https://youtube.com/watch?v=..."
+            placeholder="https://youtube.com/watch?v=dQw4w9WgXcQ"
             type="url"
             value={urlInput}
           />
