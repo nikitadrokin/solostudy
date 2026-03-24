@@ -6,10 +6,18 @@ import 'dotenv/config';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
-import type { FocusRoomVideoTag } from '../src/db/schema/focus';
 import { focusRoomVideo } from '../src/db/schema/focus';
 
-const TAG_BY_VIDEO_ID: Record<string, FocusRoomVideoTag> = {
+/** Legacy display labels before `focus_room_tag.slug` migration. */
+const LEGACY_LABEL_TO_SLUG: Record<string, string> = {
+  Lofi: 'lofi',
+  Christmas: 'christmas',
+  City: 'city',
+  Cafe: 'cafe',
+  Library: 'library',
+};
+
+const TAG_BY_VIDEO_ID: Record<string, keyof typeof LEGACY_LABEL_TO_SLUG> = {
   ZcZuCcfZfiU: 'Lofi',
   FI3tZiciiKU: 'Lofi',
   KR6vNdeIFaU: 'City',
@@ -117,10 +125,13 @@ async function main() {
 
   const now = new Date();
   await Promise.all(
-    Object.entries(TAG_BY_VIDEO_ID).map(([id, tag]) =>
+    Object.entries(TAG_BY_VIDEO_ID).map(([id, label]) =>
       db
         .update(focusRoomVideo)
-        .set({ tag, updatedAt: now })
+        .set({
+          tag: LEGACY_LABEL_TO_SLUG[label],
+          updatedAt: now,
+        })
         .where(eq(focusRoomVideo.id, id))
     )
   );

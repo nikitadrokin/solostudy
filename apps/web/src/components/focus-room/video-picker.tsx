@@ -16,15 +16,7 @@ import { Label } from '../ui/label';
 import { Skeleton } from '../ui/skeleton';
 import { extractVideoId } from './youtube-player';
 
-const VIDEO_TAGS = [
-  'All',
-  'Lofi',
-  'Christmas',
-  'City',
-  'Cafe',
-  'Library',
-] as const;
-type VideoTag = (typeof VIDEO_TAGS)[number];
+const ALL_TAGS = 'all' as const;
 
 const VideoPicker: React.FC = () => {
   const { handleVideoIdChange, handleLoadVideo } = useVideoStore();
@@ -36,11 +28,14 @@ const VideoPicker: React.FC = () => {
   const { data: videos = [], isLoading } = useQuery(
     api.focus.listVideos.queryOptions()
   );
+  const { data: focusTags = [] } = useQuery(
+    api.focus.listFocusTags.queryOptions()
+  );
 
   const [urlInput, setUrlInput] = useState(
     `https://www.youtube.com/watch?v=${videoId}`
   );
-  const [activeTag, setActiveTag] = useState<VideoTag>('All');
+  const [activeTag, setActiveTag] = useState<string>(ALL_TAGS);
 
   const handleUrlSubmit = useCallback(() => {
     // Extract video ID from URL if needed, otherwise use as-is (already an ID)
@@ -67,6 +62,15 @@ const VideoPicker: React.FC = () => {
       setUrlInput(`https://www.youtube.com/watch?v=${videoId}`);
     }
   }, [videoId]);
+
+  useEffect(() => {
+    if (
+      activeTag !== ALL_TAGS &&
+      !focusTags.some((t) => t.slug === activeTag)
+    ) {
+      setActiveTag(ALL_TAGS);
+    }
+  }, [activeTag, focusTags]);
 
   // Derive the current video ID from the URL input
   const currentInputVideoId = useMemo(() => {
@@ -97,9 +101,18 @@ const VideoPicker: React.FC = () => {
   }, [currentInputVideoId, videoExistsInFocusRoom, addVideo]);
 
   const filteredVideos = useMemo(() => {
-    if (activeTag === 'All') return videos;
+    if (activeTag === ALL_TAGS) {
+      return videos;
+    }
     return videos.filter((v) => v.tag === activeTag);
   }, [videos, activeTag]);
+
+  const filterChips = useMemo(() => {
+    return [
+      { key: ALL_TAGS, label: 'All' },
+      ...focusTags.map((t) => ({ key: t.slug, label: t.label })),
+    ];
+  }, [focusTags]);
 
   const handleVideoSelect = (id: string) => {
     handleVideoIdChange(id);
@@ -153,19 +166,19 @@ const VideoPicker: React.FC = () => {
         )}
       >
         <div className="flex gap-1 overflow-x-auto [scrollbar-width:none]">
-          {VIDEO_TAGS.map((tag) => (
+          {filterChips.map((chip) => (
             <Badge
               className={cn(
                 'shrink-0 cursor-pointer select-none rounded-full px-2.5 py-0.5 text-xs transition-colors',
-                activeTag === tag
+                activeTag === chip.key
                   ? 'bg-foreground text-background hover:bg-foreground/90'
                   : 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
-              key={tag}
-              onClick={() => setActiveTag(tag)}
+              key={chip.key}
+              onClick={() => setActiveTag(chip.key)}
               variant="outline"
             >
-              {tag}
+              {chip.label}
             </Badge>
           ))}
         </div>
@@ -180,7 +193,7 @@ const VideoPicker: React.FC = () => {
             )}
             id="video-picker-url"
             onChange={(e) => setUrlInput(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder="https://youtube.com/watch?v=dQw4w9WgXcQ"
             type="url"
             value={urlInput}

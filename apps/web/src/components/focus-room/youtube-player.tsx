@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { readFocusYouTubeResume } from '@/lib/focus-youtube-resume';
 import { cn } from '@/lib/utils';
+import { PLAYER_STATES } from '@/stores/youtube-store';
 
 interface YouTubePlayerProps {
   videoId: string;
@@ -40,7 +42,7 @@ interface YTPlayer {
   unMute(): void;
   destroy(): void;
   getCurrentTime(): number;
-  seekTo(seconds: number): void;
+  seekTo(seconds: number, allowSeekAhead?: boolean): void;
   getPlayerState(): number;
 }
 
@@ -177,6 +179,13 @@ export default function YouTubePlayer({
   const [isReady, setIsReady] = useState(false);
   const [apiLoaded, setApiLoaded] = useState(false);
 
+  /** Embed `start` must stay fixed for this iframe instance; otherwise clearing React state rewrites `src` and restarts from 0. */
+  const embedStartLockRef = useRef<{
+    reloadKey: number;
+    videoId: string;
+    startSeconds?: number;
+  }>({ reloadKey: -1, videoId: '' });
+
   // Load YouTube API on mount
   useEffect(() => {
     loadYouTubeAPI().then(() => {
@@ -213,7 +222,7 @@ export default function YouTubePlayer({
       }
 
       try {
-        const ytPlayer = new ytAPI.Player(iframe, {
+        new ytAPI.Player(iframe, {
           events: {
             onReady: (event: YTPlayerEvent) => {
               const playerInstance = event.target;
@@ -226,14 +235,9 @@ export default function YouTubePlayer({
               onReady?.({ target: playerInstance });
             },
             onStateChange: (event: YTOnStateChangeEvent) => {
-              const ytPlayerState = window.CustomYT?.PlayerState;
-              if (!ytPlayerState) {
-                return;
-              }
-
-              if (event.data === ytPlayerState.PLAYING) {
+              if (event.data === PLAYER_STATES.PLAYING) {
                 onPlay?.();
-              } else if (event.data === ytPlayerState.PAUSED) {
+              } else if (event.data === PLAYER_STATES.PAUSED) {
                 onPause?.();
               }
             },
@@ -242,7 +246,6 @@ export default function YouTubePlayer({
             },
           },
         });
-        setPlayer(ytPlayer);
       } catch {
         // Error handling without console
       }
@@ -290,7 +293,27 @@ export default function YouTubePlayer({
     );
   }
 
-  const embedUrl = normalizeYouTubeUrl(videoId, startTime);
+  if (
+    embedStartLockRef.current.videoId !== videoId ||
+    embedStartLockRef.current.reloadKey !== reloadKey
+  ) {
+    const fromProps =
+      startTime !== undefined && startTime > 0
+        ? Math.floor(startTime)
+        : undefined;
+    const fromSession =
+      fromProps === undefined ? readFocusYouTubeResume(videoId) : undefined;
+    embedStartLockRef.current = {
+      videoId,
+      reloadKey,
+      startSeconds: fromProps ?? fromSession,
+    };
+  }
+
+  const embedUrl = normalizeYouTubeUrl(
+    videoId,
+    embedStartLockRef.current.startSeconds
+  );
 
   return (
     <iframe

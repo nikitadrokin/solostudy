@@ -2,6 +2,8 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
+import { FocusRoomTagCatalog } from '@/components/admin/focus-room-tag-catalog';
+import { FocusRoomTagCombobox } from '@/components/admin/focus-room-tag-combobox';
 import { extractVideoId } from '@/components/focus-room/youtube-player';
 import {
   AlertDialog,
@@ -22,18 +24,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { FocusRoomVideoTag } from '@/db/schema/focus';
 import { YOUTUBE_VALIDATION_PATTERNS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { api, apiClient } from '@/utils/trpc';
-
-const TAG_OPTIONS: FocusRoomVideoTag[] = [
-  'Lofi',
-  'Christmas',
-  'City',
-  'Cafe',
-  'Library',
-];
 
 function isValidYouTubeInput(value: string): boolean {
   return YOUTUBE_VALIDATION_PATTERNS.some((pattern) => pattern.test(value));
@@ -45,10 +38,13 @@ export default function FocusRoomVideosAdmin() {
   const { data: videos = [], isLoading } = useQuery(
     api.focus.listVideosAdmin.queryOptions()
   );
+  const { data: tagOptions = [] } = useQuery(
+    api.focus.listFocusTags.queryOptions()
+  );
 
   const [addUrl, setAddUrl] = useState('');
   const [edits, setEdits] = useState<
-    Record<string, { title: string; tag: FocusRoomVideoTag }>
+    Record<string, { title: string; tag: string }>
   >({});
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
@@ -58,6 +54,9 @@ export default function FocusRoomVideosAdmin() {
     });
     queryClient.invalidateQueries({
       queryKey: api.focus.listVideos.queryKey(),
+    });
+    queryClient.invalidateQueries({
+      queryKey: api.focus.listFocusTags.queryKey(),
     });
   }, [queryClient]);
 
@@ -75,11 +74,8 @@ export default function FocusRoomVideosAdmin() {
     isPending: isUpdating,
     variables: updateVariables,
   } = useMutation({
-    mutationFn: (input: {
-      id: string;
-      title?: string;
-      tag?: FocusRoomVideoTag;
-    }) => apiClient.focus.updateVideo.mutate(input),
+    mutationFn: (input: { id: string; title?: string; tag?: string }) =>
+      apiClient.focus.updateVideo.mutate(input),
     onSuccess: () => {
       invalidateLists();
     },
@@ -108,14 +104,14 @@ export default function FocusRoomVideosAdmin() {
   }, [addVideo, currentInputVideoId]);
 
   const handleSaveRow = useCallback(
-    (id: string, baselineTitle: string, baselineTag: FocusRoomVideoTag) => {
+    (id: string, baselineTitle: string, baselineTag: string) => {
       const draft = edits[id];
       const title = draft?.title ?? baselineTitle;
       const tag = draft?.tag ?? baselineTag;
       const payload: {
         id: string;
         title?: string;
-        tag?: FocusRoomVideoTag;
+        tag?: string;
       } = { id };
       if (title !== baselineTitle) {
         payload.title = title;
@@ -145,6 +141,8 @@ export default function FocusRoomVideosAdmin() {
 
   return (
     <div className="space-y-6">
+      <FocusRoomTagCatalog />
+
       <div className="space-y-2 rounded-xl border p-4">
         <Label htmlFor="admin-add-focus-video">Add YouTube URL</Label>
         <div className="flex flex-wrap gap-2">
@@ -222,7 +220,7 @@ export default function FocusRoomVideosAdmin() {
                           {/** biome-ignore lint/performance/noImgElement: saving on vercel bandwidth */}
                           <img
                             alt={`YouTube thumbnail for ${video.title}`}
-                            className="object-cover"
+                            className="h-full w-full object-cover"
                             sizes="120px"
                             src={video.thumbnailUrl}
                           />
@@ -247,29 +245,18 @@ export default function FocusRoomVideosAdmin() {
                         />
                       </TableCell>
                       <TableCell>
-                        <select
-                          aria-label={`Tag for ${video.id}`}
-                          className={cn(
-                            'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs',
-                            'focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
-                          )}
-                          onChange={(e) =>
+                        <FocusRoomTagCombobox
+                          aria-label={`Tag for video ${video.id}`}
+                          id={`admin-video-tag-${video.id}`}
+                          onValueChange={(slug) =>
                             setEdits((prev) => ({
                               ...prev,
-                              [video.id]: {
-                                title,
-                                tag: e.target.value as FocusRoomVideoTag,
-                              },
+                              [video.id]: { title, tag: slug },
                             }))
                           }
+                          tags={tagOptions}
                           value={tag}
-                        >
-                          {TAG_OPTIONS.map((opt) => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
+                        />
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs">
                         {video.createdAt.toLocaleString()}

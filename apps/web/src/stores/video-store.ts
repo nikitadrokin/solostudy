@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { writeFocusYouTubeResume } from '@/lib/focus-youtube-resume';
 import { useFocusStore } from './focus-store';
 
 // YouTube player type
@@ -10,7 +11,7 @@ interface YTPlayer {
   unMute(): void;
   destroy(): void;
   getCurrentTime(): number;
-  seekTo(seconds: number): void;
+  seekTo(seconds: number, allowSeekAhead?: boolean): void;
   getPlayerState(): number;
 }
 
@@ -49,7 +50,10 @@ interface VideoActions {
   restoreTimestamp: () => void;
 
   // Reload management
-  triggerReload: () => void;
+  triggerReload: (options?: { savePosition?: boolean }) => void;
+
+  /** Persist current time for full page reload (sessionStorage). */
+  flushResumeToSession: (videoId: string) => void;
 
   // Persistence
   setOnVideoIdChangePersist: (
@@ -109,7 +113,7 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     const { player, savedTimestamp } = get();
     if (player && savedTimestamp !== null) {
       try {
-        player.seekTo(savedTimestamp);
+        player.seekTo(savedTimestamp, true);
         set({ savedTimestamp: null }); // Clear after use
       } catch {
         // Failed to seek, clear the saved timestamp
@@ -118,12 +122,27 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     }
   },
 
+  flushResumeToSession: (videoId: string) => {
+    const { player, isVideoLoaded } = get();
+    if (!(player && isVideoLoaded)) {
+      return;
+    }
+    try {
+      const currentTime = player.getCurrentTime();
+      if (currentTime > 0) {
+        writeFocusYouTubeResume(videoId, currentTime);
+      }
+    } catch {
+      // Ignore
+    }
+  },
+
   // Reload management
-  triggerReload: () => {
+  triggerReload: (options) => {
+    const savePosition = options?.savePosition ?? true;
     const { player } = get();
 
-    // Save current timestamp before reloading
-    if (player) {
+    if (savePosition && player) {
       try {
         const currentTime = player.getCurrentTime();
         set({ savedTimestamp: currentTime });
@@ -149,10 +168,9 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
       videoError: undefined,
     });
 
-    // Restore timestamp if we have one saved (from reconnection)
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       get().restoreTimestamp();
-    }, 500); // Small delay to ensure player is fully ready
+    });
   },
 
   handlePlay: () => {
@@ -186,14 +204,15 @@ export const useVideoStore = create<VideoStore>()((set, get) => ({
     set({
       isVideoLoaded: false,
       videoError: undefined,
+      savedTimestamp: null,
     });
     // Call persistence callback if set
     const { onVideoIdChangePersist } = get();
     if (onVideoIdChangePersist) {
       onVideoIdChangePersist(newId);
     }
-    // Trigger reload to sync player with new video
-    get().triggerReload();
+    // Trigger reload to sync player with new video (do not carry seek position)
+    get().triggerReload({ savePosition: false });
   },
 
   handleLoadVideo: () => {

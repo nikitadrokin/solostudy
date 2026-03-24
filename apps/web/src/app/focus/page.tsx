@@ -22,6 +22,7 @@ export default function FocusRoom() {
     reloadKey,
     savedTimestamp,
     setOnVideoIdChangePersist,
+    flushResumeToSession,
   } = useVideoStore();
 
   const [persistedVideoId, setPersistedVideoId] = useState<string | null>(null);
@@ -77,6 +78,27 @@ export default function FocusRoom() {
   const currentVideoId = session
     ? persistedVideoId || DEFAULT_VIDEO_ID
     : zustandVideoId || DEFAULT_VIDEO_ID;
+
+  useEffect(() => {
+    const flush = () => {
+      flushResumeToSession(currentVideoId);
+    };
+
+    window.addEventListener('pagehide', flush);
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        flush();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    const intervalId = window.setInterval(flush, 15_000);
+
+    return () => {
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.clearInterval(intervalId);
+    };
+  }, [currentVideoId, flushResumeToSession]);
 
   if (isLoadingVideo || isLoadingLastPlayedVideo) {
     return (

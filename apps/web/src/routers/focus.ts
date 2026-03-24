@@ -1,12 +1,20 @@
 import { TRPCError } from '@trpc/server';
-import { and, desc, eq, gte, sql, sum } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gte,
+  like,
+  or,
+  sql,
+  sum,
+} from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
-import {
-  type FocusRoomVideoTag,
-  focusRoomVideo,
-  focusSession,
-} from '../db/schema/focus';
+import { focusRoomTag, focusRoomVideo, focusSession } from '../db/schema/focus';
+import { slugifyFocusRoomTagLabel } from '../lib/focus-room-tag';
 import {
   adminProcedure,
   protectedProcedure,
@@ -14,15 +22,132 @@ import {
   router,
 } from '../lib/trpc';
 
-const focusRoomVideoTagSchema = z.enum([
-  'Lofi',
-  'Christmas',
-  'City',
-  'Cafe',
-  'Library',
-]) satisfies z.ZodType<FocusRoomVideoTag>;
+async function assertFocusTagSlug(slug: string): Promise<void> {
+  const row = await db
+    .select({ slug: focusRoomTag.slug })
+    .from(focusRoomTag)
+    .where(eq(focusRoomTag.slug, slug))
+    .limit(1);
+  if (row.length === 0) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'Unknown focus room tag',
+    });
+  }
+}
+
+async function nextFocusTagSortOrder(): Promise<number> {
+  const [row] = await db
+    .select({ max: sql<number>`coalesce(max(${focusRoomTag.sortOrder}), -1)` })
+    .from(focusRoomTag);
+  return Number(row?.max ?? -1) + 1;
+}
+
+async function uniqueFocusTagSlug(base: string): Promise<string> {
+  const rows = await db
+    .select({ slug: focusRoomTag.slug })
+    .from(focusRoomTag)
+    .where(
+      or(eq(focusRoomTag.slug, base), like(focusRoomTag.slug, `${base}-%`))
+    );
+  const taken = new Set(rows.map((r) => r.slug));
+  if (!taken.has(base)) {
+    return base;
+  }
+  let suffix = 2;
+  while (taken.has(`${base}-${suffix}`)) {
+    suffix += 1;
+  }
+  return `${base}-${suffix}`;
+}
 
 export const focusRouter = router({
+  listFocusTags: publicProcedure.query(async () => {
+    const rows = await db
+      .select()
+      .from(focusRoomTag)
+      .orderBy(asc(focusRoomTag.sortOrder), asc(focusRoomTag.label));
+    return rows.map((r) => ({
+      slug: r.slug,
+      label: r.label,
+      sortOrder: r.sortOrder,
+    }));
+  }),
+
+  createFocusTag: adminProcedure
+    .input(
+      z.object({
+        label: z.string().min(1).max(80),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const base = slugifyFocusRoomTagLabel(input.label);
+      const slug = await uniqueFocusTagSlug(base);
+      const sortOrder = await nextFocusTagSortOrder();
+      const now = new Date();
+      await db.insert(focusRoomTag).values({
+        slug,
+        label: input.label.trim(),
+        sortOrder,
+        createdAt: now,
+        updatedAt: now,
+      });
+      return { slug, label: input.label.trim(), sortOrder };
+    }),
+
+  updateFocusTag: adminProcedure
+    .input(
+      z.object({
+        slug: z.string().min(1),
+        label: z.string().min(1).max(80),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const existing = await db
+        .select({ slug: focusRoomTag.slug })
+        .from(focusRoomTag)
+        .where(eq(focusRoomTag.slug, input.slug))
+        .limit(1);
+      if (existing.length === 0) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Focus room tag not found',
+        });
+      }
+      await db
+        .update(focusRoomTag)
+        .set({ label: input.label.trim(), updatedAt: new Date() })
+        .where(eq(focusRoomTag.slug, input.slug));
+      return { slug: input.slug, label: input.label.trim() };
+    }),
+
+  deleteFocusTag: adminProcedure
+    .input(z.object({ slug: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      const usage = await db
+        .select({ n: count() })
+        .from(focusRoomVideo)
+        .where(eq(focusRoomVideo.tag, input.slug));
+      const usedBy = Number(usage[0]?.n ?? 0);
+      if (usedBy > 0) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: `Cannot delete tag: ${usedBy} video(s) still use it`,
+        });
+      }
+      const deleted = await db
+        .delete(focusRoomTag)
+        .where(eq(focusRoomTag.slug, input.slug))
+        .returning({ slug: focusRoomTag.slug });
+      if (deleted.length === 0) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Focus room tag not found',
+        });
+      }
+      return { slug: input.slug };
+    }),
+
   listVideos: publicProcedure.query(async () => {
     try {
       const videos = await db
@@ -81,13 +206,20 @@ export const focusRouter = router({
         // Fall back to using videoId as title
       }
 
+      const [defaultTag] = await db
+        .select({ slug: focusRoomTag.slug })
+        .from(focusRoomTag)
+        .orderBy(asc(focusRoomTag.sortOrder), asc(focusRoomTag.slug))
+        .limit(1);
+      const defaultSlug = defaultTag?.slug ?? 'lofi';
+
       await db.insert(focusRoomVideo).values({
         id: input.videoId,
         title,
-        tag: 'Lofi',
+        tag: defaultSlug,
       });
 
-      return { id: input.videoId, title, tag: 'Lofi' as const };
+      return { id: input.videoId, title, tag: defaultSlug };
     }),
 
   listVideosAdmin: adminProcedure.query(async () => {
@@ -120,7 +252,7 @@ export const focusRouter = router({
         .object({
           id: z.string().min(1),
           title: z.string().min(1).optional(),
-          tag: focusRoomVideoTagSchema.optional(),
+          tag: z.string().min(1).optional(),
         })
         .refine((data) => data.title !== undefined || data.tag !== undefined, {
           message: 'Provide at least one of title or tag to update',
@@ -128,6 +260,10 @@ export const focusRouter = router({
     )
     .mutation(async ({ input }) => {
       const { id, title, tag } = input;
+
+      if (tag !== undefined) {
+        await assertFocusTagSlug(tag);
+      }
 
       const existing = await db
         .select({ id: focusRoomVideo.id })
