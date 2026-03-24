@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 const isDev = process.env.NODE_ENV === 'development';
 
 export const metadata: Metadata = {
-  title: `SoloStudy ${isDev && ' | dev'}`,
+  title: `SoloStudy ${isDev ? ' | dev' : ''}`,
   description: 'solostudy',
   icons: {
     icon: '/pwa-192x192.png',
