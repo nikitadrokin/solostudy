@@ -159,7 +159,7 @@ export default function FocusRoomVideosAdmin() {
                 handleAdd();
               }
             }}
-            placeholder="https://www.youtube.com/watch?v=…"
+            placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             type="url"
             value={addUrl}
           />
