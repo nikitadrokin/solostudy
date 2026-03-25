@@ -6,113 +6,157 @@ import 'dotenv/config';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
-import { focusRoomVideo } from '../src/db/schema/focus';
+import { focusRoomTag, focusRoomVideo } from '../src/db/schema/focus';
 
-/** Legacy display labels before `focus_room_tag.slug` migration. */
-const LEGACY_LABEL_TO_SLUG: Record<string, string> = {
-  Lofi: 'lofi',
-  Christmas: 'christmas',
-  City: 'city',
-  Cafe: 'cafe',
-  Library: 'library',
+type FocusTagSlug =
+  | 'lofi'
+  | 'christmas'
+  | 'city'
+  | 'cafe'
+  | 'library'
+  | 'dark-academia'
+  | 'nature'
+  | 'rainy'
+  | 'fireplace';
+
+const REQUIRED_TAGS: Array<{ slug: FocusTagSlug; label: string; sortOrder: number }> = [
+  { slug: 'lofi', label: 'Lofi', sortOrder: 0 },
+  { slug: 'christmas', label: 'Christmas', sortOrder: 1 },
+  { slug: 'city', label: 'City', sortOrder: 2 },
+  { slug: 'cafe', label: 'Cafe', sortOrder: 3 },
+  { slug: 'library', label: 'Library', sortOrder: 4 },
+  { slug: 'dark-academia', label: 'Dark Academia', sortOrder: 5 },
+  { slug: 'nature', label: 'Nature', sortOrder: 6 },
+  { slug: 'rainy', label: 'Rainy', sortOrder: 7 },
+  { slug: 'fireplace', label: 'Fireplace', sortOrder: 8 },
+];
+
+const RAINY_KEYWORDS = [
+  'rainy',
+  ' rain ',
+  ' rain,',
+  ' rain-',
+  ' rain|',
+  ' rain/',
+  'raining',
+  'thunder',
+  'storm',
+  'drizzle',
+  'asmr while working overtime on a rainy day',
+];
+
+const FIREPLACE_KEYWORDS = [
+  'fireplace',
+  'fireside',
+  'crackling fire',
+  'fire sounds',
+];
+
+const DARK_ACADEMIA_KEYWORDS = [
+  'dark academia',
+  'ancient university',
+  'ancient library',
+  'oxford library',
+  'ancient academy',
+];
+
+const NATURE_KEYWORDS = [
+  'forest',
+  'glasshouse',
+  'cottage',
+  'seaside',
+  'beach',
+  'canal',
+  'waves',
+  'wood cabin',
+  'snow falling in a forest',
+];
+
+const CHRISTMAS_KEYWORDS = ['christmas', 'festive', 'holiday', 'winter', 'snow'];
+
+const CAFE_KEYWORDS = ['coffee shop', 'jazz cafe', 'cafe'];
+
+const LIBRARY_KEYWORDS = ['library', 'study room', 'study desk', 'exam', 'studying'];
+
+const CITY_KEYWORDS = [
+  'city',
+  'tokyo',
+  'paris',
+  'kyoto',
+  'osaka',
+  'new york',
+  'brooklyn',
+  'london',
+  'amsterdam',
+  'venice',
+  'rooftop',
+  'skyscraper',
+  'big ben',
+  'los angeles',
+];
+
+const MANUAL_OVERRIDES: Record<string, FocusTagSlug> = {
+  Zhaz_30H_0w: 'dark-academia',
+  'Ewg1T-VQOe4': 'dark-academia',
+  SllpB3W5f6s: 'dark-academia',
+  iTC49Hi4hb8: 'dark-academia',
+  'pjrye-ZSZ-8': 'dark-academia',
+  pvbX0WOfmlc: 'dark-academia',
+  '5RbH5sc6v2Y': 'fireplace',
+  SC_Uf73_jS4: 'fireplace',
+  '4M9qCyxSiJs': 'fireplace',
+  ZjQjmsA5QAg: 'fireplace',
+  '1PM6jckIb3U': 'nature',
+  xKsiaTTq2p0: 'nature',
+  RD929GWcPxo: 'nature',
+  r6OMabWgJtg: 'nature',
+  XEZqqJ2GCQk: 'nature',
+  u9vK5utTcxE: 'nature',
 };
 
-const TAG_BY_VIDEO_ID: Record<string, keyof typeof LEGACY_LABEL_TO_SLUG> = {
-  ZcZuCcfZfiU: 'Lofi',
-  FI3tZiciiKU: 'Lofi',
-  KR6vNdeIFaU: 'City',
-  SE5ByHj0HDA: 'City',
-  jfKfPfyJRdk: 'City',
-  u9vK5utTcxE: 'Christmas',
-  '0_IFFNjuVWk': 'City',
-  '5RbH5sc6v2Y': 'Christmas',
-  KSdANVwpTQs: 'Cafe',
-  CLeZyIID9Bo: 'Lofi',
-  zUNgUGI9ZbE: 'Cafe',
-  HruWhChLto0: 'Cafe',
-  ICAmVDO8O6c: 'Cafe',
-  '9wRqG2KyAKw': 'Cafe',
-  gzmA1kkk660: 'Cafe',
-  HdNr5mhfK9o: 'Cafe',
-  dMKaKtB9t5k: 'City',
-  sckheyO_OVY: 'Cafe',
-  Jvz7w0FUOhE: 'Cafe',
-  BggKXc_z6kA: 'Cafe',
-  liHgt4CbodY: 'Lofi',
-  iceaWTWUa6w: 'Cafe',
-  '2c5Awu1P8XQ': 'Library',
-  dk8Rqv3OKgY: 'Lofi',
-  NJuSStkIZBg: 'Cafe',
-  'h-PfBxoMq_4': 'Cafe',
-  SKJP5vUT2tk: 'Cafe',
-  LZfZeW3BYGg: 'Christmas',
-  QbfXcKs7v_k: 'Christmas',
-  yHq2gg909BU: 'Christmas',
-  JZtzIDZiy18: 'Christmas',
-  'c4WPT9Pd-NM': 'City',
-  zbkpshV3tGc: 'Christmas',
-  qYkhmqjqubA: 'Library',
-  o1x872hsr8Y: 'Cafe',
-  '4xDzrJKXOOY': 'Lofi',
-  SKhpl1OMqEY: 'Lofi',
-  _nA5G1WxvsQ: 'Cafe',
-  '70p-EUcyIEE': 'Cafe',
-  '4df9u9DOFa0': 'Cafe',
-  '_O-fxnREF8Y': 'Lofi',
-  MwNQHK3EB9k: 'Christmas',
-  Cl3OVsp5pvc: 'Lofi',
-  OaEnFFpgptw: 'Cafe',
-  '0-fJS-j_UEE': 'Library',
-  Jvgx5HHJ0qw: 'Library',
-  rqJDO3TWnac: 'City',
-  '1PM6jckIb3U': 'Christmas',
-  xKsiaTTq2p0: 'Library',
-  XEZqqJ2GCQk: 'City',
-  r6OMabWgJtg: 'Cafe',
-  '-uzFRzb22OM': 'Cafe',
-  'NL-NlWeWJPM': 'Christmas',
-  KDlk2wm4Vnw: 'Library',
-  Ume83dO_fe4: 'Christmas',
-  '8R99w_8bKeQ': 'Library',
-  zXluGlZinqg: 'Cafe',
-  SC_Uf73_jS4: 'Library',
-  RRVwIBQQHy4: 'Christmas',
-  Qh60c0BDKYs: 'Christmas',
-  BsbeDtFyHbI: 'Christmas',
-  'XC_s-c_IJnI': 'City',
-  GknkvoCMEIA: 'City',
-  Zhaz_30H_0w: 'Library',
-  'Ewg1T-VQOe4': 'Library',
-  SllpB3W5f6s: 'Library',
-  '4M9qCyxSiJs': 'Christmas',
-  iTC49Hi4hb8: 'Library',
-  sAn8WHYDk6o: 'Christmas',
-  'pjrye-ZSZ-8': 'Library',
-  hnX1u_5hP30: 'Christmas',
-  Rv7dY_Uwyrg: 'City',
-  IXsWr2CK4SI: 'Lofi',
-  KLGS3yyKgqU: 'City',
-  '8UT-QrIXu_8': 'Christmas',
-  RD929GWcPxo: 'Library',
-  bmUlxm6_FnU: 'City',
-  pvbX0WOfmlc: 'Library',
-  YYqX0uLu5ck: 'City',
-  ZjQjmsA5QAg: 'Christmas',
-  'RKKlFWU-N5s': 'Lofi',
-  Tx_OPjvNYbs: 'Library',
-  '6WXMivVkiR8': 'Cafe',
-  S_bON2ei8iA: 'Lofi',
-  BJo2h90J6rA: 'Cafe',
-  geygTzDFpfE: 'Christmas',
-  mCTeVgJ5ehA: 'Cafe',
-  'dv7ox-iDM0Y': 'Cafe',
-  L99J7UqUqj0: 'Cafe',
-  'qDNGP-fVdzo': 'Cafe',
-  ZSREV9GC1MY: 'Cafe',
-  '_Bb5TK8CX-Q': 'Cafe',
-  tWQ4K1H0Fpk: 'Cafe',
-  KZ2m7L9xWJ4: 'Cafe',
-};
+function hasKeyword(title: string, keywords: string[]): boolean {
+  for (const keyword of keywords) {
+    if (title.includes(keyword)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function classifyTag(id: string, title: string): FocusTagSlug {
+  const override = MANUAL_OVERRIDES[id];
+  if (override) {
+    return override;
+  }
+
+  const normalized = ` ${title.toLowerCase()} `;
+
+  if (hasKeyword(normalized, DARK_ACADEMIA_KEYWORDS)) {
+    return 'dark-academia';
+  }
+  if (hasKeyword(normalized, FIREPLACE_KEYWORDS)) {
+    return 'fireplace';
+  }
+  if (hasKeyword(normalized, RAINY_KEYWORDS)) {
+    return 'rainy';
+  }
+  if (hasKeyword(normalized, NATURE_KEYWORDS)) {
+    return 'nature';
+  }
+  if (hasKeyword(normalized, CHRISTMAS_KEYWORDS)) {
+    return 'christmas';
+  }
+  if (hasKeyword(normalized, CAFE_KEYWORDS)) {
+    return 'cafe';
+  }
+  if (hasKeyword(normalized, LIBRARY_KEYWORDS)) {
+    return 'library';
+  }
+  if (hasKeyword(normalized, CITY_KEYWORDS)) {
+    return 'city';
+  }
+  return 'lofi';
+}
 
 async function main() {
   const url = process.env.DATABASE_URL;
@@ -125,14 +169,41 @@ async function main() {
 
   const now = new Date();
   await Promise.all(
-    Object.entries(TAG_BY_VIDEO_ID).map(([id, label]) =>
+    REQUIRED_TAGS.map((tag) =>
+      db
+        .insert(focusRoomTag)
+        .values({
+          slug: tag.slug,
+          label: tag.label,
+          sortOrder: tag.sortOrder,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .onConflictDoUpdate({
+          target: focusRoomTag.slug,
+          set: {
+            label: tag.label,
+            sortOrder: tag.sortOrder,
+            updatedAt: now,
+          },
+        })
+    )
+  );
+
+  const videos = await db
+    .select({ id: focusRoomVideo.id, title: focusRoomVideo.title })
+    .from(focusRoomVideo);
+
+  const updatedAt = new Date();
+  await Promise.all(
+    videos.map((video) =>
       db
         .update(focusRoomVideo)
         .set({
-          tag: LEGACY_LABEL_TO_SLUG[label],
-          updatedAt: now,
+          tag: classifyTag(video.id, video.title),
+          updatedAt,
         })
-        .where(eq(focusRoomVideo.id, id))
+        .where(eq(focusRoomVideo.id, video.id))
     )
   );
 
