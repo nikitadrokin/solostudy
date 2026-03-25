@@ -40,6 +40,7 @@ import {
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import OpenInCoolify from './admin/open-in-coolify';
+import OpenInSupabase from './admin/open-in-supabase';
 import { ModeToggle } from './theme-toggle/dropdown';
 import { ThemeToggle } from './theme-toggle/inline';
 import UserMenu from './user-menu';
@@ -80,10 +81,13 @@ const settingsLinks = [
 type AppSidebarProps = {
   /** From `COOLIFY_PROJECT_URL` in server layout; not available via `process.env` in client code. */
   coolifyProjectUrl?: string;
+  /** From `SUPABASE_DASHBOARD_URL` in server layout; not available via `process.env` in client code. */
+  supabaseDashboardUrl?: string;
 };
 
 export default function AppSidebar({
   coolifyProjectUrl = '',
+  supabaseDashboardUrl = '',
 }: AppSidebarProps) {
   const pathname = usePathname();
   const { open } = useSidebar();
@@ -278,9 +282,16 @@ export default function AppSidebar({
             {open ? <ThemeToggle /> : <ModeToggle />}
           </SidebarMenuItem>
           {isAdmin && (
-            <SidebarMenuItem>
-              <OpenInCoolify projectUrl={coolifyProjectUrl} />
-            </SidebarMenuItem>
+            <>
+              <SidebarMenuItem>
+                <OpenInCoolify projectUrl={coolifyProjectUrl} />
+              </SidebarMenuItem>
+              {supabaseDashboardUrl ? (
+                <SidebarMenuItem>
+                  <OpenInSupabase dashboardUrl={supabaseDashboardUrl} />
+                </SidebarMenuItem>
+              ) : null}
+            </>
           )}
           <SidebarMenuItem>
             <UserMenu />
