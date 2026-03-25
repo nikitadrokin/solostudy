@@ -283,9 +283,11 @@ export default function AppSidebar({
           </SidebarMenuItem>
           {isAdmin && (
             <>
-              <SidebarMenuItem>
-                <OpenInCoolify projectUrl={coolifyProjectUrl} />
-              </SidebarMenuItem>
+              {coolifyProjectUrl ? (
+                <SidebarMenuItem>
+                  <OpenInCoolify projectUrl={coolifyProjectUrl} />
+                </SidebarMenuItem>
+              ) : null}
               {supabaseDashboardUrl ? (
                 <SidebarMenuItem>
                   <OpenInSupabase dashboardUrl={supabaseDashboardUrl} />
