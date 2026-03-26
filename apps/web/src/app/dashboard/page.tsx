@@ -67,28 +67,26 @@ export default async function Dashboard() {
           {/* Left Column (Main Actions) */}
           <div className="space-y-6 lg:col-span-8">
             {/* Focus Room Banner */}
-            <Card className="relative overflow-hidden border-none bg-gradient-to-br from-primary/90 to-primary text-primary-foreground shadow-lg">
-              <div className="-mt-16 -mr-16 absolute top-0 right-0 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-              <div className="-mb-16 -ml-16 absolute bottom-0 left-0 h-64 w-64 rounded-full bg-black/10 blur-3xl" />
-
-              <CardContent className="relative flex flex-col items-start gap-6 p-8 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-2">
-                  <CardTitle className="text-3xl">Focus Room</CardTitle>
-                  <CardDescription className="max-w-md text-base text-primary-foreground/80">
-                    Enter your distraction-free environment with ambient sounds
-                    and video backgrounds.
-                  </CardDescription>
-                </div>
-
+            <Card className="overflow-hidden border shadow-sm">
+              <CardHeader className="space-y-2 pb-4">
+                <CardTitle className="text-2xl">Focus Room</CardTitle>
+                <CardDescription className="max-w-lg text-sm">
+                  Enter your distraction-free environment with ambient sounds and
+                  video backgrounds.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4 border-t bg-muted/20 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-muted-foreground text-sm">
+                  Start a deep-focus session in one click.
+                </p>
                 <Link
                   className={buttonVariants({
-                    size: 'lg',
-                    variant: 'secondary',
-                    className: 'shrink-0 gap-2 shadow-sm',
+                    className: 'shrink-0 gap-2',
+                    size: 'default',
                   })}
                   href="/focus"
                 >
-                  Enter Focus Room <ArrowRight className="h-4 w-4" />
+                  Open Focus Room <ArrowRight className="h-4 w-4" />
                 </Link>
               </CardContent>
             </Card>
