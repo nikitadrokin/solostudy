@@ -153,12 +153,13 @@ export function Lightbox({
     if (!(isOpen && lightboxRef.current)) return;
 
     const lightbox = lightboxRef.current;
-    const focusableElements = lightbox.querySelectorAll(
+    const focusableElements = Array.from(
+      lightbox.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
     );
 
     const firstElement = focusableElements[0] as HTMLElement;
-    // @ts-expect-error - at is not a method of NodeList
     const lastElement = focusableElements.at(-1) as HTMLElement;
 
     const handleTabKey = (e: KeyboardEvent) => {
