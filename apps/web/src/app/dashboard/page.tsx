@@ -41,31 +41,26 @@ export default async function Dashboard() {
     <AuthOverlay>
       <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
         {/* Header */}
-        <Card className="border-border/60 bg-card/80 shadow-sm">
-          <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
-              <p className="font-medium text-muted-foreground text-sm">
-                Dashboard
-              </p>
-              <h1 className="font-semibold text-3xl tracking-tight">
-                {getGreeting()}, {name}
-              </h1>
-              <p className="text-muted-foreground text-sm">
-                Ready to get back in the zone?
-              </p>
-            </div>
-            <div className="inline-flex items-center gap-2 self-start rounded-full border bg-muted/40 px-3 py-1.5 font-medium text-muted-foreground text-sm sm:self-center">
-              <Calendar className="h-4 w-4" />
-              <span>
-                {new Date().toLocaleDateString(undefined, {
-                  weekday: 'long',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="font-bold text-3xl tracking-tight">
+              {getGreeting()}, {name}
+            </h1>
+            <p className="text-muted-foreground">
+              Ready to get back in the zone?
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+            <Calendar className="h-4 w-4" />
+            <span>
+              {new Date().toLocaleDateString(undefined, {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </span>
+          </div>
+        </div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
