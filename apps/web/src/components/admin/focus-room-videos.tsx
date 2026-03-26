@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { FocusRoomTagCatalog } from '@/components/admin/focus-room-tag-catalog';
 import { FocusRoomTagCombobox } from '@/components/admin/focus-room-tag-combobox';
 import { extractVideoId } from '@/components/focus-room/youtube-player';
+import { Lightbox } from '@/components/lightbox';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -216,15 +217,18 @@ export default function FocusRoomVideosAdmin() {
                   return (
                     <TableRow key={video.id}>
                       <TableCell>
-                        <div className="relative h-[68px] w-[120px] overflow-hidden rounded-md bg-muted">
-                          {/** biome-ignore lint/performance/noImgElement: saving on vercel bandwidth */}
-                          <img
-                            alt={`YouTube thumbnail for ${video.title}`}
-                            className="h-full w-full object-cover"
-                            sizes="120px"
-                            src={video.thumbnailUrl}
-                          />
-                        </div>
+                        <Lightbox
+                          className="h-[68px] w-[120px] gap-0"
+                          images={[
+                            {
+                              alt: `YouTube thumbnail for ${video.title}`,
+                              caption: video.title,
+                              src: video.thumbnailUrl,
+                            },
+                          ]}
+                          thumbnailClassName="relative h-full w-full rounded-md bg-muted"
+                          thumbnailImgClassName="h-full w-full object-cover"
+                        />
                       </TableCell>
                       <TableCell className="font-mono text-xs">
                         {video.id}
