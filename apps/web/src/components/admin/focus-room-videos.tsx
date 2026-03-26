@@ -139,6 +139,15 @@ export default function FocusRoomVideosAdmin() {
     }
     return videos.find((v) => v.id === pendingDeleteId)?.title ?? '';
   }, [pendingDeleteId, videos]);
+  const lightboxImages = useMemo(
+    () =>
+      videos.map((video) => ({
+        alt: `YouTube thumbnail for ${video.title}`,
+        caption: video.title,
+        src: video.thumbnailUrl,
+      })),
+    [videos]
+  );
 
   return (
     <div className="space-y-6">
@@ -207,7 +216,7 @@ export default function FocusRoomVideosAdmin() {
             ) : null}
             {isLoading
               ? null
-              : videos.map((video) => {
+              : videos.map((video, index) => {
                   const draft = edits[video.id];
                   const title = draft?.title ?? video.title;
                   const tag = draft?.tag ?? video.tag;
@@ -219,13 +228,8 @@ export default function FocusRoomVideosAdmin() {
                       <TableCell>
                         <Lightbox
                           className="h-[68px] w-[120px] gap-0"
-                          images={[
-                            {
-                              alt: `YouTube thumbnail for ${video.title}`,
-                              caption: video.title,
-                              src: video.thumbnailUrl,
-                            },
-                          ]}
+                          images={lightboxImages}
+                          thumbnailIndex={index}
                           thumbnailClassName="relative h-full w-full rounded-md bg-muted"
                           thumbnailImgClassName="h-full w-full object-cover"
                         />

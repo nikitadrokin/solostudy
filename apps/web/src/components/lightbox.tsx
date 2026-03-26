@@ -18,6 +18,8 @@ export interface LightboxImage {
 export interface LightboxProps extends React.HTMLAttributes<HTMLDivElement> {
   images: LightboxImage[];
   loop?: boolean;
+  /** Render only one thumbnail for the given image index */
+  thumbnailIndex?: number;
   /** Class for each thumbnail wrapper (default: cursor-pointer overflow-hidden rounded-lg) */
   thumbnailClassName?: string;
   /** Class for each thumbnail img (default: h-48 w-full object-cover …) */
@@ -30,6 +32,7 @@ export interface LightboxProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Lightbox({
   images,
   loop = false,
+  thumbnailIndex,
   className,
   thumbnailClassName,
   thumbnailImgClassName,
@@ -44,28 +47,36 @@ export function Lightbox({
 
   const lightboxRef = React.useRef<HTMLDivElement>(null);
   const thumbnailRefs = React.useRef<(HTMLImageElement | null)[]>([]);
+  const thumbnailImages = React.useMemo(() => {
+    if (thumbnailIndex === undefined) {
+      return images.map((image, index) => ({ image, index }));
+    }
+    const selectedImage = images[thumbnailIndex];
+    if (!selectedImage) {
+      return [];
+    }
+    return [{ image: selectedImage, index: thumbnailIndex }];
+  }, [images, thumbnailIndex]);
+
+  const getPreloadIndexes = React.useCallback(
+    (index: number): number[] => {
+      const previousIndex =
+        index > 0 ? index - 1 : loop ? images.length - 1 : null;
+      const nextIndex =
+        index < images.length - 1 ? index + 1 : loop ? 0 : null;
+      return [index, previousIndex, nextIndex].filter(
+        (value): value is number => value !== null
+      );
+    },
+    [images.length, loop]
+  );
 
   // Preload current image and adjacent images
   const preloadImages = React.useCallback(
     (index: number) => {
       if (preloadedIndexes.has(index)) return;
 
-      const imagesToPreload = [index];
-
-      // Add previous image to preload list
-      if (index > 0 || loop) {
-        const prevIndex = index > 0 ? index - 1 : images.length - 1;
-        imagesToPreload.push(prevIndex);
-      }
-
-      // Add next image to preload list
-      if (index < images.length - 1 || loop) {
-        const nextIndex = index < images.length - 1 ? index + 1 : 0;
-        imagesToPreload.push(nextIndex);
-      }
-
-      // Preload images
-      for (const idx of imagesToPreload) {
+      for (const idx of getPreloadIndexes(index)) {
         if (!preloadedIndexes.has(idx)) {
           const img = new Image();
           img.src = images[idx].src;
@@ -75,7 +86,7 @@ export function Lightbox({
         }
       }
     },
-    [images, loop, preloadedIndexes]
+    [getPreloadIndexes, images, preloadedIndexes]
   );
 
   // Open lightbox
@@ -193,7 +204,7 @@ export function Lightbox({
     <>
       {/* Thumbnails */}
       <div className={cn('grid grid-cols-1 gap-4', className)} {...props}>
-        {images.map((image, index) => (
+        {thumbnailImages.map(({ image, index }) => (
           <button
             className={cn(
               'cursor-pointer overflow-hidden rounded-lg border-0 bg-transparent p-0 text-left',
