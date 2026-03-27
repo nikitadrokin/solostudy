@@ -67,7 +67,7 @@ export default async function Dashboard() {
           {/* Left Column (Main Actions) */}
           <div className="space-y-6 lg:col-span-8">
             {/* Focus Room Banner */}
-            <Card className="overflow-hidden border shadow-sm">
+            <Card className="overflow-hidden border shadow-sm pb-0">
               <CardHeader className="space-y-2 pb-4">
                 <CardTitle className="text-2xl">Focus Room</CardTitle>
                 <CardDescription className="max-w-lg text-sm">
@@ -75,7 +75,7 @@ export default async function Dashboard() {
                   video backgrounds.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col gap-4 border-t bg-muted/20 pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <CardContent className="flex flex-col gap-4 border-t bg-muted/50 pb-6 pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-muted-foreground text-sm">
                   Start a deep-focus session in one click.
                 </p>
