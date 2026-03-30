@@ -91,7 +91,7 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
             )}
           </DynamicPopover>
 
-          <FocusTimer />
+            <FocusTimer onOpenChange={onPopoverOpenChange} />
         </div>
 
         {/* Trailing */}
