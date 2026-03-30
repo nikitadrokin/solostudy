@@ -9,7 +9,11 @@ import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
 
-export function FocusTimer() {
+type FocusTimerProps = {
+  onOpenChange?: (open: boolean) => void;
+};
+
+export function FocusTimer({ onOpenChange }: FocusTimerProps) {
   const { data: session } = authClient.useSession();
   const { formattedTime, isActive, focusTime } = useFocusTimer();
 
@@ -34,6 +38,7 @@ export function FocusTimer() {
   return (
     <DynamicPopover
       align="start"
+      onOpenChange={onOpenChange}
       side="bottom"
       tooltip={isActive ? 'Focus session active' : 'Focus timer'}
       trigger={

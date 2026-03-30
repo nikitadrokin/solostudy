@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import YouTubePlayer from '@/components/focus-room/youtube-player';
 import { authClient } from '@/lib/auth-client';
 import { useFocusStore } from '@/stores/focus-store';
@@ -27,6 +27,41 @@ export default function FocusRoom() {
 
   const [persistedVideoId, setPersistedVideoId] = useState<string | null>(null);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
+  const [openPopoverCount, setOpenPopoverCount] = useState(0);
+  const openPopoverCountRef = useRef(0);
+  const suppressVideoToggleUntilRef = useRef(0);
+  const isAnyPopoverOpen = openPopoverCount > 0;
+
+  const handlePopoverOpenChange = useCallback((isOpen: boolean) => {
+    const nextCount = isOpen
+      ? openPopoverCountRef.current + 1
+      : Math.max(openPopoverCountRef.current - 1, 0);
+
+    openPopoverCountRef.current = nextCount;
+    setOpenPopoverCount(nextCount);
+
+    if (isOpen) {
+      suppressVideoToggleUntilRef.current = 0;
+      return;
+    }
+
+    if (nextCount === 0) {
+      suppressVideoToggleUntilRef.current = Date.now() + 150;
+    }
+  }, []);
+
+  const handleOverlayPlayPause = useCallback(() => {
+    if (openPopoverCountRef.current > 0) {
+      return;
+    }
+
+    if (suppressVideoToggleUntilRef.current > Date.now()) {
+      return;
+    }
+
+    const { handlePlayPause } = useVideoStore.getState();
+    handlePlayPause();
+  }, []);
 
   const { data: lastPlayedVideo, isLoading: isLoadingLastPlayedVideo } =
     useQuery(
@@ -125,22 +160,21 @@ export default function FocusRoom() {
       <div
         className="absolute inset-0 z-[5]"
         onClick={() => {
-          const { handlePlayPause } = useVideoStore.getState();
-          handlePlayPause();
+          handleOverlayPlayPause();
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            const { handlePlayPause } = useVideoStore.getState();
-            handlePlayPause();
+            handleOverlayPlayPause();
           }
         }}
         role="button"
         tabIndex={0}
+        title={isAnyPopoverOpen ? 'Close the popover to control playback' : ''}
       />
 
       {/* Overlay Controls */}
-      <OverlayControls />
+      <OverlayControls onPopoverOpenChange={handlePopoverOpenChange} />
     </main>
   );
 }

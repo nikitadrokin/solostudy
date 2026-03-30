@@ -18,7 +18,13 @@ import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
 import SidebarTrigger from './sidebar-trigger';
 
-const OverlayControls: React.FC = () => {
+type OverlayControlsProps = {
+  onPopoverOpenChange: (open: boolean) => void;
+};
+
+const OverlayControls: React.FC<OverlayControlsProps> = ({
+  onPopoverOpenChange,
+}) => {
   const isMobile = useIsMobile();
   const { data: session } = useSession();
 
@@ -53,6 +59,7 @@ const OverlayControls: React.FC = () => {
           <DynamicPopover
             align="start"
             className={cn(session ? 'md:w-96 md:pb-0' : 'md:min-w-fit md:p-6')}
+            onOpenChange={onPopoverOpenChange}
             side="bottom"
             tooltip="View Tasks"
             trigger={
@@ -93,6 +100,7 @@ const OverlayControls: React.FC = () => {
             align="end"
             className="p-0 md:h-[500px] md:max-h-none md:min-h-full md:w-[600px]"
             // showScrollFadeOnPopover={isMobile}
+            onOpenChange={onPopoverOpenChange}
             side="bottom"
             tooltip="Select background"
             trigger={
@@ -112,6 +120,7 @@ const OverlayControls: React.FC = () => {
             align="end"
             className="md:w-96"
             side="bottom"
+            onOpenChange={onPopoverOpenChange}
             tooltip="Focus Room Settings"
             trigger={
               <Button

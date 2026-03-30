@@ -26,6 +26,7 @@ interface DynamicPopoverProps
     'align' | 'side' | 'className'
   > {
   children?: React.ReactNode;
+  onOpenChange?: (open: boolean) => void;
   tooltip?: React.ReactNode;
   trigger?: React.ReactNode;
   showScrollFadeOnPopover?: boolean;
@@ -38,12 +39,13 @@ const DynamicPopover: React.FC<DynamicPopoverProps> = ({
   tooltip,
   trigger,
   className,
+  onOpenChange,
   showScrollFadeOnPopover = false,
 }) => {
   const isMobile = useIsMobile();
 
   return isMobile ? (
-    <Drawer repositionInputs={false}>
+    <Drawer onOpenChange={onOpenChange} repositionInputs={false}>
       {tooltip ? (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -76,7 +78,7 @@ const DynamicPopover: React.FC<DynamicPopoverProps> = ({
       </DrawerContent>
     </Drawer>
   ) : (
-    <Popover>
+    <Popover onOpenChange={onOpenChange}>
       {tooltip ? (
         <Tooltip>
           <TooltipTrigger asChild>
