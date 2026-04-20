@@ -1,16 +1,12 @@
 'use client';
 
 import {
-  BarChart3,
-  CalendarDays,
   ChevronRight,
   Clapperboard,
-  FlaskConical,
   Focus,
   Laptop,
   LayoutDashboard,
   Link as LinkIcon,
-  ListChecks,
   Settings,
   Shield,
   User,
@@ -53,14 +49,6 @@ import UserMenu from './user-menu';
 const mainLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/focus', label: 'Focus Room', icon: Focus },
-];
-
-// biome-ignore format: because
-const studyLinks = [
-  { href: '/study/today', label: 'Today', icon: ListChecks },
-  { href: '/study/planner', label: 'Planner', icon: CalendarDays },
-  { href: '/study/progress', label: 'Progress', icon: BarChart3 },
-  { href: '/study/lab', label: 'Study Lab', icon: FlaskConical },
 ];
 
 /*
@@ -222,25 +210,6 @@ export default function AppSidebar({
                 </CollapsibleContent>
               </SidebarMenuItem>
             </Collapsible>
-          </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Study</SidebarGroupLabel>
-          <SidebarMenu>
-            {studyLinks.map(({ href, label, icon: Icon }) => (
-              <SidebarMenuItem key={href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === href}
-                  tooltip={label}
-                >
-                  <Link href={href as Route}>
-                    <Icon />
-                    <span>{label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
           </SidebarMenu>
         </SidebarGroup>
         {/*
