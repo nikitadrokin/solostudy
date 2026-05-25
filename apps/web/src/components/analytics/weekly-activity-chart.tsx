@@ -8,10 +8,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { apiClient } from '@/utils/trpc';
+import { api } from '@/utils/trpc';
 
 const chartConfig = {
-  tasks: {
+  created: {
     label: 'Tasks Created',
     color: 'var(--chart-1)',
   },
@@ -19,46 +19,40 @@ const chartConfig = {
     label: 'Tasks Completed',
     color: 'var(--chart-2)',
   },
-  focus: {
-    label: 'Focus Sessions',
+  focusMinutes: {
+    label: 'Focus Minutes',
     color: 'var(--chart-3)',
   },
 } satisfies ChartConfig;
 
 export function WeeklyActivityChart() {
-  const { data, isLoading } = useQuery({
-    queryKey: [['analytics', 'getEventCounts'], { days: 7 }],
-    queryFn: () => apiClient.analytics.getEventCounts.query({ days: 7 }),
-  });
+  const { data: todoData, isLoading: todoLoading } = useQuery(
+    api.todos.getDailyStats.queryOptions({ days: 7 })
+  );
+  const { data: focusData, isLoading: focusLoading } = useQuery(
+    api.focus.getDailyFocusStats.queryOptions({ days: 7 })
+  );
 
-  if (isLoading) {
+  if (todoLoading || focusLoading) {
     return (
       <div className="flex h-[200px] items-center justify-center">
-        <div className="text-muted-foreground text-sm">
-          Loading analytics...
-        </div>
+        <div className="text-muted-foreground text-sm">Loading analytics…</div>
       </div>
     );
   }
 
-  if (!data?.chartData || data.chartData.length === 0) {
-    return (
-      <div className="flex h-[200px] select-none items-center justify-center">
-        <div className="text-muted-foreground text-sm">
-          No analytics data available yet
-        </div>
-      </div>
-    );
-  }
+  const focusMap = new Map(
+    (focusData?.chartData ?? []).map((d) => [d.date, d.totalMinutes])
+  );
 
-  const chartData = data.chartData.map((item) => ({
-    date: new Date(item.date).toLocaleDateString('en-US', {
+  const chartData = (todoData?.chartData ?? []).map((d) => ({
+    date: new Date(d.date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
     }),
-    tasks: item.tasks,
-    completed: item.completed,
-    focus: item.focus,
+    created: d.created,
+    completed: d.completed,
+    focusMinutes: focusMap.get(d.date) ?? 0,
   }));
 
   return (
@@ -73,27 +67,24 @@ export function WeeklyActivityChart() {
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <Area
-          dataKey="tasks"
-          fill="var(--color-tasks)"
+          dataKey="created"
+          fill="var(--color-created)"
           fillOpacity={0.4}
-          stackId="1"
-          stroke="var(--color-tasks)"
+          stroke="var(--color-created)"
           type="monotone"
         />
         <Area
           dataKey="completed"
           fill="var(--color-completed)"
           fillOpacity={0.4}
-          stackId="1"
           stroke="var(--color-completed)"
           type="monotone"
         />
         <Area
-          dataKey="focus"
-          fill="var(--color-focus)"
+          dataKey="focusMinutes"
+          fill="var(--color-focusMinutes)"
           fillOpacity={0.4}
-          stackId="1"
-          stroke="var(--color-focus)"
+          stroke="var(--color-focusMinutes)"
           type="monotone"
         />
       </AreaChart>

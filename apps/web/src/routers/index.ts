@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { TRPCError } from '@trpc/server';
-import { and, count, desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq, gte, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
 import { user } from '../db/schema/auth';
@@ -95,6 +95,63 @@ export const appRouter = router({
 
       return result[0]?.count ?? 0;
     }),
+
+    getDailyStats: protectedProcedure
+      .input(z.object({ days: z.number().int().positive().default(7) }))
+      .query(async ({ ctx, input }) => {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - input.days);
+        startDate.setHours(0, 0, 0, 0);
+
+        const [created, completed] = await Promise.all([
+          db
+            .select({
+              date: sql<string>`DATE(${todo.createdAt})`.as('date'),
+              n: count().as('n'),
+            })
+            .from(todo)
+            .where(
+              and(
+                eq(todo.userId, ctx.session.user.id),
+                gte(todo.createdAt, startDate)
+              )
+            )
+            .groupBy(sql`DATE(${todo.createdAt})`),
+
+          db
+            .select({
+              date: sql<string>`DATE(${todo.updatedAt})`.as('date'),
+              n: count().as('n'),
+            })
+            .from(todo)
+            .where(
+              and(
+                eq(todo.userId, ctx.session.user.id),
+                eq(todo.completed, true),
+                gte(todo.updatedAt, startDate)
+              )
+            )
+            .groupBy(sql`DATE(${todo.updatedAt})`),
+        ]);
+
+        const createdMap = new Map(created.map((r) => [r.date, r.n]));
+        const completedMap = new Map(completed.map((r) => [r.date, r.n]));
+
+        const chartData = Array.from({ length: input.days }, (_, i) => {
+          const date = new Date(
+            Date.now() - (input.days - 1 - i) * 24 * 60 * 60 * 1000
+          )
+            .toISOString()
+            .split('T')[0];
+          return {
+            date,
+            created: createdMap.get(date) ?? 0,
+            completed: completedMap.get(date) ?? 0,
+          };
+        });
+
+        return { chartData };
+      }),
   },
   video: {
     getLastPlayed: protectedProcedure.query(async ({ ctx }) => {
