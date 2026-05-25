@@ -50,8 +50,7 @@ export function FocusTimer({ onOpenChange }: FocusTimerProps) {
       align="start"
       className="w-[min(28rem,calc(100vw-2rem))] p-0!"
       onOpenChange={onOpenChange}
-      showScrollFadeOnPopover
-      side="bottom"
+side="bottom"
       tooltip={isRunning ? 'Solo session active' : 'Focus timer'}
       trigger={
         <Button
@@ -71,7 +70,7 @@ export function FocusTimer({ onOpenChange }: FocusTimerProps) {
         </Button>
       }
     >
-      <div className="flex max-h-[75vh] flex-col overflow-y-auto p-4">
+      <div className="flex flex-col p-4">
         <SoloSessionPlanner />
 
         <div className="mt-4 flex items-center gap-3 border-t pt-3 text-muted-foreground text-xs">
