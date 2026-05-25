@@ -48,7 +48,7 @@ export function FocusTimer({ onOpenChange }: FocusTimerProps) {
   return (
     <DynamicPopover
       align="start"
-      className="w-[min(28rem,calc(100vw-2rem))]"
+      className="w-[min(28rem,calc(100vw-2rem))] p-0!"
       onOpenChange={onOpenChange}
       showScrollFadeOnPopover
       side="bottom"
@@ -71,7 +71,7 @@ export function FocusTimer({ onOpenChange }: FocusTimerProps) {
         </Button>
       }
     >
-      <div className="flex max-h-[75vh] flex-col gap-4 overflow-y-auto p-1">
+      <div className="flex max-h-[75vh] flex-col gap-4 overflow-y-auto p-4">
         <SoloSessionPlanner />
 
         <div className="h-px bg-border" />
