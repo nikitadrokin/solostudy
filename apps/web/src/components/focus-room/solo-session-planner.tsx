@@ -1,23 +1,9 @@
 'use client';
 
-import {
-  Check,
-  Circle,
-  Coffee,
-  Pause,
-  Play,
-  Plus,
-  RotateCcw,
-  Target,
-  Trash2,
-} from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { Coffee, Pause, Play, RotateCcw } from 'lucide-react';
+import { useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import {
   formatSessionTime,
@@ -39,18 +25,12 @@ export default function SoloSessionPlanner() {
     remainingSeconds,
     isRunning,
     completedFocusBlocks,
-    goals,
     selectPreset,
     start,
     pause,
     reset,
     tick,
-    addGoal,
-    toggleGoal,
-    removeGoal,
-    clearCompletedGoals,
   } = useSoloSessionStore();
-  const [goalTitle, setGoalTitle] = useState('');
 
   useEffect(() => {
     if (!isRunning) {
@@ -65,16 +45,6 @@ export default function SoloSessionPlanner() {
       window.clearInterval(intervalId);
     };
   }, [isRunning, tick]);
-
-  const completedGoals = useMemo(
-    () => goals.filter((goal) => goal.completed).length,
-    [goals]
-  );
-
-  const handleAddGoal = () => {
-    addGoal(goalTitle);
-    setGoalTitle('');
-  };
 
   return (
     <div className="space-y-5">
@@ -172,103 +142,6 @@ export default function SoloSessionPlanner() {
             );
           })}
         </div>
-      </section>
-
-      <Separator />
-
-      <section className="space-y-3">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Target className="size-4 text-muted-foreground" />
-            <h4 className="font-medium text-sm">Session Goals</h4>
-          </div>
-          <Badge variant="outline">
-            {completedGoals}/{goals.length} done
-          </Badge>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="session-goal">Goal</Label>
-          <div className="flex gap-2">
-            <Input
-              id="session-goal"
-              onChange={(event) => setGoalTitle(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  handleAddGoal();
-                }
-              }}
-              placeholder="Read chapter 3, finish problem set..."
-              value={goalTitle}
-            />
-            <Button
-              aria-label="Add session goal"
-              disabled={!goalTitle.trim()}
-              onClick={handleAddGoal}
-              size="icon"
-              type="button"
-            >
-              <Plus className="size-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="max-h-56 space-y-2 overflow-y-auto pr-1">
-          {goals.length === 0 ? (
-            <div className="rounded-md border border-dashed p-4 text-center text-muted-foreground text-sm">
-              Add 1-3 concrete goals before the timer starts.
-            </div>
-          ) : (
-            goals.map((goal) => (
-              <div
-                className="flex items-center gap-3 rounded-md border bg-background p-2"
-                key={goal.id}
-              >
-                <Checkbox
-                  aria-label={`Mark ${goal.title} as ${goal.completed ? 'incomplete' : 'complete'}`}
-                  checked={goal.completed}
-                  onCheckedChange={() => toggleGoal(goal.id)}
-                />
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={cn(
-                      'truncate text-sm',
-                      goal.completed && 'text-muted-foreground line-through'
-                    )}
-                  >
-                    {goal.title}
-                  </p>
-                </div>
-                {goal.completed ? (
-                  <Check className="size-4 text-muted-foreground" />
-                ) : (
-                  <Circle className="size-4 text-muted-foreground" />
-                )}
-                <Button
-                  aria-label={`Remove ${goal.title}`}
-                  onClick={() => removeGoal(goal.id)}
-                  size="icon"
-                  type="button"
-                  variant="ghost"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </div>
-            ))
-          )}
-        </div>
-
-        {completedGoals > 0 ? (
-          <Button
-            className="w-full"
-            onClick={clearCompletedGoals}
-            type="button"
-            variant="outline"
-          >
-            Clear completed
-          </Button>
-        ) : null}
       </section>
     </div>
   );
