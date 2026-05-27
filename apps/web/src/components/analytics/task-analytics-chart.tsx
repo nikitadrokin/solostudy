@@ -8,7 +8,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { apiClient } from '@/utils/trpc';
+import { api } from '@/utils/trpc';
 
 const chartConfig = {
   created: {
@@ -19,42 +19,28 @@ const chartConfig = {
     label: 'Completed',
     color: 'var(--chart-2)',
   },
-  deleted: {
-    label: 'Deleted',
-    color: 'var(--chart-4)',
-  },
 } satisfies ChartConfig;
 
 export function TaskAnalyticsChart() {
-  const { data, isLoading } = useQuery({
-    queryKey: [['analytics', 'getTaskAnalytics'], { days: 7 }],
-    queryFn: () => apiClient.analytics.getTaskAnalytics.query({ days: 7 }),
-  });
+  const { data, isLoading } = useQuery(
+    api.todos.getDailyStats.queryOptions({ days: 7 })
+  );
 
   if (isLoading) {
     return (
       <div className="flex h-[200px] select-none items-center justify-center">
-        <div className="text-muted-foreground text-sm">Loading...</div>
+        <div className="text-muted-foreground text-sm">Loading…</div>
       </div>
     );
   }
 
-  if (!data?.chartData || data.chartData.length === 0) {
-    return (
-      <div className="flex h-[200px] select-none items-center justify-center">
-        <div className="text-muted-foreground text-sm">No data available</div>
-      </div>
-    );
-  }
-
-  const chartData = data.chartData.map((item) => ({
+  const chartData = (data?.chartData ?? []).map((item) => ({
     date: new Date(item.date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
     }),
     created: item.created,
     completed: item.completed,
-    deleted: item.deleted,
   }));
 
   return (
@@ -70,7 +56,6 @@ export function TaskAnalyticsChart() {
         <ChartTooltip content={<ChartTooltipContent />} />
         <Bar dataKey="created" fill="var(--color-created)" radius={4} />
         <Bar dataKey="completed" fill="var(--color-completed)" radius={4} />
-        <Bar dataKey="deleted" fill="var(--color-deleted)" radius={4} />
       </BarChart>
     </ChartContainer>
   );

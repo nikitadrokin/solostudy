@@ -1,13 +1,18 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { Clock, Info, Timer } from 'lucide-react';
+import { Clock, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DynamicPopover from '@/components/ui/dynamic-popover';
 import { useFocusTimer } from '@/hooks/use-focus-timer';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
+import {
+  formatSessionTime,
+  useSoloSessionStore,
+} from '@/stores/solo-session-store';
 import { api } from '@/utils/trpc';
+import SoloSessionPlanner from './focus-room/solo-session-planner';
 
 type FocusTimerProps = {
   onOpenChange?: (open: boolean) => void;
@@ -16,6 +21,7 @@ type FocusTimerProps = {
 export function FocusTimer({ onOpenChange }: FocusTimerProps) {
   const { data: session } = authClient.useSession();
   const { formattedTime, isActive, focusTime } = useFocusTimer();
+  const { phase, remainingSeconds, isRunning } = useSoloSessionStore();
 
   const { data: todayData } = useQuery(
     api.focus.getTodayFocusTime.queryOptions(undefined, {
@@ -34,73 +40,50 @@ export function FocusTimer({ onOpenChange }: FocusTimerProps) {
   };
 
   const totalTodaySeconds = (todayData?.totalSeconds ?? 0) + focusTime;
+  const hasPlannedSession = phase !== 'idle';
+  const triggerLabel = hasPlannedSession
+    ? formatSessionTime(remainingSeconds)
+    : formattedTime;
 
   return (
     <DynamicPopover
       align="start"
+      className="w-[min(28rem,calc(100vw-2rem))] p-0!"
       onOpenChange={onOpenChange}
-      side="bottom"
-      tooltip={isActive ? 'Focus session active' : 'Focus timer'}
+side="bottom"
+      tooltip={isRunning ? 'Solo session active' : 'Focus timer'}
       trigger={
         <Button
           className="relative bg-background/80 font-mono backdrop-blur-sm"
           size="sm"
+          type="button"
           variant="outline"
         >
           <Timer className="mr-2 h-4 w-4" />
-          {formattedTime}
+          {triggerLabel}
           <div
-            className={`-right-1 -top-1 absolute h-2 w-2 rounded-full ${isActive ? 'bg-green-400' : 'bg-gray-400'}`}
+            className={cn(
+              '-right-1 -top-1 absolute h-2 w-2 rounded-full',
+              isRunning || isActive ? 'bg-primary' : 'bg-muted-foreground'
+            )}
           />
         </Button>
       }
     >
-      <div className="flex flex-col gap-4">
-        {/* Current Session */}
-        <div className="flex items-center gap-3">
-          <div
-            className={`flex h-10 w-10 items-center justify-center rounded-full ${
-              isActive
-                ? 'bg-green-500/20 text-green-500'
-                : 'bg-muted text-muted-foreground'
-            }`}
-          >
-            <Timer className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="font-medium text-sm">Current Session</p>
-            <p className="font-mono text-2xl">{formattedTime}</p>
-          </div>
-        </div>
+      <div className="flex flex-col p-4">
+        <SoloSessionPlanner />
 
-        <div className="h-px bg-border" />
-
-        {/* Today's Total */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Clock className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="font-medium text-muted-foreground text-sm">
-              Today's Total
-            </p>
-            <p className="font-semibold text-lg">
-              {formatDuration(totalTodaySeconds)}
-            </p>
-          </div>
-        </div>
-
-        {/* Status */}
-        <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3">
-          <Info
-            className={cn(
-              'aspect-square size-4',
-              isActive ? 'text-muted-foreground' : 'text-destructive'
-            )}
-          />
-          <p className="text-pretty text-muted-foreground text-xs">
-            Time is only tracked while this tab is focused
-          </p>
+        <div className="mt-4 flex items-center gap-3 border-t pt-3 text-muted-foreground text-xs">
+          <span className="flex items-center gap-1.5">
+            <Timer className="size-3" />
+            <span className="font-mono">{formattedTime}</span>
+            <span>this session</span>
+          </span>
+          <span>·</span>
+          <span className="flex items-center gap-1.5">
+            <Clock className="size-3" />
+            <span>{formatDuration(totalTodaySeconds)} today</span>
+          </span>
         </div>
       </div>
     </DynamicPopover>
