@@ -1,6 +1,6 @@
 import { Calendar } from 'lucide-react';
 import { headers } from 'next/headers';
-import { AnalyticsTabs } from '@/components/analytics/analytics-tabs';
+import { WeeklyFocusChart } from '@/components/analytics/weekly-focus-chart';
 import { AuthOverlay } from '@/components/auth-overlay';
 import {
   Card,
@@ -50,13 +50,11 @@ export default async function Dashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Analytics</CardTitle>
-                <CardDescription>
-                  Your activity over the last 7 days
-                </CardDescription>
+                <CardTitle>Focus This Week</CardTitle>
+                <CardDescription>Minutes focused per day</CardDescription>
               </CardHeader>
               <CardContent>
-                <AnalyticsTabs />
+                <WeeklyFocusChart />
               </CardContent>
             </Card>
           </div>
