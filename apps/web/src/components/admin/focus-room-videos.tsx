@@ -153,28 +153,43 @@ export default function FocusRoomVideosAdmin() {
     <div className="space-y-6">
       <FocusRoomTagCatalog />
 
-      <div className="space-y-2 rounded-xl border p-4">
-        <Label htmlFor="admin-add-focus-video">Add YouTube URL</Label>
-        <div className="flex flex-wrap gap-2">
-          <Input
-            className={cn(
-              'max-w-xl flex-1',
-              addUrl.trim() && !isValidYouTubeInput(addUrl.trim())
-                ? 'border-destructive'
-                : ''
-            )}
-            id="admin-add-focus-video"
-            onChange={(e) => setAddUrl(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleAdd();
-              }
-            }}
-            placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-            type="url"
-            value={addUrl}
-          />
+      <div className="space-y-3 rounded-xl border p-4">
+        <div>
+          <h2 className="font-semibold text-base">Add video</h2>
+          <p className="text-muted-foreground text-sm">
+            Paste a YouTube URL or video ID to add it to the catalog.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <Label htmlFor="admin-add-focus-video">YouTube URL</Label>
+            <Input
+              className={cn(
+                'max-w-xl',
+                addUrl.trim() && !isValidYouTubeInput(addUrl.trim())
+                  ? 'border-destructive'
+                  : ''
+              )}
+              id="admin-add-focus-video"
+              onChange={(e) => setAddUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAdd();
+                }
+              }}
+              placeholder="https://www.youtube.com/watch?v=…"
+              type="url"
+              value={addUrl}
+            />
+          </div>
+          {currentInputVideoId ? (
+            <img
+              alt="Preview thumbnail"
+              className="h-[52px] w-[92px] rounded-md border object-cover"
+              src={`https://img.youtube.com/vi/${currentInputVideoId}/mqdefault.jpg`}
+            />
+          ) : null}
           <Button
             disabled={!currentInputVideoId}
             isLoading={isAdding}
@@ -191,25 +206,24 @@ export default function FocusRoomVideosAdmin() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[140px]">Thumbnail</TableHead>
-              <TableHead>Video ID</TableHead>
               <TableHead>Title</TableHead>
-              <TableHead className="w-[140px]">Tag</TableHead>
-              <TableHead className="whitespace-nowrap">Created</TableHead>
-              <TableHead className="whitespace-nowrap">Updated</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[160px]">Tag</TableHead>
+              <TableHead className="w-[90px] whitespace-nowrap">Added</TableHead>
+              <TableHead className="w-[90px] whitespace-nowrap">Updated</TableHead>
+              <TableHead className="w-[120px] text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell className="text-muted-foreground" colSpan={7}>
+                <TableCell className="text-muted-foreground" colSpan={6}>
                   Loading…
                 </TableCell>
               </TableRow>
             ) : null}
             {!isLoading && videos.length === 0 ? (
               <TableRow>
-                <TableCell className="text-muted-foreground" colSpan={7}>
+                <TableCell className="text-muted-foreground" colSpan={6}>
                   No focus room videos yet.
                 </TableCell>
               </TableRow>
@@ -226,16 +240,21 @@ export default function FocusRoomVideosAdmin() {
                   return (
                     <TableRow key={video.id}>
                       <TableCell>
-                        <Lightbox
-                          className="h-[68px] w-[120px] gap-0"
-                          images={lightboxImages}
-                          thumbnailIndex={index}
-                          thumbnailClassName="relative h-full w-full rounded-md bg-muted"
-                          thumbnailImgClassName="h-full w-full object-cover"
-                        />
-                      </TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {video.id}
+                        <div className="space-y-1">
+                          <Lightbox
+                            className="h-[68px] w-[120px] gap-0"
+                            images={lightboxImages}
+                            thumbnailIndex={index}
+                            thumbnailClassName="relative h-full w-full rounded-md bg-muted"
+                            thumbnailImgClassName="h-full w-full object-cover"
+                          />
+                          <p
+                            className="max-w-[120px] truncate font-mono text-muted-foreground text-[10px]"
+                            title={video.id}
+                          >
+                            {video.id}
+                          </p>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <Input
@@ -266,11 +285,17 @@ export default function FocusRoomVideosAdmin() {
                           value={tag}
                         />
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">
-                        {video.createdAt.toLocaleString()}
+                      <TableCell
+                        className="text-muted-foreground text-xs"
+                        title={video.createdAt.toLocaleString()}
+                      >
+                        {video.createdAt.toLocaleDateString()}
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">
-                        {video.updatedAt.toLocaleString()}
+                      <TableCell
+                        className="text-muted-foreground text-xs"
+                        title={video.updatedAt.toLocaleString()}
+                      >
+                        {video.updatedAt.toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">

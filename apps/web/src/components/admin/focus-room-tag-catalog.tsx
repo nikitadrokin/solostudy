@@ -98,10 +98,10 @@ export function FocusRoomTagCatalog() {
   return (
     <div className="space-y-4 rounded-xl border p-4">
       <div>
-        <h2 className="font-semibold text-lg">Tags</h2>
+        <h2 className="font-semibold text-base">Tags</h2>
         <p className="text-muted-foreground text-sm">
-          Labels shown in the focus room filters; slugs stay stable for URLs and
-          data. Remove only applies when no video uses the tag.
+          Labels shown in the focus room filters. Slugs are stable — rename the
+          label freely. Delete is only allowed when no video uses the tag.
         </p>
       </div>
 
