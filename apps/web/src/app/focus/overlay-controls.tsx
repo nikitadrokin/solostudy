@@ -16,6 +16,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useSession } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
+import OverlayDialog from './overlay-dialog';
 import SidebarTrigger from './sidebar-trigger';
 
 type OverlayControlsProps = {
@@ -137,6 +138,8 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
           </DynamicPopover>
         </div>
       </div>
+
+      <OverlayDialog onPopoverOpenChange={onPopoverOpenChange} />
     </div>
   );
 };
