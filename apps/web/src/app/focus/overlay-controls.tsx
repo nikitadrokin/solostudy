@@ -47,6 +47,8 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
   const Title = isMobile ? DrawerTitle : CardTitle;
   const Description = isMobile ? DrawerDescription : CardDescription;
 
+  const isAdmin = session?.user?.role === 'admin';
+
   return (
     <div className="absolute top-4 right-4 left-4 z-10">
       <div className="flex items-start justify-between">
@@ -137,7 +139,9 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
             <ControlsPanel />
           </DynamicPopover>
 
-          <OverlayDialog onPopoverOpenChange={onPopoverOpenChange} />
+          {isAdmin && (
+            <OverlayDialog onPopoverOpenChange={onPopoverOpenChange} />
+          )}
         </div>
       </div>
     </div>
