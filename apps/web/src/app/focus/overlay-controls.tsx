@@ -136,10 +136,10 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
           >
             <ControlsPanel />
           </DynamicPopover>
+
+          <OverlayDialog onPopoverOpenChange={onPopoverOpenChange} />
         </div>
       </div>
-
-      <OverlayDialog onPopoverOpenChange={onPopoverOpenChange} />
     </div>
   );
 };

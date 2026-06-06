@@ -27,13 +27,8 @@ import { useSession } from '@/lib/auth-client';
 import { YOUTUBE_VALIDATION_PATTERNS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useFocusStore } from '@/stores/focus-store';
-import {
-  formatSessionTime,
-  useSoloSessionStore,
-} from '@/stores/solo-session-store';
 import { useVideoStore } from '@/stores/video-store';
 import { api, apiClient } from '@/utils/trpc';
-import SidebarTrigger from './sidebar-trigger';
 
 const ALL_TAGS = 'all' as const;
 
@@ -46,8 +41,7 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
-  const { formattedTime, isActive, focusTime } = useFocusTimer();
-  const { phase, remainingSeconds, isRunning } = useSoloSessionStore();
+  const { formattedTime, focusTime } = useFocusTimer();
 
   const { data: uncompletedTasks } = useQuery(
     api.todos.getUncompletedCount.queryOptions(undefined, {
@@ -83,44 +77,20 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
     return () => window.removeEventListener('keydown', onKey);
   }, [onPopoverOpenChange]);
 
-  const timerDisplay =
-    phase !== 'idle' ? formatSessionTime(remainingSeconds) : formattedTime;
-
   return (
     <Dialog.Root onOpenChange={handleOpenChange} open={open}>
-      {/* Always-visible top bar */}
-      <div className="pointer-events-none absolute inset-0 z-10">
-        {/* Top-left */}
-        <div className="pointer-events-auto absolute top-4 left-4 flex items-center gap-2">
-          <SidebarTrigger
-            className="bg-background/80 backdrop-blur-sm"
-            variant="outline"
-          />
-          <div className="flex h-8 items-center gap-1.5 rounded-md border border-border/60 bg-background/80 px-2.5 font-mono text-xs">
-            <Timer className="size-3 shrink-0" />
-            <span>{timerDisplay}</span>
-            <div
-              className={cn(
-                'h-1.5 w-1.5 shrink-0 rounded-full',
-                isRunning || isActive ? 'bg-primary' : 'bg-muted-foreground/40'
-              )}
-            />
-          </div>
-        </div>
-
-        <Dialog.Trigger
-          className="pointer-events-auto absolute top-4 right-4 flex h-8 items-center gap-2 rounded-md border border-border/60 bg-background/80 px-3 font-medium text-xs hover:bg-background/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          title="Open Focus Studio (H)"
-        >
-          <LayoutDashboard className="size-3.5" />
-          <span className="hidden sm:inline">Studio</span>
-          {!!uncompletedTasks && (
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary font-bold text-[10px] text-primary-foreground">
-              {uncompletedTasks > 9 ? '9+' : uncompletedTasks}
-            </span>
-          )}
-        </Dialog.Trigger>
-      </div>
+      <Dialog.Trigger
+        className="flex h-8 items-center gap-2 rounded-md border border-border/60 bg-background/80 px-3 font-medium text-xs backdrop-blur-sm hover:bg-background/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        title="Open Focus Studio (H)"
+      >
+        <LayoutDashboard className="size-3.5" />
+        <span className="hidden sm:inline">Studio</span>
+        {!!uncompletedTasks && (
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary font-bold text-[10px] text-primary-foreground">
+            {uncompletedTasks > 9 ? '9+' : uncompletedTasks}
+          </span>
+        )}
+      </Dialog.Trigger>
 
       <Dialog.Portal>
         <Dialog.Backdrop className="absolute inset-0 z-40 bg-black/60 transition-all duration-300 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
