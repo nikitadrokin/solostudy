@@ -91,7 +91,7 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
             )}
           </DynamicPopover>
 
-            <FocusTimer onOpenChange={onPopoverOpenChange} />
+          <FocusTimer onOpenChange={onPopoverOpenChange} />
         </div>
 
         {/* Trailing */}
@@ -119,8 +119,8 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
           <DynamicPopover
             align="end"
             className="md:w-96"
-            side="bottom"
             onOpenChange={onPopoverOpenChange}
+            side="bottom"
             tooltip="Focus Room Settings"
             trigger={
               <Button
