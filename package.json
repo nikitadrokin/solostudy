@@ -25,8 +25,8 @@
   "packageManager": "pnpm@10.12.4",
   "pnpm": {
     "overrides": {
-      "@better-auth/sso": "1.6.12",
-      "kysely": "^0.27.4"
+      "@better-auth/sso": "1.6.15",
+      "kysely": "^0.29.0"
     }
   }
 }
