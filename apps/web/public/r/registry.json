@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "solostudy",
-  "homepage": "https://solostudy.app",
+  "homepage": "https://study.nkdr.me",
   "items": [
     {
       "name": "alert",
@@ -20,9 +20,7 @@
       "type": "registry:ui",
       "title": "Alert Dialog",
       "description": "A modal dialog for confirming destructive or important actions.",
-      "registryDependencies": [
-        "button"
-      ],
+      "registryDependencies": ["button"],
       "files": [
         {
           "path": "src/components/ui/alert-dialog.tsx",
@@ -71,9 +69,7 @@
       "type": "registry:ui",
       "title": "Button Group",
       "description": "Groups related buttons into a connected control.",
-      "registryDependencies": [
-        "separator"
-      ],
+      "registryDependencies": ["separator"],
       "files": [
         {
           "path": "src/components/ui/button-group.tsx",
@@ -134,10 +130,7 @@
       "type": "registry:ui",
       "title": "Combobox",
       "description": "A searchable selection input built from Base UI primitives.",
-      "registryDependencies": [
-        "button",
-        "input-group"
-      ],
+      "registryDependencies": ["button", "input-group"],
       "files": [
         {
           "path": "src/components/ui/combobox.tsx",
@@ -162,9 +155,7 @@
       "type": "registry:ui",
       "title": "Drawer",
       "description": "A slide-up drawer for mobile-friendly panels.",
-      "registryDependencies": [
-        "scroll-area"
-      ],
+      "registryDependencies": ["scroll-area"],
       "files": [
         {
           "path": "src/components/ui/drawer.tsx",
@@ -219,10 +210,7 @@
       "type": "registry:ui",
       "title": "Field",
       "description": "Composable form field layout primitives.",
-      "registryDependencies": [
-        "label",
-        "separator"
-      ],
+      "registryDependencies": ["label", "separator"],
       "files": [
         {
           "path": "src/components/ui/field.tsx",
@@ -247,11 +235,7 @@
       "type": "registry:ui",
       "title": "Input Group",
       "description": "Composes inputs, textareas, buttons, and addons into grouped controls.",
-      "registryDependencies": [
-        "button",
-        "input",
-        "textarea"
-      ],
+      "registryDependencies": ["button", "input", "textarea"],
       "files": [
         {
           "path": "src/components/ui/input-group.tsx",
@@ -264,9 +248,7 @@
       "type": "registry:ui",
       "title": "Item",
       "description": "A compact row layout for lists, menus, and grouped content.",
-      "registryDependencies": [
-        "separator"
-      ],
+      "registryDependencies": ["separator"],
       "files": [
         {
           "path": "src/components/ui/item.tsx",
@@ -291,9 +273,7 @@
       "type": "registry:ui",
       "title": "Popover",
       "description": "A floating panel for contextual content.",
-      "registryDependencies": [
-        "scroll-area"
-      ],
+      "registryDependencies": ["scroll-area"],
       "files": [
         {
           "path": "src/components/ui/popover.tsx",
