@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "visually-hidden",
+  "title": "Visually Hidden",
+  "description": "Hides content visually while keeping it available to assistive technology.",
+  "files": [
+    {
+      "path": "src/components/ui/visually-hidden.tsx",
+      "content": "import { VisuallyHidden as VisuallyHiddenPrimitive } from 'radix-ui';\nimport type * as React from 'react';\n\nconst VisuallyHiddenRoot: React.FC<\n  React.ComponentProps<typeof VisuallyHiddenPrimitive.Root>\n> = ({ ...props }) => {\n  return <VisuallyHiddenPrimitive.Root {...props} />;\n};\n\nconst VisuallyHidden: React.FC<\n  React.ComponentProps<typeof VisuallyHiddenPrimitive.VisuallyHidden>\n> = ({ ...props }) => {\n  return <VisuallyHiddenPrimitive.VisuallyHidden {...props} />;\n};\n\nexport { VisuallyHiddenRoot, VisuallyHidden };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

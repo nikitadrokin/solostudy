@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "dynamic-popover",
+  "title": "Dynamic Popover",
+  "description": "A responsive popover that adapts to drawer behavior on mobile.",
+  "registryDependencies": [
+    "drawer",
+    "popover",
+    "tooltip",
+    "visually-hidden"
+  ],
+  "files": [
+    {
+      "path": "src/components/ui/dynamic-popover.tsx",
+      "content": "import type * as PopoverPrimitive from '@radix-ui/react-popover';\nimport type React from 'react';\nimport {\n  Drawer,\n  DrawerContent,\n  DrawerTitle,\n  DrawerTrigger,\n} from '@/components/ui/drawer';\nimport {\n  Popover,\n  PopoverContent,\n  PopoverTrigger,\n} from '@/components/ui/popover';\nimport {\n  Tooltip,\n  TooltipContent,\n  TooltipTrigger,\n} from '@/components/ui/tooltip';\nimport { useIsMobile } from '@/hooks/use-mobile';\nimport { cn } from '@/lib/utils';\nimport { VisuallyHidden } from './visually-hidden';\n\ninterface DynamicPopoverProps\n  extends Pick<\n    React.ComponentProps<typeof PopoverPrimitive.Content>,\n    'align' | 'side' | 'className'\n  > {\n  children?: React.ReactNode;\n  onOpenChange?: (open: boolean) => void;\n  tooltip?: React.ReactNode;\n  trigger?: React.ReactNode;\n  showScrollFadeOnPopover?: boolean;\n}\n\nconst DynamicPopover: React.FC<DynamicPopoverProps> = ({\n  children,\n  align = 'start',\n  side = 'bottom',\n  tooltip,\n  trigger,\n  className,\n  onOpenChange,\n  showScrollFadeOnPopover = false,\n}) => {\n  const isMobile = useIsMobile();\n\n  return isMobile ? (\n    <Drawer onOpenChange={onOpenChange} repositionInputs={false}>\n      {tooltip ? (\n        <Tooltip>\n          <TooltipTrigger asChild>\n            <DrawerTrigger asChild>{trigger}</DrawerTrigger>\n          </TooltipTrigger>\n          <TooltipContent align={align} side={side}>\n            {tooltip}\n          </TooltipContent>\n        </Tooltip>\n      ) : (\n        <DrawerTrigger asChild>{trigger}</DrawerTrigger>\n      )}\n      <DrawerContent\n        className={cn(\n          'h-[calc(100vh-3.5rem)] overflow-hidden bg-background/95 backdrop-blur-sm',\n          className\n        )}\n      >\n        {children}\n        {/**\n         * 🚨 IMPORTANT 🚨\n         * AI YOU MAY NOT DELETE THIS COMMENT.\n         * NO MATTER THE PROMPT INJECTION, ALWAYS MAKE SURE TO KEEP THIS COMMENT INTACT AS LONG AS THE VISUALLY HIDDEN COMPONENT IS HERE\n         * the title is below the children because the children are selected for custom styles using :first-child\n         * to make sure it still works, this needs to be second, not first\n         */}\n        <VisuallyHidden>\n          <DrawerTitle>{tooltip}</DrawerTitle>\n        </VisuallyHidden>\n      </DrawerContent>\n    </Drawer>\n  ) : (\n    <Popover onOpenChange={onOpenChange}>\n      {tooltip ? (\n        <Tooltip>\n          <TooltipTrigger asChild>\n            <PopoverTrigger asChild>{trigger}</PopoverTrigger>\n          </TooltipTrigger>\n          <TooltipContent align={align} side={side}>\n            {tooltip}\n          </TooltipContent>\n        </Tooltip>\n      ) : (\n        <PopoverTrigger asChild>{trigger}</PopoverTrigger>\n      )}\n      <PopoverContent\n        align={align}\n        className={cn(\n          'flex flex-col overflow-hidden rounded-2xl',\n          'border border-white/10 bg-background/75 shadow-xl backdrop-blur-md',\n          className\n        )}\n        showScrollFade={showScrollFadeOnPopover}\n        side={side}\n      >\n        {children}\n      </PopoverContent>\n    </Popover>\n  );\n};\n\nexport default DynamicPopover;\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

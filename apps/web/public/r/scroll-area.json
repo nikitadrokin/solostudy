@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "scroll-area",
+  "title": "Scroll Area",
+  "description": "A styled scrollable container.",
+  "files": [
+    {
+      "path": "src/components/ui/scroll-area.tsx",
+      "content": "import { useIsMobile } from '@/hooks/use-mobile';\nimport { cn } from '@/lib/utils';\n\ntype ScrollAreaProps = {\n  children: React.ReactNode;\n  className?: string;\n  gradientHeightTop?: string;\n  gradientHeightBottom?: string;\n  gradientColor?: string;\n};\n\nconst ScrollArea: React.FC<ScrollAreaProps> = ({\n  children,\n  className,\n  gradientHeightTop = '1rem',\n  gradientHeightBottom = '1rem',\n  gradientColor = 'var(--background)',\n}) => {\n  const isMobile = useIsMobile();\n\n  return (\n    <div\n      className={cn(\n        'relative flex flex-col',\n        'before:absolute before:inset-x-0 before:top-0 before:z-10 before:h-[var(--gradient-height-top)] before:bg-gradient-to-b before:from-[var(--gradient-color)] before:to-transparent before:content-[\"\"]',\n        'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-[var(--gradient-height-bottom)] after:bg-gradient-to-t after:from-[var(--gradient-color)] after:to-transparent after:content-[\"\"]',\n        isMobile\n          ? 'h-full min-h-0 *:px-4 [&>*:first-child]:pt-[var(--gradient-height-top)] [&>*:last-child]:pb-[var(--gradient-height-bottom)]'\n          : 'max-h-[500px]',\n        className\n      )}\n      style={\n        {\n          '--gradient-height-top': gradientHeightTop,\n          '--gradient-height-bottom': gradientHeightBottom,\n          '--gradient-color': gradientColor,\n        } as React.CSSProperties\n      }\n    >\n      {children}\n    </div>\n  );\n};\n\nexport default ScrollArea;\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

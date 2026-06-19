@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "popover",
+  "title": "Popover",
+  "description": "A floating panel for contextual content.",
+  "registryDependencies": [
+    "scroll-area"
+  ],
+  "files": [
+    {
+      "path": "src/components/ui/popover.tsx",
+      "content": "import * as PopoverPrimitive from '@radix-ui/react-popover';\nimport type * as React from 'react';\nimport { cn } from '@/lib/utils';\nimport ScrollArea from './scroll-area';\n\nfunction Popover({\n  ...props\n}: React.ComponentProps<typeof PopoverPrimitive.Root>) {\n  return <PopoverPrimitive.Root data-slot=\"popover\" {...props} />;\n}\n\nfunction PopoverTrigger({\n  ...props\n}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {\n  return <PopoverPrimitive.Trigger data-slot=\"popover-trigger\" {...props} />;\n}\n\nfunction PopoverContent({\n  className,\n  align = 'center',\n  sideOffset = 4,\n  showScrollFade = false,\n  children,\n  ...props\n}: React.ComponentProps<typeof PopoverPrimitive.Content> & {\n  showScrollFade?: boolean;\n}) {\n  return (\n    <PopoverPrimitive.Portal>\n      <PopoverPrimitive.Content\n        align={align}\n        className={cn(\n          'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-2xl border bg-popover/80 p-4 text-popover-foreground shadow-md outline-hidden backdrop-blur-sm data-[state=closed]:animate-out data-[state=open]:animate-in',\n          className\n        )}\n        data-slot=\"popover-content\"\n        sideOffset={sideOffset}\n        {...props}\n      >\n        {showScrollFade ? <ScrollArea>{children}</ScrollArea> : children}\n      </PopoverPrimitive.Content>\n    </PopoverPrimitive.Portal>\n  );\n}\n\nfunction PopoverAnchor({\n  ...props\n}: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {\n  return <PopoverPrimitive.Anchor data-slot=\"popover-anchor\" {...props} />;\n}\n\nexport { Popover, PopoverTrigger, PopoverContent, PopoverAnchor };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}
