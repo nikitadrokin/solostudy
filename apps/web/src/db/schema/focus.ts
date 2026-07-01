@@ -4,7 +4,7 @@ import {
   pgTable,
   text,
   timestamp,
-} from 'drizzle-orm/pg-core';
+} from 'drizzle-orm/sqlite-core';
 import { user } from './auth';
 
 export const todo = pgTable('todo', {

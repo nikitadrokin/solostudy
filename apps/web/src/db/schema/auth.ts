@@ -5,7 +5,7 @@ import {
   pgTable,
   text,
   timestamp,
-} from 'drizzle-orm/pg-core';
+} from 'drizzle-orm/sqlite-core';
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
