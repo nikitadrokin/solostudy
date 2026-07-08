@@ -9,10 +9,15 @@ import { FocusTimer } from '@/components/focus-timer';
 import TaskList from '@/components/task-list';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { CardDescription, CardTitle } from '@/components/ui/card';
-import { DrawerDescription, DrawerTitle } from '@/components/ui/drawer';
-import DynamicPopover from '@/components/ui/dynamic-popover';
-import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DynamicPopover,
+  DynamicPopoverBody,
+  DynamicPopoverContent,
+  DynamicPopoverDescription,
+  DynamicPopoverHeader,
+  DynamicPopoverTitle,
+  DynamicPopoverTrigger,
+} from '@/components/ui/dynamic-popover';
 import { useSession } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { api } from '@/utils/trpc';
@@ -26,7 +31,6 @@ type OverlayControlsProps = {
 const OverlayControls: React.FC<OverlayControlsProps> = ({
   onPopoverOpenChange,
 }) => {
-  const isMobile = useIsMobile();
   const { data: session } = useSession();
 
   const { data: uncompletedTasks } = useQuery(
@@ -44,9 +48,6 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
   const completedCount = tasks.filter((task) => task.completed).length;
   const totalCount = tasks.length;
 
-  const Title = isMobile ? DrawerTitle : CardTitle;
-  const Description = isMobile ? DrawerDescription : CardDescription;
-
   const isAdmin = session?.user?.role === 'admin';
 
   return (
@@ -59,13 +60,8 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
             variant="outline"
           />
 
-          <DynamicPopover
-            align="start"
-            className={cn(session ? 'md:w-96 md:pb-0' : 'md:min-w-fit md:p-6')}
-            onOpenChange={onPopoverOpenChange}
-            side="bottom"
-            tooltip="View Tasks"
-            trigger={
+          <DynamicPopover onOpenChange={onPopoverOpenChange}>
+            <DynamicPopoverTrigger asChild tooltip="View Tasks">
               <Button
                 className="!pr-[9px] !pl-[11px] bg-background/80 backdrop-blur-sm"
                 size="sm"
@@ -78,20 +74,29 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
                   </Badge>
                 )}
               </Button>
-            }
-          >
-            {session ? (
-              <>
-                <Title>Task List</Title>
-                <Description>
-                  {completedCount} of {totalCount} completed
-                </Description>
-
-                <TaskList className="" />
-              </>
-            ) : (
-              <SignedOutTaskContent />
-            )}
+            </DynamicPopoverTrigger>
+            <DynamicPopoverContent
+              align="start"
+              className={cn(session ? 'md:w-96' : 'md:min-w-fit')}
+              side="bottom"
+              title={session ? undefined : 'Tasks'}
+            >
+              {session ? (
+                <>
+                  <DynamicPopoverHeader>
+                    <DynamicPopoverTitle>Task List</DynamicPopoverTitle>
+                    <DynamicPopoverDescription>
+                      {completedCount} of {totalCount} completed
+                    </DynamicPopoverDescription>
+                  </DynamicPopoverHeader>
+                  <DynamicPopoverBody viewportClassName="px-4">
+                    <TaskList />
+                  </DynamicPopoverBody>
+                </>
+              ) : (
+                <SignedOutTaskContent />
+              )}
+            </DynamicPopoverContent>
           </DynamicPopover>
 
           <FocusTimer onOpenChange={onPopoverOpenChange} />
@@ -99,14 +104,8 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
 
         {/* Trailing */}
         <div className="flex items-center gap-2">
-          <DynamicPopover
-            align="end"
-            className="p-0 md:h-[500px] md:max-h-none md:min-h-full md:w-[600px]"
-            // showScrollFadeOnPopover={isMobile}
-            onOpenChange={onPopoverOpenChange}
-            side="bottom"
-            tooltip="Select background"
-            trigger={
+          <DynamicPopover onOpenChange={onPopoverOpenChange}>
+            <DynamicPopoverTrigger asChild tooltip="Select background">
               <Button
                 className="bg-background/80 backdrop-blur-sm"
                 size="sm"
@@ -114,18 +113,19 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
               >
                 <Clapperboard className="size-4" />
               </Button>
-            }
-          >
-            <VideoPicker />
+            </DynamicPopoverTrigger>
+            <DynamicPopoverContent
+              align="end"
+              className="md:h-[500px] md:max-h-none md:min-h-full md:w-[600px]"
+              side="bottom"
+              title="Select background"
+            >
+              <VideoPicker />
+            </DynamicPopoverContent>
           </DynamicPopover>
 
-          <DynamicPopover
-            align="end"
-            className="md:w-96"
-            onOpenChange={onPopoverOpenChange}
-            side="bottom"
-            tooltip="Focus Room Settings"
-            trigger={
+          <DynamicPopover onOpenChange={onPopoverOpenChange}>
+            <DynamicPopoverTrigger asChild tooltip="Focus Room Settings">
               <Button
                 className="bg-background/80 backdrop-blur-sm"
                 size="sm"
@@ -134,9 +134,17 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
               >
                 <Settings className="size-4" />
               </Button>
-            }
-          >
-            <ControlsPanel />
+            </DynamicPopoverTrigger>
+            <DynamicPopoverContent
+              align="end"
+              className="md:w-96"
+              side="bottom"
+              title="Focus Room Settings"
+            >
+              <DynamicPopoverBody viewportClassName="px-4 md:pt-4">
+                <ControlsPanel />
+              </DynamicPopoverBody>
+            </DynamicPopoverContent>
           </DynamicPopover>
 
           {isAdmin && (
@@ -149,7 +157,7 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
 };
 
 const SignedOutTaskContent: React.FC = () => (
-  <div className="flex flex-col items-start justify-center gap-4">
+  <div className="flex flex-col items-start justify-center gap-4 p-4 pt-12 md:p-6">
     <ListCheck className="size-8 text-muted-foreground" />
     <p className="text-muted-foreground text-sm">
       Sign in to view and manage your tasks!

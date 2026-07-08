@@ -1,45 +1,51 @@
-import { useIsMobile } from '@/hooks/use-mobile';
+import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
-type ScrollAreaProps = {
-  children: React.ReactNode;
-  className?: string;
-  gradientHeightTop?: string;
-  gradientHeightBottom?: string;
-  gradientColor?: string;
-};
-
-const ScrollArea: React.FC<ScrollAreaProps> = ({
-  children,
+function ScrollArea({
   className,
-  gradientHeightTop = '1rem',
-  gradientHeightBottom = '1rem',
-  gradientColor = 'var(--background)',
-}) => {
-  const isMobile = useIsMobile();
-
+  children,
+  fadeColor = 'var(--background)',
+  fadeTop = '1rem',
+  fadeBottom = '1rem',
+  viewportClassName,
+  style,
+  ...props
+}: React.ComponentProps<'div'> & {
+  fadeColor?: string;
+  fadeTop?: string;
+  fadeBottom?: string;
+  viewportClassName?: string;
+}) {
   return (
     <div
       className={cn(
-        'relative flex flex-col',
-        'before:absolute before:inset-x-0 before:top-0 before:z-10 before:h-[var(--gradient-height-top)] before:bg-gradient-to-b before:from-[var(--gradient-color)] before:to-transparent before:content-[""]',
-        'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-[var(--gradient-height-bottom)] after:bg-gradient-to-t after:from-[var(--gradient-color)] after:to-transparent after:content-[""]',
-        isMobile
-          ? 'h-full min-h-0 *:px-4 [&>*:first-child]:pt-[var(--gradient-height-top)] [&>*:last-child]:pb-[var(--gradient-height-bottom)]'
-          : 'max-h-[500px]',
+        'relative flex min-h-0 flex-col',
+        'before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:z-10 before:h-(--scroll-area-fade-top) before:bg-gradient-to-b before:from-(--scroll-area-fade-color) before:to-transparent before:content-[""]',
+        'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-(--scroll-area-fade-bottom) after:bg-gradient-to-t after:from-(--scroll-area-fade-color) after:to-transparent after:content-[""]',
         className
       )}
+      data-slot="scroll-area"
       style={
         {
-          '--gradient-height-top': gradientHeightTop,
-          '--gradient-height-bottom': gradientHeightBottom,
-          '--gradient-color': gradientColor,
+          '--scroll-area-fade-color': fadeColor,
+          '--scroll-area-fade-top': fadeTop,
+          '--scroll-area-fade-bottom': fadeBottom,
+          ...style,
         } as React.CSSProperties
       }
+      {...props}
     >
-      {children}
+      <div
+        className={cn(
+          'min-h-0 flex-1 overflow-y-auto pt-(--scroll-area-fade-top) pb-(--scroll-area-fade-bottom)',
+          viewportClassName
+        )}
+        data-slot="scroll-area-viewport"
+      >
+        {children}
+      </div>
     </div>
   );
-};
+}
 
-export default ScrollArea;
+export { ScrollArea };

@@ -3,7 +3,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { Clock, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import DynamicPopover from '@/components/ui/dynamic-popover';
+import {
+  DynamicPopover,
+  DynamicPopoverBody,
+  DynamicPopoverContent,
+  DynamicPopoverTrigger,
+} from '@/components/ui/dynamic-popover';
 import { useFocusTimer } from '@/hooks/use-focus-timer';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
@@ -46,13 +51,11 @@ export function FocusTimer({ onOpenChange }: FocusTimerProps) {
     : formattedTime;
 
   return (
-    <DynamicPopover
-      align="start"
-      className="w-[min(28rem,calc(100vw-2rem))] p-0!"
-      onOpenChange={onOpenChange}
-side="bottom"
-      tooltip={isRunning ? 'Solo session active' : 'Focus timer'}
-      trigger={
+    <DynamicPopover onOpenChange={onOpenChange}>
+      <DynamicPopoverTrigger
+        asChild
+        tooltip={isRunning ? 'Solo session active' : 'Focus timer'}
+      >
         <Button
           className="relative bg-background/80 font-mono backdrop-blur-sm"
           size="sm"
@@ -68,24 +71,30 @@ side="bottom"
             )}
           />
         </Button>
-      }
-    >
-      <div className="flex flex-col p-4">
-        <SoloSessionPlanner />
+      </DynamicPopoverTrigger>
+      <DynamicPopoverContent
+        align="start"
+        className="w-[min(28rem,calc(100vw-2rem))]"
+        side="bottom"
+        title="Focus timer"
+      >
+        <DynamicPopoverBody viewportClassName="px-4 md:pt-4">
+          <SoloSessionPlanner />
 
-        <div className="mt-4 flex items-center gap-3 border-t pt-3 text-muted-foreground text-xs">
-          <span className="flex items-center gap-1.5">
-            <Timer className="size-3" />
-            <span className="font-mono">{formattedTime}</span>
-            <span>this session</span>
-          </span>
-          <span>·</span>
-          <span className="flex items-center gap-1.5">
-            <Clock className="size-3" />
-            <span>{formatDuration(totalTodaySeconds)} today</span>
-          </span>
-        </div>
-      </div>
+          <div className="mt-4 flex items-center gap-3 border-t pt-3 text-muted-foreground text-xs">
+            <span className="flex items-center gap-1.5">
+              <Timer className="size-3" />
+              <span className="font-mono">{formattedTime}</span>
+              <span>this session</span>
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-1.5">
+              <Clock className="size-3" />
+              <span>{formatDuration(totalTodaySeconds)} today</span>
+            </span>
+          </div>
+        </DynamicPopoverBody>
+      </DynamicPopoverContent>
     </DynamicPopover>
   );
 }

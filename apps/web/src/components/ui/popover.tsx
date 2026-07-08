@@ -1,7 +1,6 @@
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
-import ScrollArea from './scroll-area';
 
 function Popover({
   ...props
@@ -19,12 +18,8 @@ function PopoverContent({
   className,
   align = 'center',
   sideOffset = 4,
-  showScrollFade = false,
-  children,
   ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Content> & {
-  showScrollFade?: boolean;
-}) {
+}: React.ComponentProps<typeof PopoverPrimitive.Content>) {
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
@@ -36,9 +31,7 @@ function PopoverContent({
         data-slot="popover-content"
         sideOffset={sideOffset}
         {...props}
-      >
-        {showScrollFade ? <ScrollArea>{children}</ScrollArea> : children}
-      </PopoverPrimitive.Content>
+      />
     </PopoverPrimitive.Portal>
   );
 }

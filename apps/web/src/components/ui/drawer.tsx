@@ -1,7 +1,6 @@
 import type * as React from 'react';
 import { Drawer as DrawerPrimitive } from 'vaul';
 import { cn } from '@/lib/utils';
-import ScrollArea from './scroll-area';
 
 function Drawer({
   ...props
@@ -66,9 +65,7 @@ function DrawerContent({
         <div className="!rounded-t-3xl relative">
           <div className="absolute top-0 right-0 left-0 z-[60] mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full bg-muted-foreground/25 backdrop-blur-sm group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
         </div>
-        <ScrollArea gradientHeightBottom="3.5rem" gradientHeightTop="3.5rem">
-          {children}
-        </ScrollArea>
+        {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
   );
