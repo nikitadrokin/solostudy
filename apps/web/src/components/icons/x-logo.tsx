@@ -1,12 +1,12 @@
-import type { LucideProps } from 'lucide-react';
+import type { SVGProps } from 'react';
 import { cn } from '@/lib/utils';
 
-interface XLogoProps extends LucideProps {}
+type XLogoProps = SVGProps<SVGSVGElement>;
 
-const XLogo: React.FC<XLogoProps> = ({ ...props }) => (
+const XLogo = ({ className, ...props }: XLogoProps) => (
   <svg
     aria-label="Twitter X Streamline Icon"
-    className={cn('size-4 stroke-foreground', props.className)}
+    className={cn('size-4 stroke-foreground', className)}
     fill="currentColor"
     height="16"
     viewBox="0 0 16 16"
