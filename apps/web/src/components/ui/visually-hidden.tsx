@@ -1,16 +1,16 @@
-import { VisuallyHidden as VisuallyHiddenPrimitive } from 'radix-ui';
 import type * as React from 'react';
 
-const VisuallyHiddenRoot: React.FC<
-  React.ComponentProps<typeof VisuallyHiddenPrimitive.Root>
-> = ({ ...props }) => {
-  return <VisuallyHiddenPrimitive.Root {...props} />;
-};
+import { cn } from '@/lib/utils';
 
-const VisuallyHidden: React.FC<
-  React.ComponentProps<typeof VisuallyHiddenPrimitive.VisuallyHidden>
-> = ({ ...props }) => {
-  return <VisuallyHiddenPrimitive.VisuallyHidden {...props} />;
-};
+function VisuallyHidden({ className, ...props }: React.ComponentProps<'span'>) {
+  return <span className={cn('sr-only', className)} {...props} />;
+}
+
+function VisuallyHiddenRoot({
+  className,
+  ...props
+}: React.ComponentProps<'span'>) {
+  return <VisuallyHidden className={className} {...props} />;
+}
 
 export { VisuallyHiddenRoot, VisuallyHidden };
