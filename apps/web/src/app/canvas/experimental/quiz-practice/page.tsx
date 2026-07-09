@@ -481,26 +481,24 @@ export default function QuizPracticePage() {
                 <div className="grid w-full min-w-full grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
                   {courses.map((course) => (
                     <Item
-                      asChild
                       className="cursor-pointer flex-nowrap overflow-hidden rounded-xl p-3 transition-colors hover:bg-accent"
                       key={course.id}
                       onClick={() => {
                         setSelectedCourseId(course.canvasId);
                         setSelectedFileIds(new Set());
                       }}
+                      render={<button type="button" />}
                       size="sm"
                       variant="outline"
                     >
-                      <button type="button">
-                        <ItemMedia variant="icon">
-                          <BookOpen className="size-4" />
-                        </ItemMedia>
-                        <ItemContent>
-                          <ItemTitle className="line-clamp-2 text-left">
-                            {course.name}
-                          </ItemTitle>
-                        </ItemContent>
-                      </button>
+                      <ItemMedia variant="icon">
+                        <BookOpen className="size-4" />
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle className="line-clamp-2 text-left">
+                          {course.name}
+                        </ItemTitle>
+                      </ItemContent>
                     </Item>
                   ))}
                 </div>

@@ -55,24 +55,36 @@ function getGradeColor(score: number): string {
 function getGradeColorFromLetter(grade: string): string {
   const letter = grade.charAt(0).toUpperCase();
   switch (letter) {
-    case 'A': return 'text-emerald-500';
-    case 'B': return 'text-blue-500';
-    case 'C': return 'text-yellow-500';
-    case 'D': return 'text-orange-500';
-    case 'F': return 'text-red-500';
-    default: return 'text-muted-foreground';
+    case 'A':
+      return 'text-emerald-500';
+    case 'B':
+      return 'text-blue-500';
+    case 'C':
+      return 'text-yellow-500';
+    case 'D':
+      return 'text-orange-500';
+    case 'F':
+      return 'text-red-500';
+    default:
+      return 'text-muted-foreground';
   }
 }
 
 function getGradeBgColorFromLetter(grade: string): string {
   const letter = grade.charAt(0).toUpperCase();
   switch (letter) {
-    case 'A': return 'bg-emerald-500/10';
-    case 'B': return 'bg-blue-500/10';
-    case 'C': return 'bg-yellow-500/10';
-    case 'D': return 'bg-orange-500/10';
-    case 'F': return 'bg-red-500/10';
-    default: return 'bg-muted';
+    case 'A':
+      return 'bg-emerald-500/10';
+    case 'B':
+      return 'bg-blue-500/10';
+    case 'C':
+      return 'bg-yellow-500/10';
+    case 'D':
+      return 'bg-orange-500/10';
+    case 'F':
+      return 'bg-red-500/10';
+    default:
+      return 'bg-muted';
   }
 }
 
@@ -356,9 +368,11 @@ const GradePredictorPage: React.FC = () => {
   );
 
   const selectedCourse = courses.find((c) => c.canvasId === selectedCourseId);
-  
+
   // Get the Canvas-provided letter grade for the selected course
-  const selectedCourseGrade = grades.find((g) => g.courseId === selectedCourseId);
+  const selectedCourseGrade = grades.find(
+    (g) => g.courseId === selectedCourseId
+  );
 
   return (
     <div className="container mx-auto max-w-7xl space-y-8 p-6 md:p-8">
@@ -420,28 +434,31 @@ const GradePredictorPage: React.FC = () => {
                   {courses.length > 0
                     ? courses.map((course) => (
                         <Item
-                          asChild
                           className="cursor-pointer flex-nowrap overflow-hidden rounded-xl p-3 transition-colors hover:bg-accent"
                           key={course.id}
                           onClick={() => setSelectedCourseId(course.canvasId)}
+                          render={
+                            <button
+                              disabled={!!selectedCourseId}
+                              type="button"
+                            />
+                          }
                           size="sm"
                           variant="outline"
                         >
-                          <button disabled={!!selectedCourseId} type="button">
-                            <ItemMedia variant="icon">
-                              {isLoadingAnalysis &&
-                              selectedCourseId === course.canvasId ? (
-                                <Loader2 className="size-4 animate-spin" />
-                              ) : (
-                                <BookOpen className="size-4" />
-                              )}
-                            </ItemMedia>
-                            <ItemContent>
-                              <ItemTitle className="line-clamp-2 text-left">
-                                {course.name}
-                              </ItemTitle>
-                            </ItemContent>
-                          </button>
+                          <ItemMedia variant="icon">
+                            {isLoadingAnalysis &&
+                            selectedCourseId === course.canvasId ? (
+                              <Loader2 className="size-4 animate-spin" />
+                            ) : (
+                              <BookOpen className="size-4" />
+                            )}
+                          </ItemMedia>
+                          <ItemContent>
+                            <ItemTitle className="line-clamp-2 text-left">
+                              {course.name}
+                            </ItemTitle>
+                          </ItemContent>
                         </Item>
                       ))
                     : Array.from({ length: 10 }).map((_, index) => (
@@ -485,13 +502,17 @@ const GradePredictorPage: React.FC = () => {
                   <div
                     className={cn(
                       'flex h-24 w-24 items-center justify-center rounded-2xl',
-                      getGradeBgColorFromLetter(selectedCourseGrade.currentGrade)
+                      getGradeBgColorFromLetter(
+                        selectedCourseGrade.currentGrade
+                      )
                     )}
                   >
                     <span
                       className={cn(
                         'font-bold text-4xl',
-                        getGradeColorFromLetter(selectedCourseGrade.currentGrade)
+                        getGradeColorFromLetter(
+                          selectedCourseGrade.currentGrade
+                        )
                       )}
                     >
                       {selectedCourseGrade.currentGrade}
