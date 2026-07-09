@@ -1,4 +1,4 @@
-import { Slot, Slottable } from '@radix-ui/react-slot';
+import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Loader2 } from 'lucide-react';
 import type * as React from 'react';
@@ -40,33 +40,29 @@ function Button({
   className,
   variant,
   size,
-  asChild = false,
+  render,
+  nativeButton,
   fullWidth = false,
   isLoading = false,
   disabled = false,
-  ref,
   icon,
   children,
   ...props
-}: React.ComponentProps<'button'> &
+}: ButtonPrimitive.Props &
   VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
     fullWidth?: boolean;
     isLoading?: boolean;
-    disabled?: boolean;
-    ref?: React.RefObject<HTMLButtonElement>;
     icon?: React.ReactNode;
   }) {
-  const Comp = asChild ? Slot : 'button';
-
   return (
-    <Comp
+    <ButtonPrimitive
       className={cn(
         fullWidth && 'w-full',
         buttonVariants({ variant, size, className })
       )}
       disabled={isLoading || disabled}
-      ref={ref}
+      nativeButton={nativeButton ?? render === undefined}
+      render={render}
       {...props}
     >
       {isLoading ? (
@@ -77,17 +73,14 @@ function Button({
         />
       ) : icon ? (
         icon
-      ) : // to prevent button from collapsing
-      null}
+      ) : null}
 
-      <Slottable>{children}</Slottable>
-
-      {/* display a dropdown if button is set to have one, otherwise add spacing so button text doesn't move */}
+      {children}
 
       {(fullWidth && isLoading) || (fullWidth && icon) ? (
         <div className="w-5" />
       ) : null}
-    </Comp>
+    </ButtonPrimitive>
   );
 }
 

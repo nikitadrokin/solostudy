@@ -137,8 +137,12 @@ const ErrorFallback: React.FC<ErrorProps> = ({ error, reset }) => {
             <RefreshCw className="mr-2 h-4 w-4" />
             Try Again
           </Button>
-          <Button asChild className="flex-1" variant="secondary">
-            <Link href="/">Go Home</Link>
+          <Button
+            className="flex-1"
+            render={<Link href="/" />}
+            variant="secondary"
+          >
+            Go Home
           </Button>
         </CardFooter>
       </Card>

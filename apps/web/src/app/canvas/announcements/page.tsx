@@ -92,8 +92,8 @@ export default function CanvasAnnouncementsPage() {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button asChild>
-                  <Link href="/settings#integrations">Go to Settings</Link>
+                <Button render={<Link href="/settings#integrations" />}>
+                  Go to Settings
                 </Button>
               </EmptyContent>
             </Empty>

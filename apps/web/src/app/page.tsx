@@ -225,19 +225,19 @@ function FeatureCard({
         {action}
         {href && cta && (
           <Button
-            asChild
             className="group p-0 hover:bg-transparent"
+            render={
+              <Link
+                className="flex items-center text-primary"
+                href={href as Route}
+              />
+            }
             variant="ghost"
           >
-            <Link
-              className="flex items-center text-primary"
-              href={href as Route}
-            >
-              {cta}
-              <span className="ml-1 transition-transform group-hover:translate-x-1">
-                →
-              </span>
-            </Link>
+            {cta}
+            <span className="ml-1 transition-transform group-hover:translate-x-1">
+              →
+            </span>
           </Button>
         )}
       </CardContent>

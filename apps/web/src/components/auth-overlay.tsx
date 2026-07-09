@@ -64,14 +64,14 @@ export function AuthOverlay({ children }: AuthOverlayProps) {
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Button
-                asChild
                 onClick={() => {
                   toast.dismiss(t);
                   toastIdRef.current = null;
                 }}
+                render={<Link href="/login" />}
                 size="sm"
               >
-                <Link href="/login">Sign In</Link>
+                Sign In
               </Button>
               <Dialog>
                 <DialogTrigger asChild>
@@ -90,8 +90,11 @@ export function AuthOverlay({ children }: AuthOverlayProps) {
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
-                    <Button asChild className="w-full sm:w-auto">
-                      <Link href="/login">Sign In or Create Account</Link>
+                    <Button
+                      className="w-full sm:w-auto"
+                      render={<Link href="/login" />}
+                    >
+                      Sign In or Create Account
                     </Button>
                   </DialogFooter>
                 </DialogContent>

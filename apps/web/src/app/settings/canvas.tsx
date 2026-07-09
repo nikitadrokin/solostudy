@@ -320,18 +320,19 @@ const CanvasIntegration: React.FC = () => {
                 Generate a personal access token in Canvas: Account → Settings →
                 New Access Token
                 <Button
-                  asChild
                   className="ml-2 h-auto p-0 text-xs"
+                  render={
+                    // biome-ignore lint/a11y/useAnchorContent: link text is Button children
+                    <a
+                      href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/How-do-I-manage-API-access-tokens-as-a-student/ta-p/273823"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    />
+                  }
                   variant="link"
                 >
-                  <a
-                    href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/How-do-I-manage-API-access-tokens-as-a-student/ta-p/273823"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    Learn more
-                    <ExternalLink className="ml-1 inline h-3 w-3" />
-                  </a>
+                  Learn more
+                  <ExternalLink className="ml-1 inline h-3 w-3" />
                 </Button>
               </FieldDescription>
             </Field>

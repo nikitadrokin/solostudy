@@ -127,10 +127,13 @@ const ErrorFallback: React.FC<GlobalErrorProps> = ({ error, reset }) => {
             <RefreshCw className="mr-2 h-4 w-4" />
             Try Again
           </Button>
-          <Button asChild className="flex-1" variant="secondary">
-            <a href={dmLink} rel="noopener" target="_blank">
-              Contact Support
-            </a>
+          <Button
+            className="flex-1"
+            // biome-ignore lint/a11y/useAnchorContent: link text is Button children
+            render={<a href={dmLink} rel="noopener" target="_blank" />}
+            variant="secondary"
+          >
+            Contact Support
           </Button>
         </CardFooter>
       </Card>

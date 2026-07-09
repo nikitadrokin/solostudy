@@ -71,15 +71,14 @@ function ComboboxInput({
       <InputGroupAddon align="inline-end">
         {showTrigger && (
           <InputGroupButton
-            asChild
             className="group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent"
             data-slot="input-group-button"
             disabled={disabled}
+            nativeButton
+            render={<ComboboxTrigger />}
             size="icon-xs"
             variant="ghost"
-          >
-            <ComboboxTrigger />
-          </InputGroupButton>
+          />
         )}
         {showClear && <ComboboxClear disabled={disabled} />}
       </InputGroupAddon>
