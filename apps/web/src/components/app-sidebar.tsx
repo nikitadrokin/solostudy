@@ -122,9 +122,10 @@ export default function AppSidebar({
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Toggle Sidebar">
-              <SidebarTrigger className="h-8 w-8" />
-            </SidebarMenuButton>
+            <SidebarMenuButton
+              render={<SidebarTrigger className="h-8 w-8" />}
+              tooltip="Toggle Sidebar"
+            />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -135,80 +136,72 @@ export default function AppSidebar({
             {mainLinks.map(({ href, label, icon: Icon }) => (
               <SidebarMenuItem key={href}>
                 <SidebarMenuButton
-                  asChild
                   isActive={pathname === href}
+                  render={<Link href={href as Route} />}
                   tooltip={label}
                 >
-                  <Link href={href as Route}>
-                    <Icon />
-                    <span>{label}</span>
-                  </Link>
+                  <Icon />
+                  <span>{label}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
             {isAdmin ? (
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  asChild
                   isActive={pathname === '/admin/focus-room-videos'}
+                  render={<Link href={'/admin/focus-room-videos' as Route} />}
                   tooltip="Focus videos"
                 >
-                  <Link href={'/admin/focus-room-videos' as Route}>
-                    <Clapperboard />
-                    <span>Focus videos</span>
-                  </Link>
+                  <Clapperboard />
+                  <span>Focus videos</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ) : null}
 
             <Collapsible
-              asChild
               defaultOpen={settingsOpen}
               onOpenChange={setSettingsOpen}
               open={settingsOpen}
+              render={<SidebarMenuItem />}
             >
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
+              <CollapsibleTrigger
+                render={
                   <SidebarMenuButton
-                    asChild
                     isActive={isSettingsPath}
+                    render={<Link href="/settings" />}
                     tooltip="Settings"
-                  >
-                    <Link href="/settings">
-                      <Settings />
-                      <span>Settings</span>
-                      <ChevronRight
-                        className={cn(
-                          'ml-auto transition-transform duration-200',
-                          settingsOpen && 'rotate-90'
-                        )}
-                      />
-                    </Link>
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {settingsLinks.map(({ href, label, icon: Icon }) => {
-                      const hash = href.split('#')[1];
-                      return (
-                        <SidebarMenuSubItem key={href}>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={
-                              isSettingsPath && currentHash === `#${hash}`
-                            }
-                          >
-                            <Link href={href as Route}>
-                              <Icon />
-                              <span>{label}</span>
-                            </Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      );
-                    })}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
+                  />
+                }
+              >
+                <Settings />
+                <span>Settings</span>
+                <ChevronRight
+                  className={cn(
+                    'ml-auto transition-transform duration-200',
+                    settingsOpen && 'rotate-90'
+                  )}
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  {settingsLinks.map(({ href, label, icon: Icon }) => {
+                    const hash = href.split('#')[1];
+                    return (
+                      <SidebarMenuSubItem key={href}>
+                        <SidebarMenuSubButton
+                          isActive={
+                            isSettingsPath && currentHash === `#${hash}`
+                          }
+                          render={<Link href={href as Route} />}
+                        >
+                          <Icon />
+                          <span>{label}</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    );
+                  })}
+                </SidebarMenuSub>
+              </CollapsibleContent>
             </Collapsible>
           </SidebarMenu>
         </SidebarGroup>
