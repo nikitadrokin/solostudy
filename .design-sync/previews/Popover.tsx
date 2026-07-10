@@ -1,10 +1,27 @@
-import { Popover, PopoverContent, PopoverTrigger, Button, Label, Input } from 'web';
+import {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+  Button,
+  Label,
+  Input,
+} from 'web';
 export const Open = () => (
   <Popover defaultOpen modal={false}>
-    <PopoverTrigger asChild><Button variant="outline">Session goal</Button></PopoverTrigger>
+    <PopoverTrigger render={<Button variant="outline" />}>
+      Session goal
+    </PopoverTrigger>
     <PopoverContent className="w-72">
       <div className="flex flex-col gap-3">
-        <div className="font-medium text-sm">Set a goal</div>
+        <PopoverHeader>
+          <PopoverTitle>Set a goal</PopoverTitle>
+          <PopoverDescription>
+            Choose how long this focus block should last.
+          </PopoverDescription>
+        </PopoverHeader>
         <div className="flex flex-col gap-2">
           <Label htmlFor="goal">Minutes</Label>
           <Input id="goal" type="number" defaultValue={25} />
