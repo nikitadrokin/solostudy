@@ -139,8 +139,12 @@ const CanvasIntegration: React.FC = () => {
     setIsConnectDialogOpen(true);
   };
 
-  const handleConnectDialogOpenChange = (open: boolean) => {
+  const handleConnectDialogOpenChange = (
+    open: boolean,
+    eventDetails?: { cancel: () => void }
+  ) => {
     if (!open && connectMutation.isPending) {
+      eventDetails?.cancel();
       return;
     }
     setIsConnectDialogOpen(open);
@@ -225,8 +229,8 @@ const CanvasIntegration: React.FC = () => {
               onOpenChange={handleConnectDialogOpenChange}
               open={isConnectDialogOpen}
             >
-              <DialogTrigger asChild>
-                <Button>Connect Canvas</Button>
+              <DialogTrigger render={<Button />}>
+                Connect Canvas
               </DialogTrigger>
             </Dialog>
           </div>
@@ -255,11 +259,7 @@ const CanvasIntegration: React.FC = () => {
         onOpenChange={handleConnectDialogOpenChange}
         open={isConnectDialogOpen}
       >
-        <DialogContent
-          onInteractOutside={(e) =>
-            connectMutation.isPending && e.preventDefault()
-          }
-        >
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>
               {status?.connected ? 'Edit Canvas' : 'Connect Canvas'}

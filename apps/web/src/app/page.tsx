@@ -248,10 +248,8 @@ function FeatureCard({
 function InstallModal() {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button size="sm" variant="outline">
-          How to Install
-        </Button>
+      <DialogTrigger render={<Button size="sm" variant="outline" />}>
+        How to Install
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

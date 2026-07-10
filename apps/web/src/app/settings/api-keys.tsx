@@ -97,8 +97,12 @@ const ApiKeys: React.FC = () => {
     }
   };
 
-  const handleDialogOpenChange = (open: boolean) => {
+  const handleDialogOpenChange = (
+    open: boolean,
+    eventDetails?: { cancel: () => void }
+  ) => {
     if (!open && isLoading) {
+      eventDetails?.cancel();
       return;
     }
     setIsDialogOpen(open);
@@ -128,8 +132,12 @@ const ApiKeys: React.FC = () => {
     }
   };
 
-  const handleDeleteDialogOpenChange = (open: boolean) => {
+  const handleDeleteDialogOpenChange = (
+    open: boolean,
+    eventDetails?: { cancel: () => void }
+  ) => {
     if (!open && isDeleting) {
+      eventDetails?.cancel();
       return;
     }
     setDeleteDialogOpen(open);
@@ -221,19 +229,19 @@ const ApiKeys: React.FC = () => {
       )}
       <CardFooter>
         <Dialog onOpenChange={handleDialogOpenChange} open={isDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              disabled={maximumApiKeysReached}
-              icon={<Plus className="size-4" />}
-            >
-              {maximumApiKeysReached
-                ? 'Maximum API Keys Reached'
-                : 'Add New API Key'}
-            </Button>
-          </DialogTrigger>
-          <DialogContent
-            onInteractOutside={(e) => isLoading && e.preventDefault()}
+          <DialogTrigger
+            render={
+              <Button
+                disabled={maximumApiKeysReached}
+                icon={<Plus className="size-4" />}
+              />
+            }
           >
+            {maximumApiKeysReached
+              ? 'Maximum API Keys Reached'
+              : 'Add New API Key'}
+          </DialogTrigger>
+          <DialogContent>
             <DialogHeader>
               <DialogTitle>Add New API Key</DialogTitle>
             </DialogHeader>
@@ -280,9 +288,7 @@ const ApiKeys: React.FC = () => {
           onOpenChange={handleDeleteDialogOpenChange}
           open={deleteDialogOpen}
         >
-          <DialogContent
-            onInteractOutside={(e) => isDeleting && e.preventDefault()}
-          >
+          <DialogContent>
             <DialogHeader>
               <DialogTitle>Delete API Key</DialogTitle>
             </DialogHeader>

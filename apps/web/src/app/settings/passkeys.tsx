@@ -113,8 +113,12 @@ const Passkeys: React.FC<{ userEmail?: string | null }> = ({ userEmail }) => {
     setDeleteDialogOpen(true);
   };
 
-  const handleDeleteDialogOpenChange = (open: boolean) => {
+  const handleDeleteDialogOpenChange = (
+    open: boolean,
+    eventDetails?: { cancel: () => void }
+  ) => {
     if (!open && isDeleting) {
+      eventDetails?.cancel();
       return;
     }
     setDeleteDialogOpen(open);
@@ -234,9 +238,7 @@ const Passkeys: React.FC<{ userEmail?: string | null }> = ({ userEmail }) => {
           onOpenChange={handleDeleteDialogOpenChange}
           open={deleteDialogOpen}
         >
-          <DialogContent
-            onInteractOutside={(e) => isDeleting && e.preventDefault()}
-          >
+          <DialogContent>
             <DialogHeader>
               <DialogTitle>Delete Passkey</DialogTitle>
             </DialogHeader>

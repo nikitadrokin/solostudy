@@ -74,10 +74,8 @@ export function AuthOverlay({ children }: AuthOverlayProps) {
                 Sign In
               </Button>
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button size="sm" variant="outline">
-                    Learn More
-                  </Button>
+                <DialogTrigger render={<Button size="sm" variant="outline" />}>
+                  Learn More
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
