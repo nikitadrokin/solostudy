@@ -1,6 +1,6 @@
 'use client';
 
-import type * as PopoverPrimitive from '@radix-ui/react-popover';
+import type { Popover as PopoverPrimitive } from '@base-ui/react/popover';
 import * as React from 'react';
 import {
   Drawer,
@@ -12,6 +12,8 @@ import {
 import {
   Popover,
   PopoverContent,
+  PopoverDescription,
+  PopoverTitle,
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -40,21 +42,45 @@ function useDynamicPopover() {
   return React.useContext(DynamicPopoverContext);
 }
 
+type DynamicPopoverProps = {
+  children?: React.ReactNode;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  modal?: boolean;
+};
+
 function DynamicPopover({
   children,
-  ...props
-}: React.ComponentProps<typeof Popover>) {
+  open,
+  defaultOpen,
+  onOpenChange,
+  modal,
+}: DynamicPopoverProps) {
   const isMobile = useIsMobile();
   const context = React.useMemo(() => ({ isMobile }), [isMobile]);
 
   return (
     <DynamicPopoverContext.Provider value={context}>
       {isMobile ? (
-        <Drawer repositionInputs={false} {...props}>
+        <Drawer
+          defaultOpen={defaultOpen}
+          modal={modal}
+          onOpenChange={onOpenChange}
+          open={open}
+          repositionInputs={false}
+        >
           {children}
         </Drawer>
       ) : (
-        <Popover {...props}>{children}</Popover>
+        <Popover
+          defaultOpen={defaultOpen}
+          modal={modal}
+          onOpenChange={onOpenChange}
+          open={open}
+        >
+          {children}
+        </Popover>
       )}
     </DynamicPopoverContext.Provider>
   );
@@ -65,19 +91,50 @@ function DynamicPopoverTrigger({
   tooltipAlign = 'center',
   tooltipSide = 'bottom',
   children,
+  className,
+  render,
   ...props
-}: Omit<React.ComponentProps<typeof PopoverTrigger>, 'ref'> & {
+}: Omit<React.ComponentProps<'button'>, 'ref'> & {
   tooltip?: React.ReactNode;
   tooltipAlign?: React.ComponentProps<typeof TooltipContent>['align'];
   tooltipSide?: React.ComponentProps<typeof TooltipContent>['side'];
+  render?: React.ComponentProps<typeof PopoverTrigger>['render'];
 }) {
   const { isMobile } = useDynamicPopover();
-  const Trigger = isMobile ? DrawerTrigger : PopoverTrigger;
-  const trigger = (
-    <Trigger data-slot="dynamic-popover-trigger" {...props}>
-      {children}
-    </Trigger>
-  );
+
+  let trigger: React.ReactElement;
+  if (isMobile) {
+    const drawerChild =
+      render && React.isValidElement(render)
+        ? React.cloneElement(
+            render as React.ReactElement<{ children?: React.ReactNode }>,
+            undefined,
+            children
+          )
+        : children;
+
+    trigger = (
+      <DrawerTrigger
+        asChild={Boolean(render && React.isValidElement(render))}
+        className={typeof className === 'string' ? className : undefined}
+        data-slot="dynamic-popover-trigger"
+        {...props}
+      >
+        {drawerChild}
+      </DrawerTrigger>
+    );
+  } else {
+    trigger = (
+      <PopoverTrigger
+        className={className}
+        data-slot="dynamic-popover-trigger"
+        render={render}
+        {...props}
+      >
+        {children}
+      </PopoverTrigger>
+    );
+  }
 
   if (!tooltip) {
     return trigger;
@@ -85,7 +142,7 @@ function DynamicPopoverTrigger({
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+      <TooltipTrigger render={trigger} />
       <TooltipContent align={tooltipAlign} side={tooltipSide}>
         {tooltip}
       </TooltipContent>
@@ -100,10 +157,7 @@ function DynamicPopoverContent({
   align = 'start',
   side = 'bottom',
   ...props
-}: Pick<
-  React.ComponentProps<typeof PopoverPrimitive.Content>,
-  'align' | 'side'
-> &
+}: Pick<PopoverPrimitive.Positioner.Props, 'align' | 'side'> &
   Omit<React.ComponentProps<'div'>, 'ref' | 'style'> & {
     /**
      * Accessible title for the mobile drawer. Omit when a visible
@@ -123,11 +177,11 @@ function DynamicPopoverContent({
         data-slot="dynamic-popover-content"
         {...props}
       >
-        {title && (
+        {title ? (
           <VisuallyHidden>
             <DrawerTitle>{title}</DrawerTitle>
           </VisuallyHidden>
-        )}
+        ) : null}
         {children}
       </DrawerContent>
     );
@@ -220,10 +274,19 @@ function DynamicPopoverTitle({
   ...props
 }: Omit<React.ComponentProps<'div'>, 'ref' | 'style'>) {
   const { isMobile } = useDynamicPopover();
-  const Title = isMobile ? DrawerTitle : 'div';
+
+  if (isMobile) {
+    return (
+      <DrawerTitle
+        className={cn('font-semibold text-foreground leading-none', className)}
+        data-slot="dynamic-popover-title"
+        {...props}
+      />
+    );
+  }
 
   return (
-    <Title
+    <PopoverTitle
       className={cn('font-semibold text-foreground leading-none', className)}
       data-slot="dynamic-popover-title"
       {...props}
@@ -236,10 +299,19 @@ function DynamicPopoverDescription({
   ...props
 }: Omit<React.ComponentProps<'div'>, 'ref' | 'style'>) {
   const { isMobile } = useDynamicPopover();
-  const Description = isMobile ? DrawerDescription : 'div';
+
+  if (isMobile) {
+    return (
+      <DrawerDescription
+        className={cn('text-muted-foreground text-sm', className)}
+        data-slot="dynamic-popover-description"
+        {...props}
+      />
+    );
+  }
 
   return (
-    <Description
+    <PopoverDescription
       className={cn('text-muted-foreground text-sm', className)}
       data-slot="dynamic-popover-description"
       {...props}

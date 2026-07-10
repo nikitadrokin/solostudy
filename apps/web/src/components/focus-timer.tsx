@@ -53,24 +53,24 @@ export function FocusTimer({ onOpenChange }: FocusTimerProps) {
   return (
     <DynamicPopover onOpenChange={onOpenChange}>
       <DynamicPopoverTrigger
-        asChild
+        render={
+          <Button
+            className="relative bg-background/80 font-mono backdrop-blur-sm"
+            size="sm"
+            type="button"
+            variant="outline"
+          />
+        }
         tooltip={isRunning ? 'Solo session active' : 'Focus timer'}
       >
-        <Button
-          className="relative bg-background/80 font-mono backdrop-blur-sm"
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          <Timer className="mr-2 h-4 w-4" />
-          {triggerLabel}
-          <div
-            className={cn(
-              '-right-1 -top-1 absolute h-2 w-2 rounded-full',
-              isRunning || isActive ? 'bg-primary' : 'bg-muted-foreground'
-            )}
-          />
-        </Button>
+        <Timer className="mr-2 h-4 w-4" />
+        {triggerLabel}
+        <div
+          className={cn(
+            '-right-1 -top-1 absolute h-2 w-2 rounded-full',
+            isRunning || isActive ? 'bg-primary' : 'bg-muted-foreground'
+          )}
+        />
       </DynamicPopoverTrigger>
       <DynamicPopoverContent
         align="start"

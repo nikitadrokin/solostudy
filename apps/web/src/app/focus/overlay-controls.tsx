@@ -61,19 +61,22 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
           />
 
           <DynamicPopover onOpenChange={onPopoverOpenChange}>
-            <DynamicPopoverTrigger asChild tooltip="View Tasks">
-              <Button
-                className="!pr-[9px] !pl-[11px] bg-background/80 backdrop-blur-sm"
-                size="sm"
-                variant="outline"
-              >
-                <ListCheck className="size-4" />
-                {!!uncompletedTasks && (
-                  <Badge className="-right-1 -top-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs shadow-sm">
-                    {uncompletedTasks}
-                  </Badge>
-                )}
-              </Button>
+            <DynamicPopoverTrigger
+              render={
+                <Button
+                  className="!pr-[9px] !pl-[11px] bg-background/80 backdrop-blur-sm"
+                  size="sm"
+                  variant="outline"
+                />
+              }
+              tooltip="View Tasks"
+            >
+              <ListCheck className="size-4" />
+              {!!uncompletedTasks && (
+                <Badge className="-right-1 -top-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs shadow-sm">
+                  {uncompletedTasks}
+                </Badge>
+              )}
             </DynamicPopoverTrigger>
             <DynamicPopoverContent
               align="start"
@@ -105,14 +108,17 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
         {/* Trailing */}
         <div className="flex items-center gap-2">
           <DynamicPopover onOpenChange={onPopoverOpenChange}>
-            <DynamicPopoverTrigger asChild tooltip="Select background">
-              <Button
-                className="bg-background/80 backdrop-blur-sm"
-                size="sm"
-                variant="outline"
-              >
-                <Clapperboard className="size-4" />
-              </Button>
+            <DynamicPopoverTrigger
+              render={
+                <Button
+                  className="bg-background/80 backdrop-blur-sm"
+                  size="sm"
+                  variant="outline"
+                />
+              }
+              tooltip="Select background"
+            >
+              <Clapperboard className="size-4" />
             </DynamicPopoverTrigger>
             <DynamicPopoverContent
               align="end"
@@ -125,15 +131,18 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
           </DynamicPopover>
 
           <DynamicPopover onOpenChange={onPopoverOpenChange}>
-            <DynamicPopoverTrigger asChild tooltip="Focus Room Settings">
-              <Button
-                className="bg-background/80 backdrop-blur-sm"
-                size="sm"
-                title="Focus Room Settings"
-                variant="outline"
-              >
-                <Settings className="size-4" />
-              </Button>
+            <DynamicPopoverTrigger
+              render={
+                <Button
+                  className="bg-background/80 backdrop-blur-sm"
+                  size="sm"
+                  title="Focus Room Settings"
+                  variant="outline"
+                />
+              }
+              tooltip="Focus Room Settings"
+            >
+              <Settings className="size-4" />
             </DynamicPopoverTrigger>
             <DynamicPopoverContent
               align="end"
