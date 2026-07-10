@@ -245,11 +245,13 @@ export default function CanvasCalendarPage() {
           </p>
         </div>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="w-[150px] justify-between" variant="outline">
-              Next {dateRange} days
-              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
+          <DropdownMenuTrigger
+            render={
+              <Button className="w-[150px] justify-between" variant="outline" />
+            }
+          >
+            Next {dateRange} days
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setDateRange('7')}>

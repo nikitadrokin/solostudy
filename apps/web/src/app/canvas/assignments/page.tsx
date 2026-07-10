@@ -301,14 +301,16 @@ export default function CanvasAssignmentsPage() {
         </div>
         <div className="flex items-center gap-2">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="w-[200px] justify-between" variant="outline">
-                {selectedCourseId
-                  ? (courses.find((c) => c.canvasId === selectedCourseId)
-                      ?.name ?? 'Select Course')
-                  : 'All Courses'}
-                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
+            <DropdownMenuTrigger
+              render={
+                <Button className="w-[200px] justify-between" variant="outline" />
+              }
+            >
+              {selectedCourseId
+                ? (courses.find((c) => c.canvasId === selectedCourseId)
+                    ?.name ?? 'Select Course')
+                : 'All Courses'}
+              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
               <DropdownMenuItem onClick={() => setSelectedCourseId(undefined)}>

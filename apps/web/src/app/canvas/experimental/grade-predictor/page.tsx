@@ -395,11 +395,13 @@ const GradePredictorPage: React.FC = () => {
 
           {/* Course selector */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="w-[250px] justify-between" variant="outline">
-                {selectedCourse?.name ?? 'Select a course'}
-                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
+            <DropdownMenuTrigger
+              render={
+                <Button className="w-[250px] justify-between" variant="outline" />
+              }
+            >
+              {selectedCourse?.name ?? 'Select a course'}
+              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[250px]">
               {courses.map((course) => (
