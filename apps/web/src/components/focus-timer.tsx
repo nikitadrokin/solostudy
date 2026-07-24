@@ -1,7 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { Clock, Timer } from 'lucide-react';
+import { Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DynamicPopover,
@@ -10,13 +9,11 @@ import {
   DynamicPopoverTrigger,
 } from '@/components/ui/dynamic-popover';
 import { useFocusTimer } from '@/hooks/use-focus-timer';
-import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import {
   formatSessionTime,
   useSoloSessionStore,
 } from '@/stores/solo-session-store';
-import { api } from '@/utils/trpc';
 import SoloSessionPlanner from './focus-room/solo-session-planner';
 
 type FocusTimerProps = {
@@ -24,27 +21,9 @@ type FocusTimerProps = {
 };
 
 export function FocusTimer({ onOpenChange }: FocusTimerProps) {
-  const { data: session } = authClient.useSession();
-  const { formattedTime, isActive, focusTime } = useFocusTimer();
+  const { formattedTime, isActive } = useFocusTimer();
   const { phase, remainingSeconds, isRunning } = useSoloSessionStore();
 
-  const { data: todayData } = useQuery(
-    api.focus.getTodayFocusTime.queryOptions(undefined, {
-      enabled: !!session,
-      refetchInterval: 60_000,
-    })
-  );
-
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
-
-  const totalTodaySeconds = (todayData?.totalSeconds ?? 0) + focusTime;
   const hasPlannedSession = phase !== 'idle';
   const triggerLabel = hasPlannedSession
     ? formatSessionTime(remainingSeconds)
@@ -86,11 +65,6 @@ export function FocusTimer({ onOpenChange }: FocusTimerProps) {
               <Timer className="size-3" />
               <span className="font-mono">{formattedTime}</span>
               <span>this session</span>
-            </span>
-            <span>·</span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="size-3" />
-              <span>{formatDuration(totalTodaySeconds)} today</span>
             </span>
           </div>
         </DynamicPopoverBody>

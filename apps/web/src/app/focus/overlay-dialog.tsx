@@ -3,23 +3,11 @@
 
 import { Dialog } from '@base-ui/react/dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  Clock,
-  LayoutDashboard,
-  ListCheck,
-  LogIn,
-  Timer,
-  Volume2,
-  VolumeX,
-  X,
-} from 'lucide-react';
-import Link from 'next/link';
+import { LayoutDashboard, Timer, Volume2, VolumeX, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import SoloSessionPlanner from '@/components/focus-room/solo-session-planner';
 import { extractVideoId } from '@/components/focus-room/youtube-player';
-import TaskList from '@/components/task-list';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFocusTimer } from '@/hooks/use-focus-timer';
@@ -40,14 +28,7 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
   onPopoverOpenChange,
 }) => {
   const [open, setOpen] = useState(false);
-  const { data: session } = useSession();
-  const { formattedTime, focusTime } = useFocusTimer();
-
-  const { data: uncompletedTasks } = useQuery(
-    api.todos.getUncompletedCount.queryOptions(undefined, {
-      enabled: !!session,
-    })
-  );
+  const { formattedTime } = useFocusTimer();
 
   const handleOpenChange = useCallback(
     (next: boolean) => {
@@ -85,60 +66,19 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
       >
         <LayoutDashboard className="size-3.5" />
         <span className="hidden sm:inline">Studio</span>
-        {!!uncompletedTasks && (
-          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary font-bold text-[10px] text-primary-foreground">
-            {uncompletedTasks > 9 ? '9+' : uncompletedTasks}
-          </span>
-        )}
       </Dialog.Trigger>
 
       <Dialog.Portal>
         <Dialog.Backdrop className="absolute inset-0 z-40 bg-black/60 transition-all duration-300 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
 
         <Dialog.Popup className="absolute inset-0 z-50 flex overflow-hidden p-6 transition-all duration-300 focus-visible:outline-none data-[ending-style]:opacity-0 data-[starting-style]:opacity-0">
-          <div className="flex min-w-0 shrink-0 flex-col gap-4">
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/50">
-              <div className="flex shrink-0 items-center gap-2 border-white/10 border-b px-4 py-3">
-                <ListCheck className="size-4 text-white/50" />
-                <span className="font-semibold text-sm text-white/90">
-                  Tasks
-                </span>
-                {!!uncompletedTasks && (
-                  <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 font-bold text-[10px] text-primary-foreground">
-                    {uncompletedTasks > 9 ? '9+' : uncompletedTasks}
-                  </span>
-                )}
-              </div>
-              <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-3 [scrollbar-color:rgba(255,255,255,0.15)_transparent] [scrollbar-width:thin]">
-                {session ? (
-                  <TaskList />
-                ) : (
-                  <div className="flex flex-col items-center gap-4 py-10 text-center">
-                    <ListCheck className="size-10 text-white/20" />
-                    <p className="text-sm text-white/50">
-                      Sign in to manage tasks
-                    </p>
-                    <Link
-                      className={cn(buttonVariants({ size: 'sm' }), 'gap-1.5')}
-                      href="/login"
-                    >
-                      <LogIn className="size-3.5" />
-                      Sign in
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-
+          <div className="flex w-80 min-w-0 shrink-0 flex-col gap-4">
             <div className="shrink-0 rounded-2xl border border-white/10 bg-black/50 p-4">
-              <SessionPanel
-                focusTime={focusTime}
-                formattedTime={formattedTime}
-              />
+              <SessionPanel formattedTime={formattedTime} />
             </div>
           </div>
 
-          <div className="ml-4 flex w-72 flex-1 shrink-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/50">
+          <div className="ml-4 flex flex-1 shrink-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/50">
             <VideosPanel />
           </div>
 
@@ -152,28 +92,12 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
   );
 };
 
-type SessionPanelProps = { formattedTime: string; focusTime: number };
+type SessionPanelProps = { formattedTime: string };
 
-const SessionPanel: React.FC<SessionPanelProps> = ({
-  formattedTime,
-  focusTime,
-}) => {
+const SessionPanel: React.FC<SessionPanelProps> = ({ formattedTime }) => {
   const { volume, isMuted } = useFocusStore();
   const { isVideoLoaded, handleVolumeChange, handleMuteToggle } =
     useVideoStore();
-  const { data: session } = useSession();
-
-  const { data: todayData } = useQuery(
-    api.focus.getTodayFocusTime.queryOptions(undefined, {
-      enabled: !!session,
-      refetchInterval: 60_000,
-    })
-  );
-
-  const totalTodaySeconds = (todayData?.totalSeconds ?? 0) + focusTime;
-  const hours = Math.floor(totalTodaySeconds / 3600);
-  const mins = Math.floor((totalTodaySeconds % 3600) / 60);
-  const todayLabel = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
 
   return (
     <div className="space-y-4">
@@ -220,11 +144,6 @@ const SessionPanel: React.FC<SessionPanelProps> = ({
           <Timer className="size-3" />
           <span className="font-mono text-white/60">{formattedTime}</span>
           <span>session</span>
-        </span>
-        <span>·</span>
-        <span className="flex items-center gap-1">
-          <Clock className="size-3" />
-          <span>{todayLabel} today</span>
         </span>
       </div>
     </div>
