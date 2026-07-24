@@ -7,7 +7,6 @@ import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { authClient } from '@/lib/auth-client';
-import ApiKeys from './api-keys';
 import Appearance from './appearance';
 import Passkeys from './passkeys';
 import Profile from './profile';
@@ -63,7 +62,6 @@ export default function SettingsPage() {
             </p>
           </div>
           <Passkeys userEmail={session?.user.email} />
-          <ApiKeys />
         </section>
 
         <Separator />
