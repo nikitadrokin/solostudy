@@ -137,14 +137,14 @@ export default function FocusRoom() {
 
   if (isLoadingVideo || isLoadingLastPlayedVideo) {
     return (
-      <main className="relative flex h-full items-center justify-center overflow-hidden">
+      <main className="relative flex h-svh items-center justify-center overflow-hidden">
         <div className="text-muted-foreground">Loading...</div>
       </main>
     );
   }
 
   return (
-    <main className="relative h-full select-none overflow-hidden">
+    <main className="relative h-svh select-none overflow-hidden">
       <YouTubePlayer
         onError={handleError}
         onPause={handlePause}
