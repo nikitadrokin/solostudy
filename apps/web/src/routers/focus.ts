@@ -1,26 +1,10 @@
 import { TRPCError } from '@trpc/server';
-import {
-  and,
-  asc,
-  count,
-  desc,
-  eq,
-  gte,
-  like,
-  or,
-  sql,
-  sum,
-} from 'drizzle-orm';
+import { asc, count, desc, eq, like, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
-import { focusRoomTag, focusRoomVideo, focusSession } from '../db/schema/focus';
+import { focusRoomTag, focusRoomVideo } from '../db/schema/focus';
 import { slugifyFocusRoomTagLabel } from '../lib/focus-room-tag';
-import {
-  adminProcedure,
-  protectedProcedure,
-  publicProcedure,
-  router,
-} from '../lib/trpc';
+import { adminProcedure, publicProcedure, router } from '../lib/trpc';
 
 async function assertFocusTagSlug(slug: string): Promise<void> {
   const row = await db
@@ -326,105 +310,5 @@ export const focusRouter = router({
       }
 
       return { id: input.id };
-    }),
-
-  saveFocusSession: protectedProcedure
-    .input(
-      z.object({
-        durationSeconds: z.number().int().positive(),
-        startedAt: z.date(),
-        endedAt: z.date(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const id = crypto.randomUUID();
-
-      await db.insert(focusSession).values({
-        id,
-        userId: ctx.session.user.id,
-        durationSeconds: input.durationSeconds,
-        startedAt: input.startedAt,
-        endedAt: input.endedAt,
-      });
-
-      return { id };
-    }),
-
-  getTodayFocusTime: protectedProcedure.query(async ({ ctx }) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const result = await db
-      .select({
-        totalSeconds: sum(focusSession.durationSeconds),
-      })
-      .from(focusSession)
-      .where(
-        and(
-          eq(focusSession.userId, ctx.session.user.id),
-          gte(focusSession.startedAt, today)
-        )
-      );
-
-    return {
-      totalSeconds: Number(result[0]?.totalSeconds ?? 0),
-    };
-  }),
-
-  getDailyFocusStats: protectedProcedure
-    .input(
-      z.object({
-        days: z.number().int().positive().default(7),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - input.days);
-      startDate.setHours(0, 0, 0, 0);
-
-      const result = await db
-        .select({
-          date: sql<string>`DATE(${focusSession.startedAt})`.as('date'),
-          totalSeconds: sum(focusSession.durationSeconds),
-          sessionCount: sql<number>`COUNT(*)`.as('session_count'),
-        })
-        .from(focusSession)
-        .where(
-          and(
-            eq(focusSession.userId, ctx.session.user.id),
-            gte(focusSession.startedAt, startDate)
-          )
-        )
-        .groupBy(sql`DATE(${focusSession.startedAt})`)
-        .orderBy(sql`DATE(${focusSession.startedAt})`);
-
-      // Create a map of existing data
-      const dataMap = new Map(
-        result.map((row) => [
-          row.date,
-          {
-            totalSeconds: Number(row.totalSeconds ?? 0),
-            sessions: Number(row.sessionCount ?? 0),
-          },
-        ])
-      );
-
-      // Generate array for all days in range
-      const chartData = Array.from({ length: input.days }, (_, i) => {
-        const date = new Date(
-          Date.now() - (input.days - 1 - i) * 24 * 60 * 60 * 1000
-        )
-          .toISOString()
-          .split('T')[0];
-
-        const dayData = dataMap.get(date);
-        return {
-          date,
-          sessions: dayData?.sessions ?? 0,
-          totalMinutes: Math.round((dayData?.totalSeconds ?? 0) / 60),
-        };
-      });
-
-      return { chartData };
     }),
 });

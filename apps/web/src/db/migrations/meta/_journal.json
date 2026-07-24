@@ -92,6 +92,13 @@
       "when": 1774386490936,
       "tag": "0012_mean_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1784863340979,
+      "tag": "0013_minor_magneto",
+      "breakpoints": true
     }
   ]
 }
