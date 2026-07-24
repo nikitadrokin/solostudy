@@ -2,11 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Script from 'next/script';
 import '../index.css';
-import { cookies } from 'next/headers';
-import AppHeader from '@/components/app-header';
-import AppSidebar from '@/components/app-sidebar';
 import Providers from '@/components/providers';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -38,16 +34,11 @@ export const viewport: Viewport = {
   // viewportFit: 'cover',
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
-  const coolifyProjectUrl = process.env.COOLIFY_PROJECT_URL ?? '';
-  const supabaseDashboardUrl = process.env.SUPABASE_DASHBOARD_URL ?? '';
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -71,18 +62,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <div className="flex min-h-svh w-full">
-              <AppSidebar
-                coolifyProjectUrl={coolifyProjectUrl}
-                supabaseDashboardUrl={supabaseDashboardUrl}
-              />
-              <SidebarInset>
-                <AppHeader />
-                {children}
-              </SidebarInset>
-            </div>
-          </SidebarProvider>
+          <div className="min-h-svh w-full">{children}</div>
         </Providers>
       </body>
     </html>

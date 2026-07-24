@@ -47,7 +47,7 @@ export default function SignInForm() {
             });
             posthog.identify(value.email);
             toast.success('Sign in successful');
-            router.push('/dashboard');
+            router.push('/focus');
           },
           onError: (error: any) => {
             posthog.capture('sign_in_failed', {
@@ -118,7 +118,7 @@ export default function SignInForm() {
           // Refetch session to update React state
           await refetch();
           toast.success('Signed in with passkey');
-          router.push('/dashboard');
+          router.push('/focus');
         },
         onError: (error: any) => {
           toast.error(error.error.message || error.error.statusText);

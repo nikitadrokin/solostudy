@@ -44,7 +44,7 @@ export default function SignUpForm() {
             });
             posthog.identify(value.email);
             toast.success('Sign up successful');
-            router.push('/dashboard');
+            router.push('/focus');
           },
           onError: (error: any) => {
             posthog.capture('sign_up_failed', {
