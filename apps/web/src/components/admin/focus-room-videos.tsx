@@ -208,8 +208,12 @@ export default function FocusRoomVideosAdmin() {
               <TableHead className="w-[140px]">Thumbnail</TableHead>
               <TableHead>Title</TableHead>
               <TableHead className="w-[160px]">Tag</TableHead>
-              <TableHead className="w-[90px] whitespace-nowrap">Added</TableHead>
-              <TableHead className="w-[90px] whitespace-nowrap">Updated</TableHead>
+              <TableHead className="w-[90px] whitespace-nowrap">
+                Added
+              </TableHead>
+              <TableHead className="w-[90px] whitespace-nowrap">
+                Updated
+              </TableHead>
               <TableHead className="w-[120px] text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -244,12 +248,12 @@ export default function FocusRoomVideosAdmin() {
                           <Lightbox
                             className="h-[68px] w-[120px] gap-0"
                             images={lightboxImages}
-                            thumbnailIndex={index}
                             thumbnailClassName="relative h-full w-full rounded-md bg-muted"
                             thumbnailImgClassName="h-full w-full object-cover"
+                            thumbnailIndex={index}
                           />
                           <p
-                            className="max-w-[120px] truncate font-mono text-muted-foreground text-[10px]"
+                            className="max-w-[120px] truncate font-mono text-[10px] text-muted-foreground"
                             title={video.id}
                           >
                             {video.id}

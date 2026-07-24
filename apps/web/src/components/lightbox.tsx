@@ -62,8 +62,7 @@ export function Lightbox({
     (index: number): number[] => {
       const previousIndex =
         index > 0 ? index - 1 : loop ? images.length - 1 : null;
-      const nextIndex =
-        index < images.length - 1 ? index + 1 : loop ? 0 : null;
+      const nextIndex = index < images.length - 1 ? index + 1 : loop ? 0 : null;
       return [index, previousIndex, nextIndex].filter(
         (value): value is number => value !== null
       );
@@ -166,7 +165,7 @@ export function Lightbox({
     const lightbox = lightboxRef.current;
     const focusableElements = Array.from(
       lightbox.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       )
     );
 

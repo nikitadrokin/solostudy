@@ -21,4 +21,3 @@ export const focusRoomVideo = pgTable('focus_room_video', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
-
