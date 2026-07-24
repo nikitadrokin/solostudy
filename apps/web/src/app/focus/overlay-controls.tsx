@@ -1,10 +1,11 @@
 'use client';
 
-import { Clapperboard, Settings } from 'lucide-react';
+import { Clapperboard, LogIn, Settings, User, Wrench } from 'lucide-react';
+import Link from 'next/link';
 import ControlsPanel from '@/components/focus-room/controls-panel';
 import VideoPicker from '@/components/focus-room/video-picker';
 import { FocusTimer } from '@/components/focus-timer';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   DynamicPopover,
   DynamicPopoverBody,
@@ -12,6 +13,7 @@ import {
   DynamicPopoverTrigger,
 } from '@/components/ui/dynamic-popover';
 import { useSession } from '@/lib/auth-client';
+import { cn } from '@/lib/utils';
 import OverlayDialog from './overlay-dialog';
 
 type OverlayControlsProps = {
@@ -83,8 +85,44 @@ const OverlayControls: React.FC<OverlayControlsProps> = ({
             </DynamicPopoverContent>
           </DynamicPopover>
 
+          {session ? (
+            <Link
+              className={cn(
+                buttonVariants({ size: 'sm', variant: 'outline' }),
+                'bg-background/80 backdrop-blur-sm'
+              )}
+              href="/settings"
+              title="Account settings"
+            >
+              <User className="size-4" />
+            </Link>
+          ) : (
+            <Link
+              className={cn(
+                buttonVariants({ size: 'sm', variant: 'outline' }),
+                'bg-background/80 backdrop-blur-sm'
+              )}
+              href="/login"
+              title="Sign in"
+            >
+              <LogIn className="size-4" />
+            </Link>
+          )}
+
           {isAdmin && (
-            <OverlayDialog onPopoverOpenChange={onPopoverOpenChange} />
+            <>
+              <Link
+                className={cn(
+                  buttonVariants({ size: 'sm', variant: 'outline' }),
+                  'bg-background/80 backdrop-blur-sm'
+                )}
+                href="/admin/focus-room-videos"
+                title="Manage focus room videos"
+              >
+                <Wrench className="size-4" />
+              </Link>
+              <OverlayDialog onPopoverOpenChange={onPopoverOpenChange} />
+            </>
           )}
         </div>
       </div>
