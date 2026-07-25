@@ -3,7 +3,7 @@
 import { Laptop, LogOut, Shield, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import BackToFocusLink from '@/components/back-to-focus-link';
 import Loader from '@/components/loader';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -34,6 +34,7 @@ const navigationItems = [
 
 export default function SettingsPage() {
   const router = useRouter();
+  const [activeSection, setActiveSection] = useState('profile');
   const { data: session, isPending } = authClient.useSession();
 
   useEffect(() => {
@@ -41,6 +42,19 @@ export default function SettingsPage() {
       router.push('/login');
     }
   }, [session, isPending, router]);
+
+  useEffect(() => {
+    const updateActiveSection = () => {
+      setActiveSection(window.location.hash.slice(1) || 'profile');
+    };
+
+    updateActiveSection();
+    window.addEventListener('hashchange', updateActiveSection);
+
+    return () => {
+      window.removeEventListener('hashchange', updateActiveSection);
+    };
+  }, []);
 
   if (isPending) {
     return (
@@ -70,19 +84,26 @@ export default function SettingsPage() {
             aria-label="Settings sections"
             className="flex gap-1 overflow-x-auto rounded-xl border bg-card/70 p-2 shadow-sm backdrop-blur-sm md:flex-col md:overflow-visible"
           >
-            {navigationItems.map(({ href, label, icon: Icon }) => (
-              <Link
-                className={cn(
-                  buttonVariants({ variant: 'ghost' }),
-                  'justify-start text-muted-foreground hover:text-foreground'
-                )}
-                href={href}
-                key={href}
-              >
-                <Icon />
-                {label}
-              </Link>
-            ))}
+            {navigationItems.map(({ href, label, icon: Icon }) => {
+              const section = href.slice(1);
+              const isActive = activeSection === section;
+
+              return (
+                <Link
+                  aria-current={isActive ? 'location' : undefined}
+                  className={cn(
+                    buttonVariants({ variant: 'ghost' }),
+                    'justify-start text-muted-foreground hover:text-foreground',
+                    isActive && 'bg-accent text-foreground'
+                  )}
+                  href={href}
+                  key={href}
+                >
+                  <Icon />
+                  {label}
+                </Link>
+              );
+            })}
           </nav>
         </aside>
 
