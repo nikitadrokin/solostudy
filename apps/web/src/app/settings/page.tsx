@@ -96,7 +96,7 @@ export default function SettingsPage() {
                     'justify-start text-muted-foreground hover:text-foreground',
                     isActive && 'bg-accent text-foreground'
                   )}
-                  href={href}
+                  href={{ hash: href }}
                   key={href}
                 >
                   <Icon />
