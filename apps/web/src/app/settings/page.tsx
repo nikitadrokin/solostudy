@@ -64,6 +64,10 @@ export default function SettingsPage() {
     );
   }
 
+  if (!session) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto max-w-4xl space-y-8 px-4 py-10">
       <header className="space-y-4">
