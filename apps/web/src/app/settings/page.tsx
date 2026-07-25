@@ -4,6 +4,7 @@ import { Laptop, LogOut, Shield, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import BackToFocusLink from '@/components/back-to-focus-link';
 import Loader from '@/components/loader';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -51,12 +52,15 @@ export default function SettingsPage() {
 
   return (
     <div className="container mx-auto max-w-4xl space-y-8 px-4 py-10">
-      <div className="space-y-2">
-        <h1 className="font-bold text-3xl tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your profile, preferences, and security.
-        </p>
-      </div>
+      <header className="space-y-4">
+        <BackToFocusLink className="-ml-3" />
+        <div className="space-y-2">
+          <h1 className="font-bold text-3xl tracking-tight">Settings</h1>
+          <p className="text-muted-foreground">
+            Manage your profile, preferences, and security.
+          </p>
+        </div>
+      </header>
 
       <Separator />
 
