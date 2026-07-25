@@ -1,11 +1,13 @@
 'use client';
 
+import BackToFocusLink from '@/components/back-to-focus-link';
 import SignInForm from '@/components/sign-in-form';
 import SignUpForm from '@/components/sign-up-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const LoginPage = () => (
-  <main className="grid min-h-svh place-items-center px-4 py-20">
+  <main className="relative grid min-h-svh place-items-center px-4 py-20">
+    <BackToFocusLink className="absolute top-4 left-4 sm:top-6 sm:left-6" />
     <div className="w-full max-w-md">
       <Tabs defaultValue="sign-in">
         <TabsList>
