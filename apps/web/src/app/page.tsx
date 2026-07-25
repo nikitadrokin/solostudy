@@ -13,6 +13,7 @@ export default function Home() {
     browserRequirements: 'Requires JavaScript',
     author: {
       '@type': 'Person',
+      '@id': 'https://nikitadrokin.com/#person',
       name: 'Nikita Drokin',
       url: 'https://nikitadrokin.com/',
     },
