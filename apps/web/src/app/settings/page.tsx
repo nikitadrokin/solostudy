@@ -1,15 +1,35 @@
 'use client';
 
-import { LogOut } from 'lucide-react';
+import { Laptop, LogOut, Shield, User } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Loader from '@/components/loader';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { authClient } from '@/lib/auth-client';
+import { cn } from '@/lib/utils';
 import Appearance from './appearance';
 import Passkeys from './passkeys';
 import Profile from './profile';
+
+const navigationItems = [
+  {
+    href: '#profile',
+    label: 'Profile',
+    icon: User,
+  },
+  {
+    href: '#appearance',
+    label: 'Appearance',
+    icon: Laptop,
+  },
+  {
+    href: '#security',
+    label: 'Security',
+    icon: Shield,
+  },
+];
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -40,43 +60,65 @@ export default function SettingsPage() {
 
       <Separator />
 
-      <div className="space-y-6">
-        <Profile
-          userEmail={session?.user.email}
-          userName={session?.user.name}
-          userRole={(session?.user as { role?: string })?.role}
-        />
-
-        <Separator />
-
-        <Appearance />
-
-        <Separator />
-
-        {/* Security Section */}
-        <section className="scroll-mt-16 space-y-4" id="security">
-          <div className="space-y-1">
-            <h2 className="font-semibold text-lg">Security</h2>
-            <p className="text-muted-foreground text-sm">
-              Manage your alternative authentication methods.
-            </p>
-          </div>
-          <Passkeys userEmail={session?.user.email} />
-        </section>
-
-        <Separator />
-
-        <div className="flex justify-end">
-          <Button
-            onClick={async () => {
-              await authClient.signOut();
-              router.push('/login');
-            }}
-            variant="destructive"
+      <div className="grid items-start gap-8 md:grid-cols-[13rem_minmax(0,1fr)]">
+        <aside className="md:sticky md:top-8">
+          <nav
+            aria-label="Settings sections"
+            className="flex gap-1 overflow-x-auto rounded-xl border bg-card/70 p-2 shadow-sm backdrop-blur-sm md:flex-col md:overflow-visible"
           >
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
+            {navigationItems.map(({ href, label, icon: Icon }) => (
+              <Link
+                className={cn(
+                  buttonVariants({ variant: 'ghost' }),
+                  'justify-start text-muted-foreground hover:text-foreground'
+                )}
+                href={href}
+                key={href}
+              >
+                <Icon />
+                {label}
+              </Link>
+            ))}
+          </nav>
+        </aside>
+
+        <div className="min-w-0 space-y-6">
+          <Profile
+            userEmail={session?.user.email}
+            userName={session?.user.name}
+            userRole={(session?.user as { role?: string })?.role}
+          />
+
+          <Separator />
+
+          <Appearance />
+
+          <Separator />
+
+          <section className="scroll-mt-16 space-y-4" id="security">
+            <div className="space-y-1">
+              <h2 className="font-semibold text-lg">Security</h2>
+              <p className="text-muted-foreground text-sm">
+                Manage your alternative authentication methods.
+              </p>
+            </div>
+            <Passkeys userEmail={session?.user.email} />
+          </section>
+
+          <Separator />
+
+          <div className="flex justify-end">
+            <Button
+              onClick={async () => {
+                await authClient.signOut();
+                router.push('/login');
+              }}
+              variant="destructive"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </div>
     </div>
