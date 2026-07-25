@@ -58,7 +58,7 @@ export default function SettingsPage() {
 
   if (isPending) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex min-h-svh items-center justify-center">
         <Loader />
       </div>
     );
