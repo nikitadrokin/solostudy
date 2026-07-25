@@ -4,8 +4,9 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'SoloStudy',
     short_name: 'SoloStudy',
-    description: 'A focused study environment with AI assistance',
-    start_url: '/',
+    description:
+      'A calm online focus room with a flexible timer and ambient video backgrounds.',
+    start_url: '/focus',
     display: 'standalone',
     background_color: '#ffffff',
     theme_color: '#000000',

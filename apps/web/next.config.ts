@@ -39,15 +39,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  async redirects() {
-    return await [
-      {
-        source: '/',
-        destination: '/focus',
-        permanent: false,
-      },
-    ];
-  },
 };
 
 export default nextConfig;

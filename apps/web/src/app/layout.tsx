@@ -15,10 +15,47 @@ const geistMono = Geist_Mono({
 });
 
 const isDev = process.env.NODE_ENV === 'development';
+const siteUrl = 'https://study.nkdr.me';
+const siteDescription =
+  'A calm online focus room with a flexible study timer, session planning, and ambient video backgrounds.';
 
 export const metadata: Metadata = {
-  title: `SoloStudy ${isDev ? ' | dev' : ''}`,
-  description: 'solostudy',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: `SoloStudy — Online Focus Room${isDev ? ' | dev' : ''}`,
+    template: `%s | SoloStudy${isDev ? ' | dev' : ''}`,
+  },
+  description: siteDescription,
+  applicationName: 'SoloStudy',
+  authors: [{ name: 'Nikita Drokin', url: 'https://nikitadrokin.com/' }],
+  creator: 'Nikita Drokin',
+  category: 'education',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/',
+    siteName: 'SoloStudy',
+    title: 'SoloStudy — Online Focus Room',
+    description: siteDescription,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SoloStudy — Online Focus Room',
+    description: siteDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   icons: {
     icon: '/pwa-192x192.png',
     shortcut: '/favicon.ico',
