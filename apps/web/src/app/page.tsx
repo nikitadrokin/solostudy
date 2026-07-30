@@ -1,148 +1,189 @@
+import { ChevronDown, Clapperboard, Timer, User } from 'lucide-react';
 import Link from 'next/link';
+import AmbientBackdrop from '@/components/landing/ambient-backdrop';
+import ControlChip from '@/components/landing/control-chip';
+import LandingHeader from '@/components/landing/landing-header';
+import { buttonVariants } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { DEFAULT_VIDEO_ID } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+
+const STRUCTURED_DATA = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'SoloStudy',
+  url: 'https://study.nkdr.me/',
+  description:
+    'A calm online focus room with a flexible study timer, session planning, and ambient video backgrounds.',
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript',
+  author: {
+    '@type': 'Person',
+    '@id': 'https://nikitadrokin.com/#person',
+    name: 'Nikita Drokin',
+    url: 'https://nikitadrokin.com/',
+  },
+};
+
+const FEATURES = [
+  {
+    title: 'A timer that fits the work',
+    description:
+      'Set your own focus and break lengths, then leave the session running in the corner of the screen.',
+    chip: (
+      <>
+        <Timer className="size-4" />
+        <span className="font-mono">25:00</span>
+        <span className="-right-1 -top-1 absolute size-2 rounded-full bg-primary" />
+      </>
+    ),
+  },
+  {
+    title: 'Backgrounds that settle the room',
+    description:
+      'Pick from a small curated set of ambient videos, or paste any YouTube link you already study to.',
+    chip: <Clapperboard className="size-4" />,
+  },
+  {
+    title: 'Nothing to set up',
+    description:
+      'Open the room and start. Signing in is optional, and only so the room remembers where you left off.',
+    chip: <User className="size-4" />,
+  },
+];
 
 export default function Home() {
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: 'SoloStudy',
-    url: 'https://study.nkdr.me/',
-    description:
-      'A calm online focus room with a flexible study timer, session planning, and ambient video backgrounds.',
-    applicationCategory: 'EducationalApplication',
-    operatingSystem: 'Any',
-    browserRequirements: 'Requires JavaScript',
-    author: {
-      '@type': 'Person',
-      '@id': 'https://nikitadrokin.com/#person',
-      name: 'Nikita Drokin',
-      url: 'https://nikitadrokin.com/',
-    },
-  };
-
   return (
     <>
       <script type="application/ld+json">
-        {JSON.stringify(structuredData)}
+        {JSON.stringify(STRUCTURED_DATA)}
       </script>
-      <main className="relative min-h-svh overflow-hidden bg-[#080b12] text-white">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-70"
-          style={{
-            background:
-              'radial-gradient(circle at 20% 10%, rgba(68, 88, 135, 0.35), transparent 32%), radial-gradient(circle at 80% 35%, rgba(76, 55, 114, 0.24), transparent 28%)',
-          }}
-        />
-        <div className="relative mx-auto flex min-h-svh w-full max-w-6xl flex-col px-6 sm:px-10">
-          <header className="flex items-center justify-between border-white/10 border-b py-6">
+
+      <main className="relative">
+        <AmbientBackdrop videoId={DEFAULT_VIDEO_ID} />
+
+        <section className="relative flex min-h-svh flex-col items-center justify-center px-6 py-24 text-center">
+          <LandingHeader />
+
+          <p className="fade-in animate-in rounded-full border bg-background/80 fill-mode-both px-3 py-1 text-muted-foreground text-xs backdrop-blur-sm duration-700 ease-out motion-reduce:animate-none">
+            No account needed
+          </p>
+
+          <h1 className="fade-in slide-in-from-bottom-3 mt-6 max-w-3xl animate-in text-balance fill-mode-both font-semibold text-4xl tracking-tight delay-100 duration-700 ease-out motion-reduce:animate-none sm:text-6xl">
+            Focus without the noise.
+          </h1>
+
+          <p className="fade-in slide-in-from-bottom-3 mt-5 max-w-xl animate-in text-balance fill-mode-both text-base text-foreground/75 leading-7 delay-200 duration-700 ease-out motion-reduce:animate-none sm:text-lg">
+            SoloStudy is a quiet study room in your browser. Choose an ambient
+            video, set a timer that matches what you are doing, and get to work.
+          </p>
+
+          <div className="fade-in slide-in-from-bottom-3 mt-9 flex animate-in flex-wrap items-center justify-center gap-3 fill-mode-both delay-300 duration-700 ease-out motion-reduce:animate-none">
             <Link
-              className="font-semibold text-lg tracking-tight"
-              href="/"
-              title="SoloStudy home"
-            >
-              SoloStudy
-            </Link>
-            <Link
-              className="rounded-full border border-white/20 px-4 py-2 font-medium text-sm transition-colors hover:border-white/40 hover:bg-white/10"
+              className={cn(
+                buttonVariants({ size: 'lg' }),
+                'transition-transform duration-200 ease-out active:scale-[0.97]'
+              )}
               href="/focus"
             >
-              Open focus room
+              Enter the focus room
             </Link>
-          </header>
-
-          <section className="grid flex-1 items-center gap-14 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:py-28">
-            <div>
-              <p className="mb-5 font-medium text-blue-200 text-sm uppercase tracking-[0.2em]">
-                Your space to focus
-              </p>
-              <h1 className="max-w-3xl text-balance font-semibold text-5xl leading-[0.96] tracking-[-0.055em] sm:text-7xl">
-                Focus without the noise.
-              </h1>
-              <p className="mt-7 max-w-xl text-balance text-lg text-white/65 leading-8 sm:text-xl">
-                SoloStudy is a calm online study room with an adaptable focus
-                timer, simple session planning, and ambient video backgrounds.
-              </p>
-              <div className="mt-10 flex flex-wrap items-center gap-4">
-                <Link
-                  className="hover:-translate-y-0.5 rounded-full bg-white px-6 py-3 font-semibold text-[#080b12] text-sm transition-transform"
-                  href="/focus"
-                >
-                  Start focusing
-                </Link>
-                <a
-                  className="px-3 py-3 font-medium text-sm text-white/65 transition-colors hover:text-white"
-                  href="https://nikitadrokin.com/"
-                >
-                  Made by Nikita Drokin
-                </a>
-              </div>
-            </div>
-
-            <div
-              aria-label="A 25 minute SoloStudy focus session"
-              className="relative mx-auto aspect-square w-full max-w-md rounded-[2.5rem] border border-white/10 bg-white/[0.045] p-6 shadow-2xl shadow-black/40 backdrop-blur-sm"
-              role="img"
+            <a
+              className={cn(
+                buttonVariants({ size: 'lg', variant: 'outline' }),
+                'bg-background/80 backdrop-blur-sm transition-transform duration-200 ease-out active:scale-[0.97]'
+              )}
+              href="#inside"
             >
-              <div className="flex h-full flex-col justify-between rounded-[2rem] border border-white/10 bg-black/25 p-7">
-                <div className="flex items-center justify-between text-white/45 text-xs uppercase tracking-[0.18em]">
-                  <span>Focus session</span>
-                  <span>25 min</span>
-                </div>
-                <div className="text-center">
-                  <p className="font-mono text-6xl tracking-[-0.06em] sm:text-7xl">
-                    25:00
-                  </p>
-                  <p className="mt-4 text-sm text-white/45">
-                    One task. One session.
-                  </p>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="h-1 rounded-full bg-blue-300/70" />
-                  <span className="h-1 rounded-full bg-white/15" />
-                  <span className="h-1 rounded-full bg-white/15" />
-                </div>
-              </div>
-            </div>
-          </section>
+              See what is inside
+            </a>
+          </div>
 
-          <section
-            aria-labelledby="features-heading"
-            className="border-white/10 border-t py-16"
+          <a
+            aria-label="Skip to what is inside the room"
+            className="-translate-x-1/2 absolute bottom-8 left-1/2 rounded-full border bg-background/80 p-2 text-muted-foreground backdrop-blur-sm transition-colors duration-200 hover:text-foreground"
+            href="#inside"
           >
-            <h2 className="sr-only" id="features-heading">
-              SoloStudy features
+            <ChevronDown className="size-4 motion-safe:animate-nudge" />
+          </a>
+        </section>
+
+        {/* Frosted sheet over the room: the ambient video stays visible, blurred. */}
+        <div className="relative border-border/60 border-t bg-background/90 backdrop-blur-lg">
+          <section
+            aria-labelledby="inside-heading"
+            className="mx-auto w-full max-w-5xl px-6 py-20 sm:py-28"
+            id="inside"
+          >
+            <h2
+              className="max-w-2xl text-balance font-semibold text-2xl tracking-tight sm:text-3xl"
+              id="inside-heading"
+            >
+              Three controls, and then the room gets out of your way.
             </h2>
-            <div className="grid gap-10 md:grid-cols-3">
-              <article>
-                <p className="font-mono text-blue-200/70 text-xs">01</p>
-                <h3 className="mt-3 font-medium text-lg">Flexible sessions</h3>
-                <p className="mt-2 text-sm text-white/50 leading-6">
-                  Set a focus and break rhythm that fits the work in front of
-                  you.
-                </p>
-              </article>
-              <article>
-                <p className="font-mono text-blue-200/70 text-xs">02</p>
-                <h3 className="mt-3 font-medium text-lg">Ambient space</h3>
-                <p className="mt-2 text-sm text-white/50 leading-6">
-                  Choose a video background that helps the room feel settled and
-                  intentional.
-                </p>
-              </article>
-              <article>
-                <p className="font-mono text-blue-200/70 text-xs">03</p>
-                <h3 className="mt-3 font-medium text-lg">Start immediately</h3>
-                <p className="mt-2 text-sm text-white/50 leading-6">
-                  Open a private focus room in your browser and begin without
-                  setting anything up.
-                </p>
-              </article>
+            <p className="mt-3 max-w-xl text-muted-foreground text-sm leading-6">
+              Everything sits in the corners of the screen, so the middle stays
+              empty for whatever you are actually working on.
+            </p>
+
+            <div className="mt-10 grid gap-4 md:grid-cols-3">
+              {FEATURES.map((feature) => (
+                <Card
+                  className="gap-0 border-border/60 bg-card/60 transition-colors duration-200 hover:bg-card/80"
+                  key={feature.title}
+                >
+                  <CardContent>
+                    <ControlChip>{feature.chip}</ControlChip>
+                  </CardContent>
+                  <CardHeader className="mt-5">
+                    <CardTitle className="text-base">{feature.title}</CardTitle>
+                    <CardDescription className="leading-6">
+                      {feature.description}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              ))}
             </div>
           </section>
 
-          <footer className="flex flex-wrap items-center justify-between gap-3 border-white/10 border-t py-6 text-white/40 text-xs">
-            <p>SoloStudy</p>
-            <p>A private online focus room</p>
+          <section className="mx-auto w-full max-w-5xl px-6 pb-20 sm:pb-28">
+            <Card className="items-center gap-4 border-border/60 bg-card/60 px-6 py-10 text-center">
+              <CardTitle className="text-balance text-xl tracking-tight sm:text-2xl">
+                Ready when you are.
+              </CardTitle>
+              <CardDescription className="max-w-md text-balance leading-6">
+                No sign-up, no onboarding. Open the room and it stays out of the
+                way for as long as you need it.
+              </CardDescription>
+              <Link
+                className={cn(
+                  buttonVariants({ size: 'lg' }),
+                  'mt-2 transition-transform duration-200 ease-out active:scale-[0.97]'
+                )}
+                href="/focus"
+              >
+                Enter the focus room
+              </Link>
+            </Card>
+          </section>
+
+          <footer className="border-border/60 border-t">
+            <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-6 text-muted-foreground text-xs">
+              <p>SoloStudy — a private online focus room</p>
+              <a
+                className="transition-colors duration-200 hover:text-foreground"
+                href="https://nikitadrokin.com/"
+              >
+                Made by Nikita Drokin
+              </a>
+            </div>
           </footer>
         </div>
       </main>

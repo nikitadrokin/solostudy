@@ -7,6 +7,29 @@
   --font-sans:
     "Inter", "Geist", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Landing page ambient backdrop: slow enough to read as stillness. */
+  --animate-ambient-drift: ambient-drift 32s ease-in-out infinite alternate;
+  --animate-nudge: nudge 2.4s ease-in-out infinite;
+
+  @keyframes ambient-drift {
+    from {
+      transform: translate3d(-1%, -0.5%, 0) scale(1.04);
+    }
+    to {
+      transform: translate3d(1%, 0.5%, 0) scale(1.1);
+    }
+  }
+
+  @keyframes nudge {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(3px);
+    }
+  }
 }
 
 html,

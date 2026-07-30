@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { DEFAULT_VIDEO_ID } from '@/lib/constants';
 
 interface FocusState {
   // Video settings
@@ -28,7 +29,7 @@ type FocusStore = FocusState & FocusActions;
 
 const initialState: FocusState = {
   // Video settings - using only ID's from the YouTube URL
-  videoId: 'jfKfPfyJRdk',
+  videoId: DEFAULT_VIDEO_ID,
   volume: 50,
   isMuted: false,
 

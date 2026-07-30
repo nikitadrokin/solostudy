@@ -24,6 +24,9 @@ if (
   posthogInitialized = true;
 }
 
+/** Routes that sit on top of the ambient video, so they are always dark. */
+const DARK_ONLY_ROUTES = new Set(['/', '/focus']);
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
@@ -34,7 +37,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         defaultTheme="system"
         disableTransitionOnChange
         enableSystem
-        forcedTheme={pathname === '/focus' ? 'dark' : undefined}
+        forcedTheme={DARK_ONLY_ROUTES.has(pathname) ? 'dark' : undefined}
       >
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>{children}</TooltipProvider>

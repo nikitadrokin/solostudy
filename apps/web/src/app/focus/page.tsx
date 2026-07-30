@@ -4,12 +4,11 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import YouTubePlayer from '@/components/focus-room/youtube-player';
 import { authClient } from '@/lib/auth-client';
+import { DEFAULT_VIDEO_ID } from '@/lib/constants';
 import { useFocusStore } from '@/stores/focus-store';
 import { useVideoStore } from '@/stores/video-store';
 import { api, apiClient } from '@/utils/trpc';
 import OverlayControls from './overlay-controls';
-
-const DEFAULT_VIDEO_ID = 'jfKfPfyJRdk';
 
 export default function FocusRoom() {
   const { data: session } = authClient.useSession();
