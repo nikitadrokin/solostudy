@@ -96,11 +96,11 @@ export default function Home() {
             <a
               className={cn(
                 buttonVariants({ size: 'lg', variant: 'outline' }),
-                'bg-background/80 backdrop-blur-sm transition-transform duration-200 ease-out active:scale-[0.97]'
+                'bg-background/80 backdrop-blur-xs transition-transform duration-200 ease-out'
               )}
               href="#inside"
             >
-              See what is inside
+              See what's inside
             </a>
           </div>
 
