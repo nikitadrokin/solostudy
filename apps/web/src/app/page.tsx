@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { DEFAULT_VIDEO_ID } from '@/lib/constants';
+import { LANDING_BACKDROP_VIDEO_ID } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 const STRUCTURED_DATA = {
@@ -67,11 +67,10 @@ export default function Home() {
       </script>
 
       <main className="relative">
-        <AmbientBackdrop videoId={DEFAULT_VIDEO_ID} />
+        <AmbientBackdrop videoId={LANDING_BACKDROP_VIDEO_ID} />
+        <LandingHeader />
 
         <section className="relative flex min-h-svh flex-col items-center justify-center px-6 py-24 text-center">
-          <LandingHeader />
-
           <p className="fade-in animate-in rounded-full border bg-background/80 fill-mode-both px-3 py-1 text-muted-foreground text-xs backdrop-blur-sm duration-700 ease-out motion-reduce:animate-none">
             No account needed
           </p>
@@ -115,11 +114,11 @@ export default function Home() {
           </a>
         </section>
 
-        {/* Frosted sheet over the room: the ambient video stays visible, blurred. */}
-        <div className="relative border-border/60 border-t bg-background/90 backdrop-blur-lg">
+        {/* Sheet over the room: the ambient glow still bleeds through the edges. */}
+        <div className="relative border-border/60 border-t bg-background/95">
           <section
             aria-labelledby="inside-heading"
-            className="mx-auto w-full max-w-5xl px-6 py-20 sm:py-28"
+            className="mx-auto w-full max-w-5xl scroll-mt-20 px-6 py-20 sm:py-28"
             id="inside"
           >
             <h2

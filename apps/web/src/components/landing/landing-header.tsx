@@ -5,11 +5,12 @@ import { cn } from '@/lib/utils';
 
 /**
  * Mirrors the focus room's floating control row: same offsets, same glass
- * chips, so arriving at /focus feels like the same screen.
+ * chips, so arriving at /focus feels like the same screen. Pinned to the
+ * viewport so the way in stays reachable from anywhere on the page.
  */
 export default function LandingHeader() {
   return (
-    <div className="absolute top-4 right-4 left-4 z-10 flex items-start justify-between">
+    <div className="fixed top-4 right-4 left-4 z-30 flex items-start justify-between">
       <Link
         className={cn(
           buttonVariants({ size: 'sm', variant: 'outline' }),
