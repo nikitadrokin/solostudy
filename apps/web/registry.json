@@ -269,6 +269,18 @@
       ]
     },
     {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "title": "Navigation Menu",
+      "description": "A collection of links and rich panels for site navigation.",
+      "files": [
+        {
+          "path": "src/components/ui/navigation-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "popover",
       "type": "registry:ui",
       "title": "Popover",
@@ -314,30 +326,6 @@
         {
           "path": "src/components/ui/sheet.tsx",
           "type": "registry:ui"
-        }
-      ]
-    },
-    {
-      "name": "sidebar",
-      "type": "registry:ui",
-      "title": "Sidebar",
-      "description": "Application sidebar primitives with desktop and mobile layouts.",
-      "registryDependencies": [
-        "button",
-        "input",
-        "separator",
-        "sheet",
-        "skeleton",
-        "tooltip"
-      ],
-      "files": [
-        {
-          "path": "src/components/ui/sidebar.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "src/hooks/use-mobile.ts",
-          "type": "registry:hook"
         }
       ]
     },

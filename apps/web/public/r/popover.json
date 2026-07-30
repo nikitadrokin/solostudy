@@ -3,7 +3,9 @@
   "name": "popover",
   "title": "Popover",
   "description": "A floating panel for contextual content.",
-  "registryDependencies": [],
+  "registryDependencies": [
+    "scroll-area"
+  ],
   "files": [
     {
       "path": "src/components/ui/popover.tsx",
