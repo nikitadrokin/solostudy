@@ -70,10 +70,6 @@ export default function Home() {
         <LandingHeader />
 
         <section className="relative flex min-h-svh flex-col items-center justify-center px-6 py-24 text-center">
-          <p className="fade-in animate-in rounded-full border bg-background/80 fill-mode-both px-3 py-1 text-muted-foreground text-xs backdrop-blur-sm duration-700 ease-out motion-reduce:animate-none">
-            No account needed
-          </p>
-
           <h1 className="fade-in slide-in-from-bottom-3 mt-6 max-w-3xl animate-in text-balance fill-mode-both font-semibold text-4xl tracking-tight delay-100 duration-700 ease-out motion-reduce:animate-none sm:text-6xl">
             Focus without the noise.
           </h1>
