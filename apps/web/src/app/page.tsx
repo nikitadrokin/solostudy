@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { LANDING_BACKDROP_VIDEO_ID } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 const STRUCTURED_DATA = {
@@ -67,7 +66,7 @@ export default function Home() {
       </script>
 
       <main className="relative">
-        <AmbientBackdrop videoId={LANDING_BACKDROP_VIDEO_ID} />
+        <AmbientBackdrop />
         <LandingHeader />
 
         <section className="relative flex min-h-svh flex-col items-center justify-center px-6 py-24 text-center">
