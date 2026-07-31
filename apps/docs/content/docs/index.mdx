@@ -1,0 +1,32 @@
+---
+title: Introduction
+description: The solostudy component registry — a shadcn-compatible collection of Base UI components powering study.nkdr.me.
+---
+
+The **solostudy registry** is a [shadcn](https://ui.shadcn.com)-compatible
+component registry. Every component is built on [Base UI](https://base-ui.com)
+primitives, styled with Tailwind CSS, and installable straight into your project
+with the shadcn CLI.
+
+## Installation
+
+Add any component by pointing the shadcn CLI at its registry URL. For example,
+to add the **Button**:
+
+<InstallCommand url="https://study.nkdr.me/r/button.json" />
+
+Each component's page lists its own install command, a live preview, and the
+full source you'll pull into `components/ui`.
+
+## How it works
+
+The registry is served from `https://study.nkdr.me/r/{name}.json`. When you run
+`shadcn add`, the CLI fetches that file, resolves any registry dependencies, and
+writes the component files into your project using the aliases from your
+`components.json`.
+
+## Browse components
+
+Head to the [Components](/docs/components) section in the sidebar to preview and
+install every primitive — from buttons and inputs to the adaptive Dynamic
+Popover.
