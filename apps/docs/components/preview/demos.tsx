@@ -475,9 +475,8 @@ function DropdownMenuDemo() {
         Open menu
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>My account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          <DropdownMenuLabel>My account</DropdownMenuLabel>
           <DropdownMenuItem>
             <User />
             Profile
