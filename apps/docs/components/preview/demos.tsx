@@ -6,6 +6,8 @@ import {
   Bold,
   CalendarDays,
   ChevronsUpDown,
+  Clapperboard,
+  Clock,
   CreditCard,
   Folder,
   Italic,
@@ -18,7 +20,7 @@ import {
   Underline,
   User,
 } from 'lucide-react';
-import type { ComponentType } from 'react';
+import { type ComponentType, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -103,9 +105,7 @@ import {
   DynamicPopover,
   DynamicPopoverBody,
   DynamicPopoverContent,
-  DynamicPopoverDescription,
   DynamicPopoverHeader,
-  DynamicPopoverTitle,
   DynamicPopoverTrigger,
 } from '@/components/ui/dynamic-popover';
 import {
@@ -501,28 +501,162 @@ function DropdownMenuDemo() {
   );
 }
 
+const BACKGROUND_FILTERS = ['All', 'Nature', 'Lo-fi', 'Cafe', 'Rain'] as const;
+
+type BackgroundFilter = (typeof BACKGROUND_FILTERS)[number];
+
+type BackgroundItem = {
+  id: string;
+  title: string;
+  tag: Exclude<BackgroundFilter, 'All'>;
+  accent: string;
+};
+
+const BACKGROUNDS: BackgroundItem[] = [
+  {
+    id: 'forest',
+    title: 'Forest path',
+    tag: 'Nature',
+    accent: 'from-emerald-900 via-green-700 to-lime-600',
+  },
+  {
+    id: 'waves',
+    title: 'Ocean waves',
+    tag: 'Nature',
+    accent: 'from-sky-900 via-cyan-700 to-teal-500',
+  },
+  {
+    id: 'lofi-room',
+    title: 'Lo-fi room',
+    tag: 'Lo-fi',
+    accent: 'from-violet-900 via-purple-700 to-fuchsia-500',
+  },
+  {
+    id: 'vinyl',
+    title: 'Vinyl corner',
+    tag: 'Lo-fi',
+    accent: 'from-orange-900 via-amber-700 to-yellow-500',
+  },
+  {
+    id: 'corner-cafe',
+    title: 'Corner cafe',
+    tag: 'Cafe',
+    accent: 'from-stone-800 via-amber-800 to-orange-600',
+  },
+  {
+    id: 'bookstore',
+    title: 'Bookstore nook',
+    tag: 'Cafe',
+    accent: 'from-neutral-900 via-stone-700 to-amber-600',
+  },
+  {
+    id: 'window-rain',
+    title: 'Window rain',
+    tag: 'Rain',
+    accent: 'from-slate-900 via-blue-800 to-indigo-500',
+  },
+  {
+    id: 'night-city',
+    title: 'Night city',
+    tag: 'Rain',
+    accent: 'from-zinc-950 via-slate-800 to-blue-600',
+  },
+  {
+    id: 'meadow',
+    title: 'Morning meadow',
+    tag: 'Nature',
+    accent: 'from-green-900 via-emerald-600 to-yellow-400',
+  },
+  {
+    id: 'study-desk',
+    title: 'Study desk',
+    tag: 'Lo-fi',
+    accent: 'from-rose-950 via-rose-800 to-orange-500',
+  },
+];
+
 function DynamicPopoverDemo() {
+  const [activeFilter, setActiveFilter] = useState<BackgroundFilter>('All');
+  const [urlInput, setUrlInput] = useState('');
+
+  const filteredBackgrounds =
+    activeFilter === 'All'
+      ? BACKGROUNDS
+      : BACKGROUNDS.filter((item) => item.tag === activeFilter);
+
   return (
     <DynamicPopover>
       <DynamicPopoverTrigger
-        className={cn(buttonVariants({ variant: 'outline' }))}
+        className={cn(
+          buttonVariants({ variant: 'outline' }),
+          'bg-background/80 backdrop-blur-sm'
+        )}
+        tooltip="Select background"
       >
-        Open
+        <Clapperboard className="size-4" />
+        Select background
       </DynamicPopoverTrigger>
-      <DynamicPopoverContent className="h-64 w-72" title="Notifications">
-        <DynamicPopoverHeader>
-          <DynamicPopoverTitle>Notifications</DynamicPopoverTitle>
-          <DynamicPopoverDescription>
-            A popover on desktop, a drawer on mobile.
-          </DynamicPopoverDescription>
+      <DynamicPopoverContent className="h-95 w-85" title="Select background">
+        <DynamicPopoverHeader className="gap-2 px-3 md:px-4">
+          <div className="flex gap-1 overflow-x-auto [scrollbar-width:none]">
+            {BACKGROUND_FILTERS.map((filter) => (
+              <Badge
+                className={cn(
+                  'shrink-0 cursor-pointer select-none rounded-full px-2.5 py-0.5 text-xs backdrop-blur-xs transition-colors',
+                  activeFilter === filter
+                    ? 'bg-foreground text-background hover:bg-foreground/90'
+                    : 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground'
+                )}
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setActiveFilter(filter);
+                  }
+                }}
+                render={<button type="button" />}
+                variant="outline"
+              >
+                {filter}
+              </Badge>
+            ))}
+          </div>
+          <Label htmlFor="demo-background-url">Custom Video URL</Label>
+          <div className="flex gap-2">
+            <Input
+              className="h-8 flex-1"
+              id="demo-background-url"
+              onChange={(event) => setUrlInput(event.target.value)}
+              placeholder="https://youtube.com/watch?v=…"
+              type="url"
+              value={urlInput}
+            />
+            <Button disabled={!urlInput.trim()} size="sm">
+              Load
+            </Button>
+          </div>
         </DynamicPopoverHeader>
-        <DynamicPopoverBody className="p-4">
-          <div className="flex flex-col gap-3">
-            {['New comment', 'Session reminder', 'Weekly recap'].map((n) => (
-              <div className="flex items-center gap-2 text-sm" key={n}>
-                <Bell className="size-4 text-muted-foreground" />
-                {n}
-              </div>
+        <DynamicPopoverBody viewportClassName="px-2 pb-3 md:px-3">
+          <div className="grid grid-cols-2 gap-1 md:gap-2">
+            {filteredBackgrounds.map((item) => (
+              <button
+                className="cursor-pointer rounded-lg p-2 text-left hover:bg-muted/50"
+                key={item.id}
+                type="button"
+              >
+                <AspectRatio
+                  className="overflow-hidden rounded-md"
+                  ratio={16 / 9}
+                >
+                  <div
+                    className={cn('h-full w-full bg-linear-to-br', item.accent)}
+                  />
+                </AspectRatio>
+                <div className="mt-2 truncate font-medium text-xs">
+                  {item.title}
+                </div>
+              </button>
             ))}
           </div>
         </DynamicPopoverBody>
@@ -660,27 +794,168 @@ function NavigationMenuDemo() {
   );
 }
 
+const SESSION_FILTERS = ['All', 'Today', 'This week'] as const;
+
+type SessionFilter = (typeof SESSION_FILTERS)[number];
+
+const SESSIONS = [
+  {
+    id: '1',
+    title: 'Organic chemistry review',
+    meta: '45 min · Today',
+    when: 'today' as const,
+  },
+  {
+    id: '2',
+    title: 'Linear algebra drills',
+    meta: '25 min · Today',
+    when: 'today' as const,
+  },
+  {
+    id: '3',
+    title: 'Essay outline',
+    meta: '60 min · Yesterday',
+    when: 'week' as const,
+  },
+  {
+    id: '4',
+    title: 'Spanish vocab',
+    meta: '20 min · Mon',
+    when: 'week' as const,
+  },
+  {
+    id: '5',
+    title: 'Circuits lab prep',
+    meta: '35 min · Sun',
+    when: 'week' as const,
+  },
+  {
+    id: '6',
+    title: 'Reading notes',
+    meta: '50 min · Sat',
+    when: 'week' as const,
+  },
+  {
+    id: '7',
+    title: 'Calc problem set',
+    meta: '40 min · Fri',
+    when: 'week' as const,
+  },
+  {
+    id: '8',
+    title: 'Design critique',
+    meta: '30 min · Thu',
+    when: 'week' as const,
+  },
+];
+
 function PopoverDemo() {
+  const [activeFilter, setActiveFilter] = useState<SessionFilter>('All');
+  const [query, setQuery] = useState('');
+
+  const filteredSessions = SESSIONS.filter((session) => {
+    const matchesFilter =
+      activeFilter === 'All' ||
+      (activeFilter === 'Today' && session.when === 'today') ||
+      (activeFilter === 'This week' &&
+        (session.when === 'today' || session.when === 'week'));
+    const matchesQuery = session.title
+      .toLowerCase()
+      .includes(query.trim().toLowerCase());
+    return matchesFilter && matchesQuery;
+  });
+
   return (
     <Popover>
-      <PopoverTrigger className={cn(buttonVariants({ variant: 'outline' }))}>
-        Open popover
+      <PopoverTrigger
+        className={cn(
+          buttonVariants({ variant: 'outline' }),
+          'bg-background/80 backdrop-blur-sm'
+        )}
+      >
+        <Clock className="size-4" />
+        Recent sessions
       </PopoverTrigger>
-      <PopoverContent>
-        <PopoverHeader>
-          <PopoverTitle>Dimensions</PopoverTitle>
-          <PopoverDescription>Set the layout dimensions.</PopoverDescription>
-        </PopoverHeader>
-        <div className="mt-3 flex flex-col gap-2">
-          <div className="flex items-center justify-between gap-4">
-            <Label htmlFor="width">Width</Label>
-            <Input className="h-8 w-24" defaultValue="100%" id="width" />
+      <PopoverContent
+        className={cn(
+          'relative h-95 w-80 overflow-hidden rounded-2xl p-0',
+          'border-white/10 bg-background/75 shadow-xl backdrop-blur-md'
+        )}
+      >
+        <div
+          className={cn(
+            'absolute inset-x-0 top-0 z-10 flex flex-col gap-2 bg-background/80 p-4',
+            'after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-5 after:bg-linear-to-b after:from-background/80 after:to-transparent after:content-[""]'
+          )}
+        >
+          <PopoverHeader>
+            <PopoverTitle>Sessions</PopoverTitle>
+            <PopoverDescription>
+              Scroll under the glass header to browse past focus blocks.
+            </PopoverDescription>
+          </PopoverHeader>
+          <div className="flex gap-1 overflow-x-auto [scrollbar-width:none]">
+            {SESSION_FILTERS.map((filter) => (
+              <Badge
+                className={cn(
+                  'shrink-0 cursor-pointer select-none rounded-full px-2.5 py-0.5 text-xs backdrop-blur-xs transition-colors',
+                  activeFilter === filter
+                    ? 'bg-foreground text-background hover:bg-foreground/90'
+                    : 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground'
+                )}
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setActiveFilter(filter);
+                  }
+                }}
+                render={<button type="button" />}
+                variant="outline"
+              >
+                {filter}
+              </Badge>
+            ))}
           </div>
-          <div className="flex items-center justify-between gap-4">
-            <Label htmlFor="height">Height</Label>
-            <Input className="h-8 w-24" defaultValue="24px" id="height" />
-          </div>
+          <Input
+            className="h-8"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search sessions…"
+            value={query}
+          />
         </div>
+        <ScrollArea
+          className="h-full"
+          fadeColor="color-mix(in oklab, var(--background) 80%, transparent)"
+          fadeTop="0px"
+          viewportClassName="space-y-1 px-3 pb-3 pt-[11.5rem]"
+        >
+          {filteredSessions.map((session) => (
+            <button
+              className="flex w-full items-start gap-3 rounded-lg px-2 py-2.5 text-left hover:bg-muted/50"
+              key={session.id}
+              type="button"
+            >
+              <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-muted">
+                <Clock className="size-3.5 text-muted-foreground" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate font-medium text-sm">
+                  {session.title}
+                </div>
+                <div className="text-muted-foreground text-xs">
+                  {session.meta}
+                </div>
+              </div>
+            </button>
+          ))}
+          {filteredSessions.length === 0 ? (
+            <p className="px-2 py-6 text-center text-muted-foreground text-sm">
+              No sessions match.
+            </p>
+          ) : null}
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );
