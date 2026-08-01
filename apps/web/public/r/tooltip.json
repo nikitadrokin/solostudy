@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "tooltip",
+  "title": "Tooltip",
+  "description": "A small hover and focus disclosure for supplemental text.",
+  "files": [
+    {
+      "path": "src/components/ui/tooltip.tsx",
+      "content": "'use client';\n\nimport { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip';\n\nimport { cn } from '@/lib/utils';\n\nfunction TooltipProvider({\n  delay = 200,\n  ...props\n}: TooltipPrimitive.Provider.Props) {\n  return (\n    <TooltipPrimitive.Provider\n      data-slot=\"tooltip-provider\"\n      delay={delay}\n      {...props}\n    />\n  );\n}\n\nfunction Tooltip({ ...props }: TooltipPrimitive.Root.Props) {\n  return (\n    <TooltipProvider>\n      <TooltipPrimitive.Root data-slot=\"tooltip\" {...props} />\n    </TooltipProvider>\n  );\n}\n\nfunction TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {\n  return <TooltipPrimitive.Trigger data-slot=\"tooltip-trigger\" {...props} />;\n}\n\nfunction TooltipContent({\n  className,\n  side = 'top',\n  sideOffset = 4,\n  align = 'center',\n  alignOffset = 0,\n  children,\n  ...props\n}: TooltipPrimitive.Popup.Props &\n  Pick<\n    TooltipPrimitive.Positioner.Props,\n    'align' | 'alignOffset' | 'side' | 'sideOffset'\n  >) {\n  return (\n    <TooltipPrimitive.Portal>\n      <TooltipPrimitive.Positioner\n        align={align}\n        alignOffset={alignOffset}\n        className=\"isolate z-50\"\n        side={side}\n        sideOffset={sideOffset}\n      >\n        <TooltipPrimitive.Popup\n          className={cn(\n            'z-50 w-fit origin-(--transform-origin) text-balance rounded-md border bg-primary-foreground px-3 py-1.5 text-primary text-xs shadow-md outline-hidden transition-[transform,opacity]',\n            'data-ending-style:scale-95 data-starting-style:scale-95 data-ending-style:opacity-0 data-starting-style:opacity-0',\n            className\n          )}\n          data-slot=\"tooltip-content\"\n          {...props}\n        >\n          {children}\n        </TooltipPrimitive.Popup>\n      </TooltipPrimitive.Positioner>\n    </TooltipPrimitive.Portal>\n  );\n}\n\nexport { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}
