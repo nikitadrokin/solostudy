@@ -37,7 +37,7 @@ export default function HomePage() {
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Link
             className="inline-flex items-center gap-2 rounded-md bg-fd-primary px-4 py-2 font-medium text-fd-primary-foreground text-sm transition-opacity hover:opacity-90"
-            href="/docs/components"
+            href="/components"
           >
             Browse components
             <ArrowRight className="size-4" />
@@ -54,7 +54,7 @@ export default function HomePage() {
           {registryItems.map((item) => (
             <Link
               className="group flex flex-col gap-1 rounded-lg border border-fd-border bg-fd-card p-4 transition-colors hover:border-fd-primary/40 hover:bg-fd-accent/40"
-              href={`/docs/components/${item.name}`}
+              href={`/components/${item.name}`}
               key={item.name}
             >
               <div className="flex items-center justify-between">

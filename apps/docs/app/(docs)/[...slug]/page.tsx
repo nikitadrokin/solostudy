@@ -10,7 +10,7 @@ import { source } from '@/lib/source';
 import { getMDXComponents } from '@/mdx-components';
 
 export default async function Page(props: {
-  params: Promise<{ slug?: string[] }>;
+  params: Promise<{ slug: string[] }>;
 }) {
   const params = await props.params;
   const page = source.getPage(params.slug);
@@ -33,11 +33,13 @@ export default async function Page(props: {
 }
 
 export function generateStaticParams() {
-  return source.generateParams();
+  return source
+    .generateParams()
+    .filter((param) => (param.slug?.length ?? 0) > 0);
 }
 
 export async function generateMetadata(props: {
-  params: Promise<{ slug?: string[] }>;
+  params: Promise<{ slug: string[] }>;
 }): Promise<Metadata> {
   const params = await props.params;
   const page = source.getPage(params.slug);

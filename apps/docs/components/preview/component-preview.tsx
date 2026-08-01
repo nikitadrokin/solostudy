@@ -64,7 +64,7 @@ export function ComponentPreview({
               {index > 0 ? ', ' : ''}
               <Link
                 className="font-medium text-fd-foreground underline underline-offset-4"
-                href={`/docs/components/${dep}`}
+                href={`/components/${dep}`}
               >
                 {dep}
               </Link>

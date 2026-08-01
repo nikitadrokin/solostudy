@@ -11,7 +11,10 @@ copy-paste install command for every item in
 pnpm --filter docs dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000).
+Then open [http://localhost:3000/docs](http://localhost:3000/docs).
+
+The app uses Next.js `basePath: '/docs'` so it matches production at
+[https://study.nkdr.me/docs](https://study.nkdr.me/docs).
 
 ## How it fits together
 
@@ -24,8 +27,9 @@ Then open [http://localhost:3000](http://localhost:3000).
   install command, and `install-command.tsx` is the package-manager switcher.
 - **`content/docs/*`** — the MDX pages. Component pages are generated from
   `registry.json`.
-- **`lib/source.ts`, `app/docs/*`, `app/(home)/*`** — the Fumadocs source
-  loader, docs layout/page, and the showcase landing page.
+- **`lib/source.ts`, `app/(docs)/*`, `app/(home)/*`** — the Fumadocs source
+  loader, docs layout/page, and the showcase landing page (publicly under
+  `/docs` via `basePath`).
 
 ## Regenerating component docs
 

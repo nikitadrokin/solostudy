@@ -2,6 +2,7 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 
 /**
  * Shared layout options used by both the home and docs layouts.
+ * Paths are in-app routes; Next.js `basePath: '/docs'` prefixes them publicly.
  */
 export function baseOptions(): BaseLayoutProps {
   return {
@@ -17,7 +18,7 @@ export function baseOptions(): BaseLayoutProps {
     links: [
       {
         text: 'Components',
-        url: '/docs/components',
+        url: '/components',
         active: 'nested-url',
       },
       {

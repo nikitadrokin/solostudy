@@ -20,7 +20,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className={inter.className} lang="en" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider
+          search={{
+            options: {
+              // Absolute public path — fetch is not basePath-aware
+              api: '/docs/api/search',
+            },
+          }}
+        >
+          {children}
+        </RootProvider>
       </body>
     </html>
   );
