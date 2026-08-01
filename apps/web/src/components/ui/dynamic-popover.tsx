@@ -16,6 +16,7 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { ProgressiveBlur } from '@/components/ui/progressive-blur';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Tooltip,
@@ -191,7 +192,7 @@ function DynamicPopoverContent({
     <PopoverContent
       align={align}
       className={cn(
-        'flex flex-col overflow-hidden rounded-2xl p-0',
+        'flex flex-col rounded-2xl p-0',
         'border border-white/10 bg-background/75 shadow-xl backdrop-blur-md',
         className
       )}
@@ -206,6 +207,7 @@ function DynamicPopoverContent({
 
 function DynamicPopoverHeader({
   className,
+  children,
   ...props
 }: React.ComponentProps<'div'>) {
   const { isMobile } = useDynamicPopover();
@@ -237,15 +239,29 @@ function DynamicPopoverHeader({
   return (
     <div
       className={cn(
-        'absolute inset-x-0 top-0 z-10 flex flex-col gap-1.5 bg-background/80 p-4',
-        'after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-5 after:bg-gradient-to-b after:from-background/80 after:to-transparent after:content-[""]',
+        'absolute inset-x-0 top-0 isolate z-10 flex flex-col gap-1.5 p-4',
         isMobile && 'pt-12',
         className
       )}
       data-slot="dynamic-popover-header"
       ref={ref}
       {...props}
-    />
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 z-[-20] h-[calc(100%+2rem)] overflow-hidden rounded-t-2xl"
+      >
+        <ProgressiveBlur side="top" tint={false} />
+      </div>
+      <div
+        aria-hidden
+        className={cn(
+          'pointer-events-none absolute inset-0 z-[-10] rounded-t-2xl bg-background/80',
+          'after:absolute after:inset-x-0 after:top-full after:h-5 after:bg-linear-to-b after:from-background/80 after:to-transparent after:content-[""]'
+        )}
+      />
+      {children}
+    </div>
   );
 }
 
@@ -256,7 +272,7 @@ function DynamicPopoverBody({
 }: React.ComponentProps<typeof ScrollArea>) {
   return (
     <ScrollArea
-      className={cn('min-h-0 flex-1', className)}
+      className={cn('min-h-0 flex-1 overflow-hidden rounded-b-2xl', className)}
       data-slot="dynamic-popover-body"
       fadeColor="color-mix(in oklab, var(--background) 80%, transparent)"
       fadeTop="0px"

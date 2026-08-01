@@ -183,6 +183,7 @@
       "registryDependencies": [
         "drawer",
         "popover",
+        "progressive-blur",
         "tooltip",
         "visually-hidden"
       ],
@@ -289,6 +290,18 @@
       "files": [
         {
           "path": "components/ui/popover.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "progressive-blur",
+      "type": "registry:ui",
+      "title": "Progressive Blur",
+      "description": "Stacked CSS blur bands that fade content under glass headers.",
+      "files": [
+        {
+          "path": "components/ui/progressive-blur.tsx",
           "type": "registry:ui"
         }
       ]

@@ -151,6 +151,7 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { ProgressiveBlur } from '@/components/ui/progressive-blur';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -878,16 +879,24 @@ function PopoverDemo() {
       </PopoverTrigger>
       <PopoverContent
         className={cn(
-          'relative h-95 w-80 overflow-hidden rounded-2xl p-0',
+          'relative h-95 w-80 rounded-2xl p-0',
           'border-white/10 bg-background/75 shadow-xl backdrop-blur-md'
         )}
       >
-        <div
-          className={cn(
-            'absolute inset-x-0 top-0 z-10 flex flex-col gap-2 bg-background/80 p-4',
-            'after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-5 after:bg-linear-to-b after:from-background/80 after:to-transparent after:content-[""]'
-          )}
-        >
+        <div className="absolute inset-x-0 top-0 isolate z-10 flex flex-col gap-2 p-4">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 z-[-20] h-[calc(100%+2rem)] overflow-hidden rounded-t-2xl"
+          >
+            <ProgressiveBlur side="top" tint={false} />
+          </div>
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-0 z-[-10] rounded-t-2xl bg-background/80',
+              'after:absolute after:inset-x-0 after:top-full after:h-5 after:bg-linear-to-b after:from-background/80 after:to-transparent after:content-[""]'
+            )}
+          />
           <PopoverHeader>
             <PopoverTitle>Sessions</PopoverTitle>
             <PopoverDescription>
@@ -926,7 +935,7 @@ function PopoverDemo() {
           />
         </div>
         <ScrollArea
-          className="h-full"
+          className="h-full overflow-hidden rounded-b-2xl"
           fadeColor="color-mix(in oklab, var(--background) 80%, transparent)"
           fadeTop="0px"
           viewportClassName="space-y-1 px-3 pb-3 pt-[11.5rem]"
@@ -958,6 +967,37 @@ function PopoverDemo() {
         </ScrollArea>
       </PopoverContent>
     </Popover>
+  );
+}
+
+function ProgressiveBlurDemo() {
+  const lines = Array.from({ length: 16 }, (_, i) => {
+    const n = i + 1;
+    return `Focus block ${n} — review notes, drill flashcards, then take a short break.`;
+  });
+
+  return (
+    <div className="relative h-72 w-full max-w-sm overflow-clip rounded-2xl border border-white/10 bg-background/75 shadow-xl backdrop-blur-md">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 isolate z-10 h-24"
+      >
+        <div className="absolute inset-0 z-[-20]">
+          <ProgressiveBlur side="top" tint={false} />
+        </div>
+        <div className="absolute inset-0 z-[-10] bg-background/80" />
+      </div>
+      <ScrollArea className="h-full" fadeTop="0px" viewportClassName="p-4 pt-8">
+        <p className="mb-3 font-medium text-sm">Scroll under the blur</p>
+        <div className="flex flex-col gap-2">
+          {lines.map((line) => (
+            <p className="text-muted-foreground text-sm" key={line}>
+              {line}
+            </p>
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
   );
 }
 
@@ -1186,6 +1226,7 @@ export const demos: Record<string, ComponentType> = {
   label: LabelDemo,
   'navigation-menu': NavigationMenuDemo,
   popover: PopoverDemo,
+  'progressive-blur': ProgressiveBlurDemo,
   'scroll-area': ScrollAreaDemo,
   separator: SeparatorDemo,
   sheet: SheetDemo,
