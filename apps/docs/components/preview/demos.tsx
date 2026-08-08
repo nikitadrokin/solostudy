@@ -886,17 +886,10 @@ function PopoverDemo() {
         <div className="absolute inset-x-0 top-0 isolate z-10 flex flex-col gap-2 p-4">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 z-[-20] h-[calc(100%+2rem)] overflow-hidden rounded-t-2xl"
+            className="pointer-events-none absolute inset-x-0 top-0 z-[-20] h-[calc(100%+3.5rem)] overflow-hidden rounded-t-2xl"
           >
-            <ProgressiveBlur side="top" tint={false} />
+            <ProgressiveBlur side="top" />
           </div>
-          <div
-            aria-hidden
-            className={cn(
-              'pointer-events-none absolute inset-0 z-[-10] rounded-t-2xl bg-background/80',
-              'after:absolute after:inset-x-0 after:top-full after:h-5 after:bg-linear-to-b after:from-background/80 after:to-transparent after:content-[""]'
-            )}
-          />
           <PopoverHeader>
             <PopoverTitle>Sessions</PopoverTitle>
             <PopoverDescription>
@@ -980,12 +973,9 @@ function ProgressiveBlurDemo() {
     <div className="relative h-72 w-full max-w-sm overflow-clip rounded-2xl border border-white/10 bg-background/75 shadow-xl backdrop-blur-md">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 isolate z-10 h-24"
+        className="pointer-events-none absolute inset-x-0 top-0 isolate z-10 h-32"
       >
-        <div className="absolute inset-0 z-[-20]">
-          <ProgressiveBlur side="top" tint={false} />
-        </div>
-        <div className="absolute inset-0 z-[-10] bg-background/80" />
+        <ProgressiveBlur side="top" />
       </div>
       <ScrollArea className="h-full" fadeTop="0px" viewportClassName="p-4 pt-8">
         <p className="mb-3 font-medium text-sm">Scroll under the blur</p>
