@@ -249,7 +249,7 @@ function DynamicPopoverHeader({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-[-20] h-[calc(100%+3.5rem)] overflow-hidden rounded-t-2xl"
+        className="pointer-events-none absolute inset-x-0 top-0 z-[-20] h-[calc(100%+0.5rem)] overflow-hidden rounded-t-2xl"
       >
         <ProgressiveBlur side="top" />
       </div>
