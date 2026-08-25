@@ -1,3 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+overrides:
+  "@better-auth/sso": "1.6.15"
+  kysely: "^0.29.0"

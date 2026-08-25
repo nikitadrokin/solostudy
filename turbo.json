@@ -4,8 +4,20 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": [
+        "BETTER_AUTH_API_KEY",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "COOLIFY_PROJECT_URL",
+        "DATABASE_URL",
+        "PASSKEY_ORIGIN",
+        "PASSKEY_RP_ID",
+        "PASSKEY_RP_NAME",
+        "POSTHOG_API_KEY",
+        "POSTHOG_PROJECT_ID"
+      ],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]

@@ -22,11 +22,5 @@
     "turbo": "^2.6.1",
     "ultracite": "5.1.1"
   },
-  "packageManager": "pnpm@10.12.4",
-  "pnpm": {
-    "overrides": {
-      "@better-auth/sso": "1.6.15",
-      "kysely": "^0.29.0"
-    }
-  }
+  "packageManager": "pnpm@10.12.4"
 }
