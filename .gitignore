@@ -14,3 +14,5 @@ apps/web/ds-entry.tsx
 apps/web/.ds-styles.css
 
 apps/web/ds-extra.tsx
+.vercel
+.env*
