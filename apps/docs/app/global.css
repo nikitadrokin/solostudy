@@ -101,3 +101,20 @@
     outline-color: color-mix(in oklch, var(--ring) 50%, transparent);
   }
 }
+/*
+ * Progressive blur: stacked masked backdrop-filter bands only render
+ * cleanly in Gecko (Firefox, Zen). Chromium and WebKit get a gradient fade.
+ */
+[data-slot="progressive-blur-layer"] {
+  display: none;
+}
+
+@supports (-moz-appearance: none) {
+  [data-slot="progressive-blur-layer"] {
+    display: block;
+  }
+
+  [data-slot="progressive-blur-fallback"] {
+    display: none;
+  }
+}

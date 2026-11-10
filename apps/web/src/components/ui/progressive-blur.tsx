@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
  * Chromium renders the masked bands as a hard-edged slab (nested
  * `backdrop-filter` + `mask-image`), so the bands only show on Gecko
  * (Firefox, Zen). Everywhere else a plain gradient fade stands in. The
- * switch lives in CSS (`index.css`, `@supports (-moz-appearance: none)`)
+ * switch lives in the global stylesheet (`@supports (-moz-appearance: none)`)
  * rather than UA sniffing, so server and client markup always match.
  */
 

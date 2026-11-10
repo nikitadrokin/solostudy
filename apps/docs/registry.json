@@ -70,7 +70,20 @@
           "path": "components/ui/progressive-blur.tsx",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "css": {
+        "[data-slot=\"progressive-blur-layer\"]": {
+          "display": "none"
+        },
+        "@supports (-moz-appearance: none)": {
+          "[data-slot=\"progressive-blur-layer\"]": {
+            "display": "block"
+          },
+          "[data-slot=\"progressive-blur-fallback\"]": {
+            "display": "none"
+          }
+        }
+      }
     },
     {
       "name": "scroll-area",
