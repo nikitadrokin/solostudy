@@ -12,6 +12,12 @@ import { cn } from '@/lib/utils';
  * continuous ramp even though the steps are discrete.
  *
  * @see https://kennethnym.com/blog/progressive-blur-in-css/
+ *
+ * Chromium renders the masked bands as a hard-edged slab (nested
+ * `backdrop-filter` + `mask-image`), so the bands only show on Gecko
+ * (Firefox, Zen). Everywhere else a plain gradient fade stands in. The
+ * switch lives in CSS (`index.css`, `@supports (-moz-appearance: none)`)
+ * rather than UA sniffing, so server and client markup always match.
  */
 
 type BlurLayer = {
@@ -98,6 +104,7 @@ function ProgressiveBlur({
       {layers.map((layer) => (
         <div
           className="absolute inset-0"
+          data-slot="progressive-blur-layer"
           key={layer.blur}
           style={{
             backdropFilter: `blur(${layer.blur}px)`,
@@ -107,6 +114,15 @@ function ProgressiveBlur({
           }}
         />
       ))}
+      <div
+        className={cn(
+          'absolute inset-0',
+          side === 'top'
+            ? 'bg-linear-to-b from-background/90 via-background/70 to-transparent'
+            : 'bg-linear-to-t from-background/90 via-background/70 to-transparent'
+        )}
+        data-slot="progressive-blur-fallback"
+      />
       {tint ? (
         <div
           className={cn(
